@@ -22,3 +22,6 @@ gradle-app.setting
 
 # Ignore Gradle build output directory
 build
+/android-native/src/native/headers/
+/android-native/.cxx/
+/lib/.cxx/

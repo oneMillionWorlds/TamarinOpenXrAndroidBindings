@@ -6,6 +6,18 @@
  * This project uses @Incubating APIs which are subject to change.
  */
 
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    plugins {
+        id 'com.android.library' version '7.4.2'
+        id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+    }
+}
+
 plugins {
     // Apply the foojay-resolver plugin to allow automatic download of JDKs
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
@@ -13,3 +25,6 @@ plugins {
 
 rootProject.name = 'TamarinOpenXrAndroidBindings'
 include('lib')
+
+include 'android-java'
+include 'android-native'

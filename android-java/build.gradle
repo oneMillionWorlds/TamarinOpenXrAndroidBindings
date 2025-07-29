@@ -1,0 +1,21 @@
+plugins {
+    id("java")
+}
+
+group = "com.onemillionworlds.tamarin"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+compileJava {
+    options.compilerArgs += ["-h", "${project.rootDir}/android-native/src/native/headers"]
+}

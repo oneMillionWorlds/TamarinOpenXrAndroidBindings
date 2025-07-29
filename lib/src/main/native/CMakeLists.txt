@@ -1,129 +1,57 @@
-# Copyright (c) 2017-2022, The Khronos Group Inc.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# Author:
-#
-
-# Copy the openxr_platform_defines.h file and place it in the binary (build) directory.
-configure_file(include/openxr/openxr_platform_defines.h ${CMAKE_CURRENT_BINARY_DIR}/openxr_platform_defines.h COPYONLY)
-
-# Generate OpenXR header files.
-
-set(HEADERS
-    openxr.h
-    openxr_platform.h
-    openxr_reflection.h)
-set(HAVE_PREGENERATED TRUE)
-set(SOURCE_HEADERS)
-foreach(output ${HEADERS})
-    list(APPEND SOURCE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/openxr/${output})
-    if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include/openxr/${output})
-        set(HAVE_PREGENERATED FALSE)
-    endif()
-endforeach()
-
-set(XR_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-if(HAVE_PREGENERATED AND NOT BUILD_FORCE_GENERATION)
-    add_custom_target(generate_openxr_header
-        COMMENT "Using found pre-generated OpenXR headers.")
-
-    set(INSTALL_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/openxr/openxr_platform_defines.h
-        ${SOURCE_HEADERS})
-else()
-
-    set(GENERATED_HEADERS)
-    set(OUTPUT_STAMPS)
-    # Copy the openxr_platform_defines.h file and place it in the binary (build) directory.
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/openxr/openxr_platform_defines.h
-        ${CMAKE_CURRENT_BINARY_DIR}/openxr_platform_defines.h
-        COPYONLY)
-
-    # Generate the header files and place it in the binary (build) directory.
-    foreach(output ${HEADERS})
-        add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${output}
-            COMMAND ${PYTHON_EXECUTABLE} ${XR_ROOT}/specification/scripts/genxr.py
-                -registry ${XR_ROOT}/specification/registry/xr.xml
-                -o ${CMAKE_CURRENT_BINARY_DIR} ${output}
-            DEPENDS
-                ${XR_ROOT}/specification/scripts/genxr.py
-                ${XR_ROOT}/specification/scripts/cgenerator.py
-                ${XR_ROOT}/specification/scripts/creflectiongenerator.py
-                ${XR_ROOT}/specification/scripts/generator.py
-                ${XR_ROOT}/specification/scripts/reg.py
-                ${XR_ROOT}/specification/registry/xr.xml
-            COMMENT "Generating ${CMAKE_CURRENT_BINARY_DIR}/${output}"
-        )
-        list(APPEND GENERATED_HEADERS "${CMAKE_CURRENT_BINARY_DIR}/${output}")
-    endforeach()
-
-    set_source_files_properties(
-        ${GENERATED_HEADERS}
-        PROPERTIES GENERATED TRUE
-    )
-
-    set(INSTALL_HEADERS
-        ${CMAKE_CURRENT_BINARY_DIR}/openxr_platform_defines.h
-        ${GENERATED_HEADERS})
+cmake_minimum_required(VERSION 3.10)
+project(OpenXRBindings LANGUAGES C CXX)
 
 
-    # Define generate_openxr_header target to generate the OpenXR header files.
-    # Other targets that need the OpenXR headers should use generate_openxr_header as a dependency.
-    add_custom_target(generate_openxr_header
-        SOURCES ${XR_ROOT}/specification/registry/xr.xml
-        DEPENDS
-        ${GENERATED_HEADERS}
-        ${OUTPUT_STAMPS}
-    )
-endif()
-set_target_properties(generate_openxr_header PROPERTIES FOLDER ${CODEGEN_FOLDER})
-if(NOT CMAKE_INSTALL_INCDIR)
-    set(CMAKE_INSTALL_INCDIR include)
-endif()
-
-INSTALL(FILES ${INSTALL_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCDIR}/openxr
-    COMPONENT Headers
-)
-
-# Build the JNI library
-find_package(JNI REQUIRED)
-include_directories(${JNI_INCLUDE_DIRS})
-
-# Add the JNI source files
+# Define JNI source files
 set(JNI_SOURCES
     jni/src/com_onemillionworlds_tamarin_openxrbindings_Library.c
     jni/src/com_onemillionworlds_tamarin_openxrbindings_MemoryUtil.c
 )
 
-# Create the JNI library
+# Define JNI library
 add_library(openxrjni SHARED ${JNI_SOURCES})
 
-# Link against the Android log library
-target_link_libraries(openxrjni
-    android
-    log
-)
+# Only include JNI headers and call find_package(JNI) if not Android
+if (NOT ANDROID)
+    find_package(JNI REQUIRED)
+    include_directories(${JNI_INCLUDE_DIRS})
+else()
+    # On Android, the headers come from the NDK toolchain
+    message(STATUS "Skipping find_package(JNI) on Android")
+endif()
 
-# Make sure the JNI library can find the OpenXR headers and JNI headers
+# Add include directories for headers
 target_include_directories(openxrjni PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/jni/include
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-# Add dependency on the OpenXR headers
+# Link against Android system libraries
+target_link_libraries(openxrjni
+    android
+    log
+)
+
+# Add the OpenXR header generation step
+set(HEADERS openxr.h openxr_platform.h openxr_reflection.h)
+set(GENERATED_HEADERS)
+
+foreach(header ${HEADERS})
+    list(APPEND GENERATED_HEADERS ${CMAKE_CURRENT_BINARY_DIR}/${header})
+
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${header}
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../../specification/scripts/genxr.py
+            -registry ${CMAKE_CURRENT_SOURCE_DIR}/../../specification/registry/xr.xml
+            -o ${CMAKE_CURRENT_BINARY_DIR} ${header}
+        DEPENDS
+            ${CMAKE_CURRENT_SOURCE_DIR}/../../specification/scripts/genxr.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/../../specification/scripts/generator.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/../../specification/registry/xr.xml
+        COMMENT "Generating OpenXR header: ${header}"
+    )
+endforeach()
+
+add_custom_target(generate_openxr_header DEPENDS ${GENERATED_HEADERS})
 add_dependencies(openxrjni generate_openxr_header)
