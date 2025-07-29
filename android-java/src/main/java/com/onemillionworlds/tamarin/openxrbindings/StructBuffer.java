@@ -99,6 +99,13 @@ public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T
     }
 
     /**
+     * Returns the size in bytes of a single element in this buffer.
+     */
+    public int sizeof() {
+        return getElementFactory().sizeof();
+    }
+
+    /**
      * Returns the element at the specified index.
      */
     public abstract T get(int index);
@@ -126,6 +133,8 @@ public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T
         }
         return create(address + position * getElementFactory().sizeof(), container, -1, 0, limit - position, limit - position);
     }
+
+
 
     /**
      * Returns a factory for creating elements of this buffer.

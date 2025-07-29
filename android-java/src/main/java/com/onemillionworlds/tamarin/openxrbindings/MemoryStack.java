@@ -4,6 +4,7 @@
 package com.onemillionworlds.tamarin.openxrbindings;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,6 +103,17 @@ public class MemoryStack implements AutoCloseable {
      */
     public ByteBuffer calloc(int capacity) {
         return MemoryUtil.memByteBuffer(ncalloc(1, capacity, 1), capacity);
+    }
+
+    /**
+     * Returns an IntBuffer that represents the specified memory on the stack.
+     * 
+     * @param size the number of ints
+     * @return the IntBuffer
+     */
+    public IntBuffer mallocInt(int size) {
+        ByteBuffer buffer = malloc(size * 4);
+        return buffer.asIntBuffer();
     }
 
     /**
