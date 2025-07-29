@@ -1,5 +1,10 @@
 # Process
 
+## Java version
+
+core-for-system-modules.jar isn't a valid module for Java 21 jlink and will cause the build 
+to crash. For this reason java 17 is used instead
+
 ## Java bindings
 
 In the module android-java there are the java side of the native methods. These are annotated 
@@ -12,4 +17,7 @@ native and during the buid process (see android-java/build.gradle) headers are c
 ## OpenXR headers
 
 The header files for the openXR calls (calls into the loader, not the system calls) are at 
-`lib/src/main/native/include/openxr`. These are third party 
+`lib/src/main/native/include/openxr`. These are third party headers that allow our c to call 
+the openXR loaded
+
+## OpenXR loader so files

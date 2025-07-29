@@ -24,7 +24,6 @@ plugins {
 }
 
 rootProject.name = 'TamarinOpenXrAndroidBindings'
-include('lib')
 
 include 'android-java'
 include 'android-native'
