@@ -1,8 +1,10 @@
 plugins {
     id("java")
+    id("maven-publish")
 }
 
 group = "com.onemillionworlds.tamarin"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -23,4 +25,23 @@ java {
 
 compileJava {
     options.compilerArgs += ["-h", "${project.rootDir}/android-native/src/native/headers"]
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifactId = 'openxr-bindings-java'
+
+            pom {
+                name = 'Tamarin OpenXR Java Bindings'
+                description = 'Java bindings for OpenXR on Android'
+                url = 'https://github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings'
+            }
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }

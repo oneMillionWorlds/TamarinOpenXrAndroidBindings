@@ -21,3 +21,7 @@ The header files for the openXR calls (calls into the loader, not the system cal
 the openXR loaded
 
 ## OpenXR loader so files
+
+The file at android-native/src/main/jnilibs/arm64-v8a/libopenxr_loader.so is the actual openXR loader.
+At runtime it dynamically links to the actual OpenXR system calls and allows our java calls to flow through to 
+the underlying system.

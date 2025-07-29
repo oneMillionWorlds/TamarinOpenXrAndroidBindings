@@ -2,7 +2,11 @@
 plugins {
     // Apply the Android library plugin
     id 'com.android.library'
+    id 'maven-publish'
 }
+
+group = "com.onemillionworlds.tamarin"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -62,6 +66,13 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
+    // Specify Java toolchain
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(11)
+        }
+    }
+
 }
 
 dependencies {
@@ -83,5 +94,38 @@ dependencies {
 android.testOptions {
     unitTests {
         includeAndroidResources = true
+    }
+}
+
+// Use the new Android publishing DSL
+android {
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = group
+                artifactId = 'openxr-bindings-native'
+                version = version
+
+                from components.release
+
+                pom {
+                    name = 'Tamarin OpenXR Native Bindings'
+                    description = 'Native bindings for OpenXR on Android'
+                    url = 'https://github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings'
+                }
+            }
+        }
+        repositories {
+            mavenLocal()
+        }
     }
 }
