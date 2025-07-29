@@ -70,6 +70,15 @@ JNIEXPORT jlong JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_MemoryU
     return (jlong)(intptr_t)ptr;
 }
 
+JNIEXPORT jlong JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_MemoryUtil_memAddressIntBuffer
+  (JNIEnv *env, jclass cls, jobject buffer) {
+    if (buffer == NULL) {
+        return 0;
+    }
+    void *ptr = (*env)->GetDirectBufferAddress(env, buffer);
+    return (jlong)(intptr_t)ptr;
+}
+
 /*
  * Class:     com_onemillionworlds_tamarin_openxrbindings_MemoryUtil
  * Method:    memGetInt

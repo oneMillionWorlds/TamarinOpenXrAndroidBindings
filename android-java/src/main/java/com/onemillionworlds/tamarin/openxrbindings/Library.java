@@ -23,5 +23,12 @@ public class Library {
      *                   Will have the result written to it (if not null)
      * @return  The error code (if any)
      */
-    public native int xrEnumerateApiLayerProperties(IntBuffer propertyCapacityInput, XrApiLayerProperties.Buffer properties);
+    public int xrEnumerateApiLayerProperties(IntBuffer propertyCapacityInput, XrApiLayerProperties.Buffer properties){
+        int remaining = propertyCapacityInput == null ? 0 : propertyCapacityInput.remaining();
+        long propertyCapacityAddress = MemoryUtil.memAddressIntBuffer(propertyCapacityInput);
+        long propertiesAddress = properties.address;
+        return nxrEnumerateApiLayerProperties(remaining, propertyCapacityAddress, propertiesAddress);
+    }
+
+    public native int nxrEnumerateApiLayerProperties(int propertyCapacityInput, long propertyCountOutput, long properties);
 }

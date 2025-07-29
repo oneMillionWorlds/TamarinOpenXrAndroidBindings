@@ -5,6 +5,7 @@ package com.onemillionworlds.tamarin.openxrbindings;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 
 public class MemoryUtil {
     
@@ -107,7 +108,9 @@ public class MemoryUtil {
      * @return the memory address
      */
     public static native long memAddress(ByteBuffer buffer);
-    
+
+    public static native long memAddressIntBuffer(IntBuffer buffer);
+
     /**
      * Checks if a ByteBuffer can store the specified number of bytes.
      * 
@@ -214,4 +217,5 @@ public class MemoryUtil {
      * @return the string
      */
     public static native String memUTF8(long address);
+
 }
