@@ -18,10 +18,9 @@
 #
 
 # Copy the openxr_platform_defines.h file and place it in the binary (build) directory.
-configure_file(openxr_platform_defines.h ${CMAKE_CURRENT_BINARY_DIR}/openxr_platform_defines.h COPYONLY)
+configure_file(include/openxr/openxr_platform_defines.h ${CMAKE_CURRENT_BINARY_DIR}/openxr_platform_defines.h COPYONLY)
 
 # Generate OpenXR header files.
-
 
 set(HEADERS
     openxr.h
@@ -30,8 +29,8 @@ set(HEADERS
 set(HAVE_PREGENERATED TRUE)
 set(SOURCE_HEADERS)
 foreach(output ${HEADERS})
-    list(APPEND SOURCE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/${output})
-    if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${output})
+    list(APPEND SOURCE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/openxr/${output})
+    if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include/openxr/${output})
         set(HAVE_PREGENERATED FALSE)
     endif()
 endforeach()
@@ -42,14 +41,14 @@ if(HAVE_PREGENERATED AND NOT BUILD_FORCE_GENERATION)
         COMMENT "Using found pre-generated OpenXR headers.")
 
     set(INSTALL_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/openxr_platform_defines.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/openxr/openxr_platform_defines.h
         ${SOURCE_HEADERS})
 else()
 
     set(GENERATED_HEADERS)
     set(OUTPUT_STAMPS)
     # Copy the openxr_platform_defines.h file and place it in the binary (build) directory.
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/openxr_platform_defines.h
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/openxr/openxr_platform_defines.h
         ${CMAKE_CURRENT_BINARY_DIR}/openxr_platform_defines.h
         COPYONLY)
 
@@ -106,8 +105,8 @@ include_directories(${JNI_INCLUDE_DIRS})
 
 # Add the JNI source files
 set(JNI_SOURCES
-    jni/com_onemillionworlds_tamarin_openxrbindings_Library.c
-    jni/com_onemillionworlds_tamarin_openxrbindings_MemoryUtil.c
+    jni/src/com_onemillionworlds_tamarin_openxrbindings_Library.c
+    jni/src/com_onemillionworlds_tamarin_openxrbindings_MemoryUtil.c
 )
 
 # Create the JNI library
@@ -119,9 +118,10 @@ target_link_libraries(openxrjni
     log
 )
 
-# Make sure the JNI library can find the OpenXR headers
+# Make sure the JNI library can find the OpenXR headers and JNI headers
 target_include_directories(openxrjni PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/jni/include
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 

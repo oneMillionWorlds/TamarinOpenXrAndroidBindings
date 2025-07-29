@@ -43,7 +43,7 @@ tasks.register('generateJniHeaders', JavaCompile) {
     source = sourceSets.main.java
     classpath = sourceSets.main.compileClasspath
     destinationDirectory.set(layout.buildDirectory.dir("classes/java/jni"))
-    options.headerOutputDirectory.set(file("src/main/native/openxr/jni"))
+    options.headerOutputDirectory.set(file("src/main/native/jni/include"))
 }
 
 // Make sure JNI headers are generated before building

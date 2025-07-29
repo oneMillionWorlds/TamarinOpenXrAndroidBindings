@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <android/log.h>
-#include "../openxr.h"
+#include "../../include/openxr/openxr.h"
 
 #define TAG "OpenXRJNI"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
