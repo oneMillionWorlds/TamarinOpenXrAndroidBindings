@@ -123,4 +123,14 @@ public class MemoryStack implements AutoCloseable {
     public void close() {
         pop();
     }
+
+    /**
+     * Returns a zeroed PointerBuffer that represents the specified memory on the stack.
+     * 
+     * @param size the number of pointers
+     * @return the PointerBuffer
+     */
+    public PointerBuffer callocPointer(int size) {
+        return PointerBuffer.create(ncalloc(8, size, 8), size);
+    }
 }

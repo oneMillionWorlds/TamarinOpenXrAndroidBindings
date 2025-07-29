@@ -4,6 +4,7 @@
 package com.onemillionworlds.tamarin.openxrbindings.examples;
 
 import com.onemillionworlds.tamarin.openxrbindings.Library;
+import com.onemillionworlds.tamarin.openxrbindings.PointerBuffer;
 import com.onemillionworlds.tamarin.openxrbindings.Struct;
 import com.onemillionworlds.tamarin.openxrbindings.StructBuffer;
 import com.onemillionworlds.tamarin.openxrbindings.XR10;
