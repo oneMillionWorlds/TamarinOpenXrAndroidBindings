@@ -8,6 +8,8 @@ import com.onemillionworlds.tamarin.openxrbindings.Struct;
 import com.onemillionworlds.tamarin.openxrbindings.StructBuffer;
 import com.onemillionworlds.tamarin.openxrbindings.XR10;
 import com.onemillionworlds.tamarin.openxrbindings.XrApiLayerProperties;
+import com.onemillionworlds.tamarin.openxrbindings.XrLoaderInitInfoBaseHeaderKHR;
+import com.onemillionworlds.tamarin.openxrbindings.XrStructureType;
 import com.onemillionworlds.tamarin.openxrbindings.memory.JavaBufferView;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
@@ -24,8 +26,17 @@ public class EnumerateApiLayerPropertiesExample {
 
         // Use a memory stack for efficient memory management
         try (MemoryStack stack = MemoryStack.stackGet().push()) {
+
+            XrLoaderInitInfoBaseHeaderKHR loaderInitInfoBaseHeaderKHR = XrLoaderInitInfoBaseHeaderKHR.calloc(stack);
+            loaderInitInfoBaseHeaderKHR.type$Default();
+
+            openxr.xrInitializeLoaderKHR(
+                    loaderInitInfoBaseHeaderKHR
+            );
+
+
             // First call to get the count
-            JavaBufferView<IntBuffer> numberOfLayersPointer = stack.mallocInt(1);
+            JavaBufferView<IntBuffer> numberOfLayersPointer = stack.callocInt(1);
 
             checkResponseCode(openxr.xrEnumerateApiLayerProperties(numberOfLayersPointer, null));
             int numLayers = numberOfLayersPointer.getBufferView().get(0);

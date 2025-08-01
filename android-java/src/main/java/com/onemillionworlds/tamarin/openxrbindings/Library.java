@@ -27,7 +27,7 @@ public class Library {
      * @return  The error code (if any)
      */
     public int xrEnumerateApiLayerProperties(JavaBufferView<IntBuffer> propertyCapacityInput, XrApiLayerProperties.Buffer properties){
-        int remaining = propertyCapacityInput.getBufferView().remaining();
+        int remaining = properties == null ? 0 : propertyCapacityInput.getBufferView().remaining();
         long propertyCapacityAddress = propertyCapacityInput.getAddress();
         return nxrEnumerateApiLayerProperties(remaining, propertyCapacityAddress, properties == null ? MemoryUtil.NULL : properties.address);
     }
@@ -50,4 +50,16 @@ public class Library {
     }
 
     public native int nxrEnumerateInstanceExtensionProperties(String layerName, int propertyCapacityInput, long propertyCountOutput, long properties);
+
+    /**
+     * Initializes the loader for this process
+     * 
+     * @param loaderInitInfo Loader initialization info
+     * @return The error code (if any)
+     */
+    public int xrInitializeLoaderKHR(XrLoaderInitInfoBaseHeaderKHR loaderInitInfo) {
+        return nxrInitializeLoaderKHR(loaderInitInfo.address());
+    }
+
+    public native int nxrInitializeLoaderKHR(long loaderInitInfo);
 }

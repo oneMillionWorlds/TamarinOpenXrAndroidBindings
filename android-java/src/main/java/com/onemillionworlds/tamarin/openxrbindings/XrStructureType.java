@@ -28,4 +28,7 @@ public class XrStructureType {
     public static final int XR_TYPE_ACTION_STATE_FLOAT = 24;
     public static final int XR_TYPE_ACTION_STATE_VECTOR2F = 25;
     public static final int XR_TYPE_ACTION_STATE_POSE = 27;
+
+    // KHR extension types
+    public static final int XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR = 1000089000;
 }

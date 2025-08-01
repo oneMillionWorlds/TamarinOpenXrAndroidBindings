@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.onemillionworlds.tamarin"
-version = "1.0.1-SNAPSHOT"
+version = "1.0.5-SNAPSHOT"
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -73,6 +73,11 @@ android {
         }
     }
 
+}
+
+// Configure Java compiler to generate JNI header files
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ["-h", "${project.projectDir}/src/native/headers"]
 }
 
 dependencies {
