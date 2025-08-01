@@ -44,7 +44,7 @@ public class Library {
      * @return  The error code (if any)
      */
     public int xrEnumerateInstanceExtensionProperties(String layerName, JavaBufferView<IntBuffer> propertyCapacityInput, XrExtensionProperties.Buffer properties){
-        int remaining = propertyCapacityInput.getBufferView().remaining();
+        int remaining = properties == null ? 0 :  properties.remaining();
         long propertyCapacityAddress = propertyCapacityInput.getAddress();
         return nxrEnumerateInstanceExtensionProperties(layerName, remaining, propertyCapacityAddress, properties == null ? MemoryUtil.NULL : properties.address);
     }
