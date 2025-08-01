@@ -6,7 +6,7 @@ package com.onemillionworlds.tamarin.openxrbindings.examples;
 import com.onemillionworlds.tamarin.openxrbindings.Library;
 import com.onemillionworlds.tamarin.openxrbindings.Struct;
 import com.onemillionworlds.tamarin.openxrbindings.StructBuffer;
-import com.onemillionworlds.tamarin.openxrbindings.XR10;
+import com.onemillionworlds.tamarin.openxrbindings.XR10ConstantsOld;
 import com.onemillionworlds.tamarin.openxrbindings.XrApiLayerProperties;
 import com.onemillionworlds.tamarin.openxrbindings.XrExtensionProperties;
 import com.onemillionworlds.tamarin.openxrbindings.memory.IntBufferView;
@@ -125,7 +125,7 @@ public class EnumerateInstanceExtensionPropertiesExample {
         return fill(
                 XrApiLayerProperties.calloc(numLayers, stack),
                 XrApiLayerProperties.TYPE,
-                XR10.XR_TYPE_API_LAYER_PROPERTIES
+                XR10ConstantsOld.XR_TYPE_API_LAYER_PROPERTIES
         );
     }
 

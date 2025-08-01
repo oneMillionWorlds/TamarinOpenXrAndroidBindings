@@ -1,0 +1,22 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'java'
+
+gradlePlugin {
+    plugins {
+        createStructsPlugin {
+            id = 'com.onemillionworlds.tamarin.createstructs'
+            implementationClass = 'com.onemillionworlds.tamarin.gradle.CreateStructsPlugin'
+        }
+    }
+}
+
+dependencies {
+    implementation gradleApi()
+}

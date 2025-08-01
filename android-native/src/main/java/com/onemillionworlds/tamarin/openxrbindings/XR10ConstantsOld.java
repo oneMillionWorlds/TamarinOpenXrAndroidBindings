@@ -3,7 +3,7 @@
  */
 package com.onemillionworlds.tamarin.openxrbindings;
 
-public class XR10 {
+public class XR10ConstantsOld {
     // Structure types
     public static final int XR_TYPE_API_LAYER_PROPERTIES = 1;
     

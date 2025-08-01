@@ -1,8 +1,10 @@
+import com.onemillionworlds.tamarin.gradle.tasks.CreateStructs
 
 plugins {
     // Apply the Android library plugin
     id 'com.android.library'
     id 'maven-publish'
+    id 'com.onemillionworlds.tamarin.createstructs'
 }
 
 group = "com.onemillionworlds.tamarin"
@@ -22,7 +24,7 @@ android {
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src/main/java']
+            java.srcDirs = ['src/main/java', "src/main/generated/java"]
             jniLibs.srcDirs = ['src/main/jniLibs']
         }
     }
@@ -78,6 +80,28 @@ android {
 // Configure Java compiler to generate JNI header files
 tasks.withType(JavaCompile) {
     options.compilerArgs += ["-h", "${project.projectDir}/src/native/headers"]
+}
+
+// Configure the CreateStructs task
+def generatedOutputDir = file("${project.projectDir}/src/main/generated/java/com.onemillionworlds.tamarin.openxrbindings")
+def openxrHeaderFile = file("${project.projectDir}/src/native/include/openxr/openxr.h")
+
+// Create the output directory
+task createGeneratedDir {
+    doLast {
+        generatedOutputDir.mkdirs()
+    }
+}
+
+task createOpenXrStructs(type: CreateStructs) {
+    dependsOn createGeneratedDir
+    headerFile = openxrHeaderFile
+    outputDir = generatedOutputDir
+}
+
+// Make sure the CreateStructs task runs before Java compilation
+tasks.withType(JavaCompile) {
+    dependsOn createOpenXrStructs
 }
 
 dependencies {

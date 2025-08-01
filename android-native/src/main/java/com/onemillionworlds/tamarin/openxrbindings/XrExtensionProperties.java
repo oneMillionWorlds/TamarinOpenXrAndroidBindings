@@ -9,7 +9,7 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
 import java.nio.ByteBuffer;
 
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
-import static com.onemillionworlds.tamarin.openxrbindings.XR10.*;
+import static com.onemillionworlds.tamarin.openxrbindings.XR10ConstantsOld.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XrStructureType.*;
 
 /**

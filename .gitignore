@@ -25,3 +25,4 @@ build
 /android-native/src/native/headers/
 /android-native/.cxx/
 /lib/.cxx/
+/android-native/src/main/generated/

@@ -6,16 +6,11 @@ package com.onemillionworlds.tamarin.openxrbindings.examples;
 import com.onemillionworlds.tamarin.openxrbindings.Library;
 import com.onemillionworlds.tamarin.openxrbindings.Struct;
 import com.onemillionworlds.tamarin.openxrbindings.StructBuffer;
-import com.onemillionworlds.tamarin.openxrbindings.XR10;
+import com.onemillionworlds.tamarin.openxrbindings.XR10ConstantsOld;
 import com.onemillionworlds.tamarin.openxrbindings.XrApiLayerProperties;
-import com.onemillionworlds.tamarin.openxrbindings.XrLoaderInitInfoBaseHeaderKHR;
-import com.onemillionworlds.tamarin.openxrbindings.XrStructureType;
 import com.onemillionworlds.tamarin.openxrbindings.memory.IntBufferView;
-import com.onemillionworlds.tamarin.openxrbindings.memory.JavaBufferView;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
-
-import java.nio.IntBuffer;
 
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.memPutInt;
 
@@ -106,7 +101,7 @@ public class EnumerateApiLayerPropertiesExample {
         return fill(
                 XrApiLayerProperties.calloc(numLayers, stack),
                 XrApiLayerProperties.TYPE,
-                XR10.XR_TYPE_API_LAYER_PROPERTIES
+                XR10ConstantsOld.XR_TYPE_API_LAYER_PROPERTIES
         );
     }
 
