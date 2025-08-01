@@ -141,9 +141,9 @@ public class MemoryStack implements AutoCloseable {
      * @param size the number of ints
      * @return the IntBuffer
      */
-    public JavaBufferView<IntBuffer> mallocInt(int size) {
+    public IntBufferView mallocInt(int size) {
         BufferAndAddress buffer = malloc(4, size * 4);
-        return new JavaBufferView<>(buffer.buffer, buffer.buffer.asIntBuffer(), buffer.address);
+        return new IntBufferView(buffer.buffer, buffer.buffer.asIntBuffer(), buffer.address);
     }
 
     /**
@@ -152,9 +152,9 @@ public class MemoryStack implements AutoCloseable {
      * @param size the number of ints
      * @return the IntBuffer
      */
-    public JavaBufferView<IntBuffer> callocInt(int size) {
+    public IntBufferView callocInt(int size) {
         BufferAndAddress buffer = calloc(4, size * 4);
-        return new JavaBufferView<>(buffer.buffer, buffer.buffer.asIntBuffer(), buffer.address);
+        return new IntBufferView(buffer.buffer, buffer.buffer.asIntBuffer(), buffer.address);
     }
 
     /**

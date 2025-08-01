@@ -9,6 +9,7 @@ import com.onemillionworlds.tamarin.openxrbindings.StructBuffer;
 import com.onemillionworlds.tamarin.openxrbindings.XR10;
 import com.onemillionworlds.tamarin.openxrbindings.XrApiLayerProperties;
 import com.onemillionworlds.tamarin.openxrbindings.XrExtensionProperties;
+import com.onemillionworlds.tamarin.openxrbindings.memory.IntBufferView;
 import com.onemillionworlds.tamarin.openxrbindings.memory.JavaBufferView;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 
@@ -60,7 +61,7 @@ public class EnumerateInstanceExtensionPropertiesExample {
 
             // Now let's enumerate extensions for each available API layer
             // First, get the count of API layers
-            JavaBufferView<IntBuffer> numberOfLayersPointer = stack.mallocInt(1);
+            IntBufferView numberOfLayersPointer = stack.mallocInt(1);
             checkResponseCode(openxr.xrEnumerateApiLayerProperties(numberOfLayersPointer, null));
             int numLayers = numberOfLayersPointer.getBufferView().get(0);
 
