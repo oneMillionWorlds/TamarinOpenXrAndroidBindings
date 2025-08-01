@@ -457,7 +457,7 @@ public class CreateStructs extends DefaultTask {
             if (hasTypeField) {
                 String typeConstant = getTypeConstantForStruct(struct.getName());
                 writer.write("    /** Sets the specified value to the {@code type} field. */\n");
-                writer.write("    public " + struct.getName() + " type$Default() { return type(" + typeConstant + "); }\n");
+                writer.write("    public " + struct.getName() + " type$Default() { return type(XR10Constants." + typeConstant + "); }\n");
             }
 
             writer.write("\n");
@@ -792,7 +792,7 @@ public class CreateStructs extends DefaultTask {
             if (hasTypeField) {
                 String typeConstant = getTypeConstantForStruct(struct.getName());
                 writer.write("        /** Sets the specified value to the {@code type} field. */\n");
-                writer.write("        public Buffer type$Default() { return type(" + typeConstant + "); }\n");
+                writer.write("        public Buffer type$Default() { return type(XR10Constants." + typeConstant + "); }\n");
             }
 
             writer.write("    }\n");
