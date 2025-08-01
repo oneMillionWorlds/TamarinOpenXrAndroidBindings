@@ -81,8 +81,6 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-    api project(':android-java')
-
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api libs.commons.math3
 
