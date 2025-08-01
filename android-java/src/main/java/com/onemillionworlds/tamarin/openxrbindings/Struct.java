@@ -3,6 +3,8 @@
  */
 package com.onemillionworlds.tamarin.openxrbindings;
 
+import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+
 import java.nio.ByteBuffer;
 
 public abstract class Struct<T extends Struct<T>> implements NativeResource {

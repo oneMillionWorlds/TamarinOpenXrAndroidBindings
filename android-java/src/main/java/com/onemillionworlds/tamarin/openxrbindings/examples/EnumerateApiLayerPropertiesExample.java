@@ -4,16 +4,17 @@
 package com.onemillionworlds.tamarin.openxrbindings.examples;
 
 import com.onemillionworlds.tamarin.openxrbindings.Library;
-import com.onemillionworlds.tamarin.openxrbindings.PointerBuffer;
 import com.onemillionworlds.tamarin.openxrbindings.Struct;
 import com.onemillionworlds.tamarin.openxrbindings.StructBuffer;
 import com.onemillionworlds.tamarin.openxrbindings.XR10;
 import com.onemillionworlds.tamarin.openxrbindings.XrApiLayerProperties;
-import com.onemillionworlds.tamarin.openxrbindings.MemoryStack;
+import com.onemillionworlds.tamarin.openxrbindings.memory.JavaBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
 
 import java.nio.IntBuffer;
 
-import static com.onemillionworlds.tamarin.openxrbindings.MemoryUtil.memPutInt;
+import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.memPutInt;
 
 public class EnumerateApiLayerPropertiesExample {
 
@@ -24,10 +25,10 @@ public class EnumerateApiLayerPropertiesExample {
         // Use a memory stack for efficient memory management
         try (MemoryStack stack = MemoryStack.stackGet().push()) {
             // First call to get the count
-            IntBuffer numberOfLayersPointer = stack.mallocInt(1);
+            JavaBufferView<IntBuffer> numberOfLayersPointer = stack.mallocInt(1);
 
             checkResponseCode(openxr.xrEnumerateApiLayerProperties(numberOfLayersPointer, null));
-            int numLayers = numberOfLayersPointer.get(0);
+            int numLayers = numberOfLayersPointer.getBufferView().get(0);
 
             System.out.println("Found " + numLayers + " API layer properties");
 
@@ -66,11 +67,11 @@ public class EnumerateApiLayerPropertiesExample {
     private static LayerCheckResult makeLayersCheck(MemoryStack stack){
         Library openxr = new Library();
 
-        IntBuffer numberOfLayersPointer = stack.mallocInt(1);
+        JavaBufferView<IntBuffer> numberOfLayersPointer = stack.mallocInt(1);
 
         boolean hasCoreValidationLayer = false;
         checkResponseCode(openxr.xrEnumerateApiLayerProperties(numberOfLayersPointer, null));
-        int numLayers = numberOfLayersPointer.get(0);
+        int numLayers = numberOfLayersPointer.getBufferView().get(0);
 
         XrApiLayerProperties.Buffer pLayers = prepareApiLayerProperties(stack, numLayers);
         checkResponseCode(openxr.xrEnumerateApiLayerProperties(numberOfLayersPointer, pLayers));
@@ -85,7 +86,7 @@ public class EnumerateApiLayerPropertiesExample {
             }
         };
 
-        PointerBuffer wantedLayers;
+        PointerBufferView wantedLayers;
         if (hasCoreValidationLayer) {
             wantedLayers = stack.callocPointer(1);
             // wantedLayers.put(0, stack.UTF8("XR_APILAYER_LUNARG_core_validation"));
@@ -122,10 +123,10 @@ public class EnumerateApiLayerPropertiesExample {
 
 
     public static class LayerCheckResult{
-        PointerBuffer wantedLayers;
+        PointerBufferView wantedLayers;
         boolean hasCoreValidationLayer;
 
-        public LayerCheckResult(PointerBuffer wantedLayers, boolean hasCoreValidationLayer) {
+        public LayerCheckResult(PointerBufferView wantedLayers, boolean hasCoreValidationLayer) {
             this.wantedLayers = wantedLayers;
             this.hasCoreValidationLayer = hasCoreValidationLayer;
         }

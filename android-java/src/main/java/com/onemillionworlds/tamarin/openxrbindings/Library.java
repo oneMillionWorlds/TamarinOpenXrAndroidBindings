@@ -4,6 +4,9 @@
 package com.onemillionworlds.tamarin.openxrbindings;
 
 
+import com.onemillionworlds.tamarin.openxrbindings.memory.JavaBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+
 import java.nio.IntBuffer;
 
 /**
@@ -23,11 +26,10 @@ public class Library {
      *                   Will have the result written to it (if not null)
      * @return  The error code (if any)
      */
-    public int xrEnumerateApiLayerProperties(IntBuffer propertyCapacityInput, XrApiLayerProperties.Buffer properties){
-        int remaining = propertyCapacityInput == null ? 0 : propertyCapacityInput.remaining();
-        long propertyCapacityAddress = MemoryUtil.memAddressIntBuffer(propertyCapacityInput);
-        long propertiesAddress = properties.address;
-        return nxrEnumerateApiLayerProperties(remaining, propertyCapacityAddress, propertiesAddress);
+    public int xrEnumerateApiLayerProperties(JavaBufferView<IntBuffer> propertyCapacityInput, XrApiLayerProperties.Buffer properties){
+        int remaining = propertyCapacityInput.getBufferView().remaining();
+        long propertyCapacityAddress = propertyCapacityInput.getAddress();
+        return nxrEnumerateApiLayerProperties(remaining, propertyCapacityAddress, properties == null ? MemoryUtil.NULL : properties.address);
     }
 
     public native int nxrEnumerateApiLayerProperties(int propertyCapacityInput, long propertyCountOutput, long properties);
