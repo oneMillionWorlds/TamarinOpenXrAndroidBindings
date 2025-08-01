@@ -187,7 +187,7 @@ public class CreateStructs extends DefaultTask {
         StructDefinition structDef = new StructDefinition(name);
 
         // Parse fields
-        Pattern fieldPattern = Pattern.compile("\\s*(\\w+(?:\\*\\s*XR_MAY_ALIAS)?)\\s+(\\w+)(?:\\[(XR_[A-Z_]+)\\])?;");
+        Pattern fieldPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s*\\*(?:\\s*XR_MAY_ALIAS)?)?(?:\\s+const)?)\\s+(\\w+)(?:\\[(XR_[A-Z_]+)\\])?;");
         Matcher matcher = fieldPattern.matcher(content);
 
         while (matcher.find()) {
