@@ -42,7 +42,7 @@ public class MemoryUtil {
      * @return the memory address
      */
     public static native long nmemAlloc(long size);
-    
+
     /**
      * Allocates native memory and checks if the allocation was successful.
      * 
@@ -57,7 +57,7 @@ public class MemoryUtil {
         }
         return address;
     }
-    
+
     /**
      * Allocates zeroed native memory.
      * 
@@ -65,7 +65,7 @@ public class MemoryUtil {
      * @return the memory address
      */
     public static native long nmemCalloc(long size);
-    
+
     /**
      * Allocates zeroed native memory and checks if the allocation was successful.
      * 
@@ -81,14 +81,14 @@ public class MemoryUtil {
         }
         return address;
     }
-    
+
     /**
      * Frees native memory.
      * 
      * @param address the memory address
      */
     public static native void nmemFree(long address);
-    
+
     /**
      * Creates a ByteBuffer that represents the specified native memory.
      * 
@@ -102,7 +102,7 @@ public class MemoryUtil {
         }
         return memSetupBuffer(memNewBuffer(address, size));
     }
-    
+
     /**
      * Creates a new direct ByteBuffer for the specified memory address.
      * 
@@ -111,7 +111,7 @@ public class MemoryUtil {
      * @return the ByteBuffer
      */
     private static native ByteBuffer memNewBuffer(long address, int size);
-    
+
     /**
      * Sets up a ByteBuffer.
      * 
@@ -122,7 +122,7 @@ public class MemoryUtil {
         buffer.order(ByteOrder.nativeOrder());
         return buffer;
     }
-    
+
     /**
      * Returns the memory address of a direct ByteBuffer.
      * 
@@ -150,7 +150,7 @@ public class MemoryUtil {
         }
         return buffer;
     }
-    
+
     /**
      * Creates a new direct ByteBuffer with the specified capacity.
      * 
@@ -160,7 +160,7 @@ public class MemoryUtil {
     public static ByteBuffer __create(int capacity, int alignment) {
         return memSetupBuffer(ByteBuffer.allocateDirect(capacity));
     }
-    
+
     /**
      * Checks if the specified size is valid for allocation.
      * 
@@ -174,7 +174,7 @@ public class MemoryUtil {
         }
         return size;
     }
-    
+
     /**
      * Gets an int value from the specified memory address.
      * 
@@ -182,7 +182,7 @@ public class MemoryUtil {
      * @return the int value
      */
     public static native int memGetInt(long address);
-    
+
     /**
      * Gets a long value from the specified memory address.
      * 
@@ -190,7 +190,15 @@ public class MemoryUtil {
      * @return the long value
      */
     public static native long memGetLong(long address);
-    
+
+    /**
+     * Gets a float value from the specified memory address.
+     * 
+     * @param address the memory address
+     * @return the float value
+     */
+    public static native float memGetFloat(long address);
+
     /**
      * Gets an address value from the specified memory address.
      * 
@@ -198,7 +206,7 @@ public class MemoryUtil {
      * @return the address value
      */
     public static native long memGetAddress(long address);
-    
+
     /**
      * Puts an int value at the specified memory address.
      * 
@@ -224,7 +232,7 @@ public class MemoryUtil {
      * @param value the long value
      */
     public static native void memPutLong(long address, long value);
-    
+
     /**
      * Puts an address value at the specified memory address.
      * 
@@ -232,7 +240,7 @@ public class MemoryUtil {
      * @param value the address value
      */
     public static native void memPutAddress(long address, long value);
-    
+
     /**
      * Copies memory from one address to another.
      * 
@@ -241,7 +249,7 @@ public class MemoryUtil {
      * @param size the size in bytes
      */
     public static native void memCopy(long src, long dst, long size);
-    
+
     /**
      * Gets a UTF-8 string from the specified memory address.
      * 
