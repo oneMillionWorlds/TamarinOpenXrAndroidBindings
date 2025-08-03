@@ -37,11 +37,15 @@ public class StructGenerator extends FileGenerator {
     // List of enum definitions from the header file
     private final List<EnumDefinition> enums;
 
-    public StructGenerator(Logger logger, StructDefinition struct, Map<String, String> constants, List<EnumDefinition> enums) {
+    // Map of typedefs from the header file (e.g., "XrTime" -> "int64_t")
+    private final Map<String, String> typedefs;
+
+    public StructGenerator(Logger logger, StructDefinition struct, Map<String, String> constants, List<EnumDefinition> enums, Map<String, String> typedefs) {
         super(logger);
         this.struct = struct;
         this.constants = constants;
         this.enums = enums;
+        this.typedefs = typedefs;
     }
 
     /**
@@ -70,6 +74,20 @@ public class StructGenerator extends FileGenerator {
      */
     private String getEnumImport(String type) {
         return "import com.onemillionworlds.tamarin.openxrbindings.enums." + type + ";\n";
+    }
+
+    /**
+     * Checks if the given type is a typedef of int64_t or uint64_t.
+     * 
+     * @param type The type to check
+     * @return true if the type is a typedef of int64_t or uint64_t, false otherwise
+     */
+    private boolean isInt64Typedef(String type) {
+        if (typedefs.containsKey(type)) {
+            String baseType = typedefs.get(type);
+            return baseType.equals("int64_t") || baseType.equals("uint64_t");
+        }
+        return false;
     }
 
     @Override
@@ -196,6 +214,9 @@ public class StructGenerator extends FileGenerator {
                     layoutBuilder.append("Layout.__member(1)");
                 } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
                     layoutBuilder.append("Layout.__member(8)"); // Handle types and atom types are 64-bit
+                } else if (isInt64Typedef(fieldType)) {
+                    layoutBuilder.append("Layout.__member(8)"); // Typedefs of int64_t or uint64_t are 64-bit
+                    logger.lifecycle("  Treating '{}' as a 64-bit integer (8 bytes) because it's a typedef of int64_t or uint64_t", fieldType);
                 } else {
                     // For other types, assume it's a struct and use its size
                     layoutBuilder.append("Layout.__member(4)"); // Default to 4 bytes
@@ -268,7 +289,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
                     writer.write("    public int " + fieldName + "() { return memGetInt(address() + " + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion") || 
-                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
+                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("    public long " + fieldName + "() { return memGetLong(address() + " + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("float")) {
                     writer.write("    public float " + fieldName + "() { return memGetFloat(address() + " + fieldNameUpper + "); }\n");
@@ -293,7 +314,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldName.equals("next")) {
                     writer.write("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("    public " + struct.getName() + " " + fieldName + "(long value) { memPutAddress(address() + " + fieldNameUpper + ", value); return this; }\n");
-                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
+                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("    public " + struct.getName() + " " + fieldName + "(long value) { memPutLong(address() + " + fieldNameUpper + ", value); return this; }\n");
                 } else if (isEnumType(fieldType)) {
@@ -507,7 +528,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
                     writer.write("    public static int n" + fieldName + "(long struct) { return memGetInt(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion") || 
-                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
+                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("    public static long n" + fieldName + "(long struct) { return memGetLong(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("float")) {
                     writer.write("    public static float n" + fieldName + "(long struct) { return memGetFloat(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
@@ -532,7 +553,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldName.equals("next")) {
                     writer.write("    /** Unsafe version of {@link #" + fieldName + "(long) " + fieldName + "}. */\n");
                     writer.write("    public static void n" + fieldName + "(long struct, long value) { memPutAddress(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
-                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
+                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("    /** Unsafe version of {@link #" + fieldName + "(long) " + fieldName + "}. */\n");
                     writer.write("    public static void n" + fieldName + "(long struct, long value) { memPutLong(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
                 } else if (isEnumType(fieldType)) {
@@ -619,7 +640,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
                     writer.write("        public int " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                 } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion") || 
-                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
+                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("        public long " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                 } else if (fieldType.equals("float")) {
                     writer.write("        public float " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
@@ -644,7 +665,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldName.equals("next")) {
                     writer.write("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("        public Buffer " + fieldName + "(long value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
-                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
+                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("        public Buffer " + fieldName + "(long value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
                 } else if (isEnumType(fieldType)) {

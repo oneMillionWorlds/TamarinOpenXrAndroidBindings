@@ -60,15 +60,16 @@ public class CreateStructs extends DefaultTask {
         Map<String, String> constants = new LinkedHashMap<>();
         List<StructDefinition> structs = new ArrayList<>();
         List<EnumDefinition> enums = new ArrayList<>();
+        Map<String, String> typedefs = new HashMap<>();
 
-        parseHeaderFile(header, constants, structs, enums);
+        parseHeaderFile(header, constants, structs, enums, typedefs);
 
         // Generate XR10Constants.java
         new ConstantsGenerator(getLogger(), constants).generate(output);
 
         // Generate struct classes
         for (StructDefinition struct : structs) {
-            new StructGenerator(getLogger(), struct, constants, enums).generate(output);
+            new StructGenerator(getLogger(), struct, constants, enums, typedefs).generate(output);
         }
 
         // Generate enum classes
@@ -77,7 +78,8 @@ public class CreateStructs extends DefaultTask {
         }
     }
 
-    private void parseHeaderFile(File headerFile, Map<String, String> constants, List<StructDefinition> structs, List<EnumDefinition> enums) throws IOException {
+    private void parseHeaderFile(File headerFile, Map<String, String> constants, List<StructDefinition> structs, List<EnumDefinition> enums, Map<String, String> typedefs) throws IOException {
+
         try (BufferedReader reader = new BufferedReader(new FileReader(headerFile))) {
             String line;
             StringBuilder structBuilder = null;
@@ -92,6 +94,9 @@ public class CreateStructs extends DefaultTask {
             Pattern structEndPattern = Pattern.compile("\\}\\s+(Xr[A-Za-z]+);");
             Pattern structFieldPattern = Pattern.compile("\\s*(\\w+(?:\\*\\s*XR_MAY_ALIAS)?)\\s+(\\w+)(?:\\[(XR_[A-Z_]+)\\])?;");
 
+            // Pattern for simple typedefs like "typedef int64_t XrTime;"
+            Pattern simpleTypedefPattern = Pattern.compile("typedef\\s+(\\w+)\\s+(Xr[A-Za-z]+);");
+
             // Patterns for all enum parsing (including XrStructureType)
             // This pattern handles both named enums (typedef enum XrName {) and unnamed enums (typedef enum {)
             Pattern enumStartPattern = Pattern.compile("typedef\\s+enum\\s+(?:(Xr[A-Za-z]+)\\s+)?\\{");
@@ -99,6 +104,16 @@ public class CreateStructs extends DefaultTask {
             Pattern enumValuePattern = Pattern.compile("\\s*(XR_[A-Z0-9_]+)\\s*=\\s*([^,]+),?");
 
             while ((line = reader.readLine()) != null) {
+                // Check for simple typedefs like "typedef int64_t XrTime;"
+                Matcher simpleTypedefMatcher = simpleTypedefPattern.matcher(line);
+                if (simpleTypedefMatcher.find()) {
+                    String baseType = simpleTypedefMatcher.group(1);
+                    String typedefName = simpleTypedefMatcher.group(2);
+                    typedefs.put(typedefName, baseType);
+                    getLogger().lifecycle("Found typedef: {} -> {}", typedefName, baseType);
+                    continue;
+                }
+
                 // Check if we're entering an enum
                 if (!inEnum) {
                     Matcher enumStartMatcher = enumStartPattern.matcher(line);
