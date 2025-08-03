@@ -84,7 +84,6 @@ public class CreateStructs extends DefaultTask {
             StringBuilder enumBuilder = null;
             String currentStructName = null;
             String currentEnumName = null;
-            boolean inStructureTypeEnum = false;
             boolean inEnum = false;
 
             // Regex patterns
@@ -92,44 +91,52 @@ public class CreateStructs extends DefaultTask {
             Pattern structStartPattern = Pattern.compile("typedef\\s+struct\\s+(Xr[A-Za-z]+)\\s+\\{");
             Pattern structEndPattern = Pattern.compile("\\}\\s+(Xr[A-Za-z]+);");
             Pattern structFieldPattern = Pattern.compile("\\s*(\\w+(?:\\*\\s*XR_MAY_ALIAS)?)\\s+(\\w+)(?:\\[(XR_[A-Z_]+)\\])?;");
-            Pattern enumStartPattern = Pattern.compile("typedef\\s+enum\\s+XrStructureType\\s+\\{");
-            Pattern enumEndPattern = Pattern.compile("\\}\\s+XrStructureType;");
-            Pattern enumValuePattern = Pattern.compile("\\s*(XR_TYPE_[A-Z0-9_]+)\\s*=\\s*([^,]+),?");
 
-            // New patterns for general enum parsing
-            Pattern generalEnumStartPattern = Pattern.compile("typedef\\s+enum\\s+(Xr[A-Za-z]+)\\s+\\{");
-            Pattern generalEnumEndPattern = Pattern.compile("\\}\\s+(Xr[A-Za-z]+);");
-            Pattern generalEnumValuePattern = Pattern.compile("\\s*(XR_[A-Z0-9_]+)\\s*=\\s*([^,]+),?");
+            // Patterns for all enum parsing (including XrStructureType)
+            // This pattern handles both named enums (typedef enum XrName {) and unnamed enums (typedef enum {)
+            Pattern enumStartPattern = Pattern.compile("typedef\\s+enum\\s+(?:(Xr[A-Za-z]+)\\s+)?\\{");
+            Pattern enumEndPattern = Pattern.compile("\\}\\s+(Xr[A-Za-z]+);");
+            Pattern enumValuePattern = Pattern.compile("\\s*(XR_[A-Z0-9_]+)\\s*=\\s*([^,]+),?");
 
             while ((line = reader.readLine()) != null) {
-                // Check if we're entering the XrStructureType enum
-                if (!inStructureTypeEnum && !inEnum) {
+                // Check if we're entering an enum
+                if (!inEnum) {
                     Matcher enumStartMatcher = enumStartPattern.matcher(line);
                     if (enumStartMatcher.find()) {
-                        inStructureTypeEnum = true;
-                        continue;
-                    }
-
-                    // Check if we're entering a general enum
-                    Matcher generalEnumStartMatcher = generalEnumStartPattern.matcher(line);
-                    if (generalEnumStartMatcher.find()) {
                         inEnum = true;
-                        currentEnumName = generalEnumStartMatcher.group(1);
+                        // Group 1 might be null if this is an unnamed enum like "typedef enum {"
+                        // In that case, we'll get the name from the end pattern (e.g., "} XrStructureType;")
+                        currentEnumName = enumStartMatcher.group(1);
                         enumBuilder = new StringBuilder();
                         enumBuilder.append(line).append("\n");
 
                         // Create a new enum definition
-                        EnumDefinition enumDef = new EnumDefinition(currentEnumName);
-                        enums.add(enumDef);
+                        // If currentEnumName is null, we'll update it when we find the end of the enum
+                        if (currentEnumName != null) {
+                            EnumDefinition enumDef = new EnumDefinition(currentEnumName);
+                            enums.add(enumDef);
+                        }
                         continue;
                     }
                 }
 
-                // If we're inside the XrStructureType enum, extract the values
-                if (inStructureTypeEnum) {
+                // If we're inside an enum, extract the values
+                if (inEnum) {
+                    enumBuilder.append(line).append("\n");
+
                     Matcher enumEndMatcher = enumEndPattern.matcher(line);
                     if (enumEndMatcher.find()) {
-                        inStructureTypeEnum = false;
+                        // If we didn't get the enum name from the start pattern, get it from the end pattern
+                        if (currentEnumName == null) {
+                            currentEnumName = enumEndMatcher.group(1);
+                            // Create the enum definition now that we have the name
+                            EnumDefinition enumDef = new EnumDefinition(currentEnumName);
+                            enums.add(enumDef);
+                        }
+
+                        inEnum = false;
+                        currentEnumName = null;
+                        enumBuilder = null;
                         continue;
                     }
 
@@ -138,45 +145,13 @@ public class CreateStructs extends DefaultTask {
                         String name = enumValueMatcher.group(1);
                         String value = enumValueMatcher.group(2).trim();
 
-                        // Try to convert the value to an integer if possible
-                        try {
-                            // Handle hexadecimal values
-                            if (value.startsWith("0x")) {
-                                int intValue = Integer.parseInt(value.substring(2), 16);
-                                constants.put(name, String.valueOf(intValue));
-                            } else {
-                                int intValue = Integer.parseInt(value);
-                                constants.put(name, String.valueOf(intValue));
-                            }
-                        } catch (NumberFormatException e) {
-                            // If it's not a simple integer, store the raw value
-                            constants.put(name, value);
+                        // Find the enum definition (if it exists)
+                        if (!enums.isEmpty()) {
+                            EnumDefinition enumDef = enums.get(enums.size() - 1);
+
+                            // Add the enum value
+                            enumDef.addValue(new EnumDefinition.EnumValue(name, value));
                         }
-                    }
-                }
-
-                // If we're inside a general enum, extract the values
-                if (inEnum) {
-                    enumBuilder.append(line).append("\n");
-
-                    Matcher generalEnumEndMatcher = generalEnumEndPattern.matcher(line);
-                    if (generalEnumEndMatcher.find()) {
-                        inEnum = false;
-                        currentEnumName = null;
-                        enumBuilder = null;
-                        continue;
-                    }
-
-                    Matcher generalEnumValueMatcher = generalEnumValuePattern.matcher(line);
-                    if (generalEnumValueMatcher.find()) {
-                        String name = generalEnumValueMatcher.group(1);
-                        String value = generalEnumValueMatcher.group(2).trim();
-
-                        // Find the enum definition
-                        EnumDefinition enumDef = enums.get(enums.size() - 1);
-
-                        // Add the enum value
-                        enumDef.addValue(new EnumDefinition.EnumValue(name, value));
                     }
                 }
 

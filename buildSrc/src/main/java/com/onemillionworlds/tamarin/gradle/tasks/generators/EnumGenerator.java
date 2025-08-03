@@ -20,21 +20,25 @@ public class EnumGenerator extends FileGenerator {
 
     @Override
     public void generate(File outputDir) throws IOException {
-        // Create the enums directory if it doesn't exist
-        File enumsDir = new File(outputDir, "enums");
-        if (!enumsDir.exists()) {
-            enumsDir.mkdirs();
-        }
-
         // Generate the enum class
         String enumName = enumDef.getName();
-        File outputFile = new File(enumsDir, enumName + ".java");
+
+
+        // Create the appropriate directory
+        File targetDir = new File(outputDir, "enums");
+        if (!targetDir.exists()) {
+            targetDir.mkdirs();
+        }
+
+
+        File outputFile = new File(targetDir, enumName + ".java");
 
         try (BufferedWriter writer = createWriter(outputFile)) {
             writer.write("/*\n");
             writer.write(" * OpenXR Java bindings for Android\n");
             writer.write(" * This file is auto-generated. DO NOT EDIT.\n");
             writer.write(" */\n");
+
             writer.write("package com.onemillionworlds.tamarin.openxrbindings.enums;\n\n");
 
             writer.write("/**\n");
@@ -47,7 +51,7 @@ public class EnumGenerator extends FileGenerator {
                 EnumDefinition.EnumValue value = enumDef.getValues().get(i);
                 writer.write("    /** " + value.getName() + " */\n");
                 writer.write("    " + formatEnumValueName(value.getName()) + "(" + value.getValue() + ")");
-                
+
                 if (i < enumDef.getValues().size() - 1) {
                     writer.write(",\n\n");
                 } else {
@@ -90,7 +94,11 @@ public class EnumGenerator extends FileGenerator {
             writer.write("}\n");
         }
 
-        logGeneration("enums/" + enumName + ".java");
+        if (enumName.equals("XrStructureType")) {
+            logGeneration(enumName + ".java");
+        } else {
+            logGeneration("enums/" + enumName + ".java");
+        }
     }
 
     /**
@@ -98,6 +106,11 @@ public class EnumGenerator extends FileGenerator {
      * For example, "XR_RESULT_MAX_ENUM" -> "MAX_ENUM"
      */
     private String formatEnumValueName(String name) {
+        // Special case for XrStructureType - keep the original name
+        if (enumDef.getName().equals("XrStructureType")) {
+            return name;
+        }
+
         // Remove the prefix (e.g., "XR_RESULT_")
         String prefix = enumDef.getName().toUpperCase() + "_";
         if (name.startsWith("XR_") && name.contains(prefix.substring(3))) {

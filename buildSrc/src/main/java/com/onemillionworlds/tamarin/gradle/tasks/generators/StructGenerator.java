@@ -53,7 +53,6 @@ public class StructGenerator extends FileGenerator {
     private boolean isEnumType(String type) {
         logger.lifecycle("Checking if type '{}' is an enum type", type);
         for (EnumDefinition enumDef : enums) {
-            logger.lifecycle("  Comparing with enum '{}'", enumDef.getName());
             if (enumDef.getName().equals(type)) {
                 logger.lifecycle("  Found match: '{}' is an enum type", type);
                 return true;
@@ -61,6 +60,16 @@ public class StructGenerator extends FileGenerator {
         }
         logger.lifecycle("  No match found: '{}' is not an enum type", type);
         return false;
+    }
+
+    /**
+     * Gets the import statement for an enum type.
+     * 
+     * @param type The enum type
+     * @return The import statement for the enum type
+     */
+    private String getEnumImport(String type) {
+        return "import com.onemillionworlds.tamarin.openxrbindings.enums." + type + ";\n";
     }
 
     @Override
@@ -78,16 +87,10 @@ public class StructGenerator extends FileGenerator {
             writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;\n");
 
             // Add imports for enum types if needed
-            boolean needsEnumImports = false;
             for (StructField field : struct.getFields()) {
                 if (isEnumType(field.getType())) {
-                    needsEnumImports = true;
-                    break;
+                    writer.write(getEnumImport(field.getType()));
                 }
-            }
-
-            if (needsEnumImports) {
-                writer.write("import com.onemillionworlds.tamarin.openxrbindings.enums.*;\n");
             }
 
             writer.write("\nimport java.nio.ByteBuffer;\n\n");
@@ -120,6 +123,7 @@ public class StructGenerator extends FileGenerator {
             }
 
             writer.write(" * }</code></pre>\n");
+            writer.write(" * @noinspection unused\n");
             writer.write(" */\n");
             writer.write("public class " + struct.getName() + " extends Struct<" + struct.getName() + "> {\n\n");
 
@@ -131,22 +135,28 @@ public class StructGenerator extends FileGenerator {
 
             // Write field offsets
             writer.write("    /** The struct member offsets. */\n");
-            writer.write("    public static final int\n");
 
-            StringBuilder offsetsBuilder = new StringBuilder();
-            for (int i = 0; i < struct.getFields().size(); i++) {
-                StructField field = struct.getFields().get(i);
-                String fieldName = field.getName().toUpperCase();
+            if (struct.getFields().isEmpty()) {
+                // If there are no fields, just declare an empty int array
+                writer.write("    public static final int[] EMPTY_OFFSETS = {};\n\n");
+            } else {
+                writer.write("    public static final int\n");
 
-                offsetsBuilder.append("        ").append(fieldName);
-                if (i < struct.getFields().size() - 1) {
-                    offsetsBuilder.append(",\n");
-                } else {
-                    offsetsBuilder.append(";\n");
+                StringBuilder offsetsBuilder = new StringBuilder();
+                for (int i = 0; i < struct.getFields().size(); i++) {
+                    StructField field = struct.getFields().get(i);
+                    String fieldName = field.getName().toUpperCase();
+
+                    offsetsBuilder.append("        ").append(fieldName);
+                    if (i < struct.getFields().size() - 1) {
+                        offsetsBuilder.append(",\n");
+                    } else {
+                        offsetsBuilder.append(";\n");
+                    }
                 }
+                writer.write(offsetsBuilder.toString());
+                writer.write("\n");
             }
-            writer.write(offsetsBuilder.toString());
-            writer.write("\n");
 
             // Write static initializer
             writer.write("    static {\n");
@@ -298,7 +308,7 @@ public class StructGenerator extends FileGenerator {
             if (hasTypeField) {
                 String typeConstant = getTypeConstantForStruct(struct.getName());
                 writer.write("    /** Sets the specified value to the {@code type} field. */\n");
-                writer.write("    public " + struct.getName() + " type$Default() { return type(XR10Constants." + typeConstant + "); }\n");
+                writer.write("    public " + struct.getName() + " type$Default() { return type(XrStructureType." + typeConstant + ".getValue()); }\n");
             }
 
             writer.write("\n");
@@ -647,7 +657,7 @@ public class StructGenerator extends FileGenerator {
             if (hasTypeField) {
                 String typeConstant = getTypeConstantForStruct(struct.getName());
                 writer.write("        /** Sets the specified value to the {@code type} field. */\n");
-                writer.write("        public Buffer type$Default() { return type(XR10Constants." + typeConstant + "); }\n");
+                writer.write("        public Buffer type$Default() { return type(XrStructureType." + typeConstant + ".getValue()); }\n");
             }
 
             writer.write("    }\n");
