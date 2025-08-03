@@ -691,6 +691,7 @@ public class StructGenerator extends FileGenerator {
     /**
      * Converts a struct name to its corresponding type constant.
      * For example, "XrExtensionProperties" -> "XR_TYPE_EXTENSION_PROPERTIES"
+     * Handles acronyms correctly, e.g., "XrBindingModificationsKHR" -> "XR_TYPE_BINDING_MODIFICATIONS_KHR"
      */
     private String getTypeConstantForStruct(String structName) {
         // Convert camel case to underscore format for the type constant
@@ -698,7 +699,11 @@ public class StructGenerator extends FileGenerator {
         StringBuilder typeConstantBuilder = new StringBuilder("XR_TYPE_");
         for (int i = 0; i < name.length(); i++) {
             char c = name.charAt(i);
-            if (i > 0 && Character.isUpperCase(c)) {
+            // Only add underscore when transitioning from lowercase to uppercase
+            // This ensures acronyms like "KHR" stay together without underscores
+            if (i > 0 && Character.isUpperCase(c) && i < name.length() - 1 && 
+                (Character.isLowerCase(name.charAt(i - 1)) || 
+                 (Character.isUpperCase(name.charAt(i - 1)) && Character.isLowerCase(name.charAt(i + 1))))) {
                 typeConstantBuilder.append('_');
             }
             typeConstantBuilder.append(Character.toUpperCase(c));
