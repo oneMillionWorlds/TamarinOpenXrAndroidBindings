@@ -255,13 +255,6 @@ public class CreateStructs extends DefaultTask {
             writer.write("import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;\n");
             writer.write("import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;\n");
 
-            // Add XrStructureType import if needed
-            boolean hasStructureType = struct.getFields().stream()
-                    .anyMatch(field -> field.getType().equals("XrStructureType"));
-            if (hasStructureType) {
-                writer.write("import static com.onemillionworlds.tamarin.openxrbindings.XrStructureType.*;\n");
-            }
-
             writer.write("\n");
             writer.write("/**\n");
             // Add spaces between words in the struct name for better readability
@@ -417,7 +410,7 @@ public class CreateStructs extends DefaultTask {
                     } else {
                         writer.write("    public ByteBuffer " + fieldName + "() { return memByteBuffer(address() + " + fieldNameUpper + ", " + arraySizeConstant + " * " + getSizeForType(fieldType) + "); }\n");
                     }
-                } else if (fieldType.equals("XrStructureType")) {
+                } else if (fieldType.equals("XrStructureType") || fieldType.equals("XrActionType")) {
                     writer.write("    public int " + fieldName + "() { return memGetInt(address() + " + fieldNameUpper + "); }\n");
                 } else if (fieldType.contains("*")) {
                     writer.write("    public long " + fieldName + "() { return memGetAddress(address() + " + fieldNameUpper + "); }\n");
@@ -649,7 +642,7 @@ public class CreateStructs extends DefaultTask {
                     } else {
                         writer.write("    public static ByteBuffer n" + fieldName + "(long struct) { return memByteBuffer(struct + " + struct.getName() + "." + fieldNameUpper + ", " + arraySizeConstant + " * " + getSizeForType(fieldType) + "); }\n");
                     }
-                } else if (fieldType.equals("XrStructureType")) {
+                } else if (fieldType.equals("XrStructureType") || fieldType.equals("XrActionType")) {
                     writer.write("    public static int n" + fieldName + "(long struct) { return memGetInt(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 } else if (fieldType.contains("*")) {
                     writer.write("    public static long n" + fieldName + "(long struct) { return memGetAddress(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
@@ -754,7 +747,7 @@ public class CreateStructs extends DefaultTask {
                     } else {
                         writer.write("        public ByteBuffer " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                     }
-                } else if (fieldType.equals("XrStructureType")) {
+                } else if (fieldType.equals("XrStructureType") || fieldType.equals("XrActionType")) {
                     writer.write("        public int " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                 } else if (fieldType.contains("*")) {
                     writer.write("        public long " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");

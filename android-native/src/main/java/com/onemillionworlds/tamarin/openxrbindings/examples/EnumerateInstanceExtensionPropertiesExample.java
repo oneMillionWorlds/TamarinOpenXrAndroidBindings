@@ -7,8 +7,6 @@ import com.onemillionworlds.tamarin.openxrbindings.Library;
 import com.onemillionworlds.tamarin.openxrbindings.Struct;
 import com.onemillionworlds.tamarin.openxrbindings.StructBuffer;
 import com.onemillionworlds.tamarin.openxrbindings.XR10ConstantsOld;
-import com.onemillionworlds.tamarin.openxrbindings.XrApiLayerProperties;
-import com.onemillionworlds.tamarin.openxrbindings.XrExtensionProperties;
 import com.onemillionworlds.tamarin.openxrbindings.memory.IntBufferView;
 import com.onemillionworlds.tamarin.openxrbindings.memory.JavaBufferView;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
