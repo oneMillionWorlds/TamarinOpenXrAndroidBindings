@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,20 @@ import java.util.Map;
 public class StructGenerator extends FileGenerator {
     private final StructDefinition struct;
     private final Map<String, String> constants;
+
+    // List of known handle types that should be treated as 64-bit integers
+    private static final List<String> HANDLE_TYPES = Arrays.asList(
+        "XrAction", "XrActionSet", "XrInstance", "XrSession", "XrSpace", "XrSwapchain",
+        "XrDebugUtilsMessengerEXT", "XrSpatialAnchorMSFT", "XrSpatialGraphNodeBindingMSFT",
+        "XrHandTrackerEXT", "XrSceneObserverMSFT", "XrSceneMSFT", "XrFacialTrackerHTC",
+        "XrFoveationProfileFB", "XrTriangleMeshFB", "XrPassthroughFB", "XrPassthroughLayerFB",
+        "XrGeometryInstanceFB", "XrSpatialAnchorStoreConnectionMSFT"
+    );
+
+    // List of known atom types that should be treated as 64-bit integers
+    private static final List<String> ATOM_TYPES = Arrays.asList(
+        "XrPath", "XrSystemId", "XrAsyncRequestIdFB"
+    );
 
     public StructGenerator(Logger logger, StructDefinition struct, Map<String, String> constants) {
         super(logger);
@@ -131,6 +146,8 @@ public class StructGenerator extends FileGenerator {
                     layoutBuilder.append("Layout.__member(8)");
                 } else if (fieldType.equals("char")) {
                     layoutBuilder.append("Layout.__member(1)");
+                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
+                    layoutBuilder.append("Layout.__member(8)"); // Handle types and atom types are 64-bit
                 } else {
                     // For other types, assume it's a struct and use its size
                     layoutBuilder.append("Layout.__member(4)"); // Default to 4 bytes
@@ -202,7 +219,8 @@ public class StructGenerator extends FileGenerator {
                     writer.write("    public long " + fieldName + "() { return memGetAddress(address() + " + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
                     writer.write("    public int " + fieldName + "() { return memGetInt(address() + " + fieldNameUpper + "); }\n");
-                } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion")) {
+                } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion") || 
+                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
                     writer.write("    public long " + fieldName + "() { return memGetLong(address() + " + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("float")) {
                     writer.write("    public float " + fieldName + "() { return memGetFloat(address() + " + fieldNameUpper + "); }\n");
@@ -215,7 +233,7 @@ public class StructGenerator extends FileGenerator {
             }
             writer.write("\n");
 
-            // Generate setters for type and next fields
+            // Generate setters for type, next fields, and handle/atom types
             for (StructField field : struct.getFields()) {
                 String fieldType = field.getType();
                 String fieldName = field.getName();
@@ -227,6 +245,9 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldName.equals("next")) {
                     writer.write("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("    public " + struct.getName() + " " + fieldName + "(long value) { memPutAddress(address() + " + fieldNameUpper + ", value); return this; }\n");
+                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
+                    writer.write("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
+                    writer.write("    public " + struct.getName() + " " + fieldName + "(long value) { memPutLong(address() + " + fieldNameUpper + ", value); return this; }\n");
                 }
             }
 
@@ -434,7 +455,8 @@ public class StructGenerator extends FileGenerator {
                     writer.write("    public static long n" + fieldName + "(long struct) { return memGetAddress(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
                     writer.write("    public static int n" + fieldName + "(long struct) { return memGetInt(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
-                } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion")) {
+                } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion") || 
+                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
                     writer.write("    public static long n" + fieldName + "(long struct) { return memGetLong(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("float")) {
                     writer.write("    public static float n" + fieldName + "(long struct) { return memGetFloat(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
@@ -448,7 +470,7 @@ public class StructGenerator extends FileGenerator {
 
             writer.write("\n");
 
-            // Generate unsafe setters for type and next fields
+            // Generate unsafe setters for type, next fields, and handle/atom types
             for (StructField field : struct.getFields()) {
                 String fieldType = field.getType();
                 String fieldName = field.getName();
@@ -459,6 +481,9 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldName.equals("next")) {
                     writer.write("    /** Unsafe version of {@link #" + fieldName + "(long) " + fieldName + "}. */\n");
                     writer.write("    public static void n" + fieldName + "(long struct, long value) { memPutAddress(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
+                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
+                    writer.write("    /** Unsafe version of {@link #" + fieldName + "(long) " + fieldName + "}. */\n");
+                    writer.write("    public static void n" + fieldName + "(long struct, long value) { memPutLong(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
                 }
             }
 
@@ -539,7 +564,8 @@ public class StructGenerator extends FileGenerator {
                     writer.write("        public long " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
                     writer.write("        public int " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
-                } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion")) {
+                } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion") || 
+                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
                     writer.write("        public long " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                 } else if (fieldType.equals("float")) {
                     writer.write("        public float " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
@@ -562,6 +588,9 @@ public class StructGenerator extends FileGenerator {
                     writer.write("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("        public Buffer " + fieldName + "(int value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
                 } else if (fieldName.equals("next")) {
+                    writer.write("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
+                    writer.write("        public Buffer " + fieldName + "(long value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
+                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
                     writer.write("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("        public Buffer " + fieldName + "(long value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
                 }
