@@ -149,6 +149,23 @@ public class CreateStructs extends DefaultTask {
                         if (!enums.isEmpty()) {
                             EnumDefinition enumDef = enums.get(enums.size() - 1);
 
+                            // Check if the value is a reference to another enum value
+                            if (value.startsWith("XR_") && !value.contains("(") && !value.contains("+") && !value.contains("-") && !value.contains("*") && !value.contains("/")) {
+                                // Look up the referenced value in the current enum
+                                String resolvedValue = null;
+                                for (EnumDefinition.EnumValue existingValue : enumDef.getValues()) {
+                                    if (existingValue.getName().equals(value)) {
+                                        resolvedValue = existingValue.getValue();
+                                        break;
+                                    }
+                                }
+
+                                // If we found the referenced value, use it
+                                if (resolvedValue != null) {
+                                    value = resolvedValue;
+                                }
+                            }
+
                             // Add the enum value
                             enumDef.addValue(new EnumDefinition.EnumValue(name, value));
                         }
