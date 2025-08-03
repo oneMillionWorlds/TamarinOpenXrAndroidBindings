@@ -2,6 +2,7 @@ package com.onemillionworlds.tamarin.gradle.tasks.generators;
 
 import com.onemillionworlds.tamarin.gradle.tasks.CreateStructs.StructDefinition;
 import com.onemillionworlds.tamarin.gradle.tasks.CreateStructs.StructField;
+import com.onemillionworlds.tamarin.gradle.tasks.EnumDefinition;
 import org.gradle.api.logging.Logger;
 
 import java.io.BufferedWriter;
@@ -33,10 +34,33 @@ public class StructGenerator extends FileGenerator {
         "XrPath", "XrSystemId", "XrAsyncRequestIdFB"
     );
 
-    public StructGenerator(Logger logger, StructDefinition struct, Map<String, String> constants) {
+    // List of enum definitions from the header file
+    private final List<EnumDefinition> enums;
+
+    public StructGenerator(Logger logger, StructDefinition struct, Map<String, String> constants, List<EnumDefinition> enums) {
         super(logger);
         this.struct = struct;
         this.constants = constants;
+        this.enums = enums;
+    }
+
+    /**
+     * Checks if the given type is an enum type.
+     * 
+     * @param type The type to check
+     * @return true if the type is an enum type, false otherwise
+     */
+    private boolean isEnumType(String type) {
+        logger.lifecycle("Checking if type '{}' is an enum type", type);
+        for (EnumDefinition enumDef : enums) {
+            logger.lifecycle("  Comparing with enum '{}'", enumDef.getName());
+            if (enumDef.getName().equals(type)) {
+                logger.lifecycle("  Found match: '{}' is an enum type", type);
+                return true;
+            }
+        }
+        logger.lifecycle("  No match found: '{}' is not an enum type", type);
+        return false;
     }
 
     @Override
@@ -51,8 +75,22 @@ public class StructGenerator extends FileGenerator {
             writer.write("package com.onemillionworlds.tamarin.openxrbindings;\n\n");
 
             writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;\n");
-            writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;\n\n");
-            writer.write("import java.nio.ByteBuffer;\n\n");
+            writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;\n");
+
+            // Add imports for enum types if needed
+            boolean needsEnumImports = false;
+            for (StructField field : struct.getFields()) {
+                if (isEnumType(field.getType())) {
+                    needsEnumImports = true;
+                    break;
+                }
+            }
+
+            if (needsEnumImports) {
+                writer.write("import com.onemillionworlds.tamarin.openxrbindings.enums.*;\n");
+            }
+
+            writer.write("\nimport java.nio.ByteBuffer;\n\n");
             writer.write("import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;\n");
             writer.write("import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;\n");
 
@@ -213,8 +251,8 @@ public class StructGenerator extends FileGenerator {
                     } else {
                         writer.write("    public ByteBuffer " + fieldName + "() { return memByteBuffer(address() + " + fieldNameUpper + ", " + arraySizeConstant + " * " + getSizeForType(fieldType) + "); }\n");
                     }
-                } else if (fieldType.equals("XrStructureType") || fieldType.equals("XrActionType")) {
-                    writer.write("    public int " + fieldName + "() { return memGetInt(address() + " + fieldNameUpper + "); }\n");
+                } else if (isEnumType(fieldType)) {
+                    writer.write("    public " + fieldType + " " + fieldName + "() { return " + fieldType + ".fromValue(memGetInt(address() + " + fieldNameUpper + ")); }\n");
                 } else if (fieldType.contains("*")) {
                     writer.write("    public long " + fieldName + "() { return memGetAddress(address() + " + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
@@ -248,6 +286,9 @@ public class StructGenerator extends FileGenerator {
                 } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
                     writer.write("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("    public " + struct.getName() + " " + fieldName + "(long value) { memPutLong(address() + " + fieldNameUpper + ", value); return this; }\n");
+                } else if (isEnumType(fieldType)) {
+                    writer.write("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
+                    writer.write("    public " + struct.getName() + " " + fieldName + "(" + fieldType + " value) { memPutInt(address() + " + fieldNameUpper + ", value.getValue()); return this; }\n");
                 }
             }
 
@@ -449,7 +490,7 @@ public class StructGenerator extends FileGenerator {
                     } else {
                         writer.write("    public static ByteBuffer n" + fieldName + "(long struct) { return memByteBuffer(struct + " + struct.getName() + "." + fieldNameUpper + ", " + arraySizeConstant + " * " + getSizeForType(fieldType) + "); }\n");
                     }
-                } else if (fieldType.equals("XrStructureType") || fieldType.equals("XrActionType")) {
+                } else if (isEnumType(fieldType)) {
                     writer.write("    public static int n" + fieldName + "(long struct) { return memGetInt(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 } else if (fieldType.contains("*")) {
                     writer.write("    public static long n" + fieldName + "(long struct) { return memGetAddress(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
@@ -484,6 +525,9 @@ public class StructGenerator extends FileGenerator {
                 } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
                     writer.write("    /** Unsafe version of {@link #" + fieldName + "(long) " + fieldName + "}. */\n");
                     writer.write("    public static void n" + fieldName + "(long struct, long value) { memPutLong(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
+                } else if (isEnumType(fieldType)) {
+                    writer.write("    /** Unsafe version of {@link #" + fieldName + "(" + fieldType + ") " + fieldName + "}. */\n");
+                    writer.write("    public static void n" + fieldName + "(long struct, int value) { memPutInt(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
                 }
             }
 
@@ -558,8 +602,8 @@ public class StructGenerator extends FileGenerator {
                     } else {
                         writer.write("        public ByteBuffer " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                     }
-                } else if (fieldType.equals("XrStructureType") || fieldType.equals("XrActionType")) {
-                    writer.write("        public int " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
+                } else if (isEnumType(fieldType)) {
+                    writer.write("        public " + fieldType + " " + fieldName + "() { return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(address())); }\n");
                 } else if (fieldType.contains("*")) {
                     writer.write("        public long " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
@@ -593,6 +637,9 @@ public class StructGenerator extends FileGenerator {
                 } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
                     writer.write("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("        public Buffer " + fieldName + "(long value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
+                } else if (isEnumType(fieldType)) {
+                    writer.write("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
+                    writer.write("        public Buffer " + fieldName + "(" + fieldType + " value) { " + struct.getName() + ".n" + fieldName + "(address(), value.getValue()); return this; }\n");
                 }
             }
 

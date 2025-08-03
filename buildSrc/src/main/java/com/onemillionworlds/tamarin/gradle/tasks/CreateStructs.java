@@ -68,7 +68,7 @@ public class CreateStructs extends DefaultTask {
 
         // Generate struct classes
         for (StructDefinition struct : structs) {
-            new StructGenerator(getLogger(), struct, constants).generate(output);
+            new StructGenerator(getLogger(), struct, constants, enums).generate(output);
         }
 
         // Generate enum classes
