@@ -84,19 +84,22 @@ tasks.withType(JavaCompile) {
 
 // Configure the CreateStructs task
 def generatedOutputDir = file("${project.projectDir}/src/main/generated/java/com.onemillionworlds.tamarin.openxrbindings")
+def generatedCOutputDir = file("${project.projectDir}/src/main/generated/native/src")
 def openxrHeaderFile = file("${project.projectDir}/src/native/include/openxr/openxr.h")
 
-// Create the output directory
-task createGeneratedDir {
+// Create the output directories
+task createGeneratedDirs {
     doLast {
         generatedOutputDir.mkdirs()
+        generatedCOutputDir.mkdirs()
     }
 }
 
 task createOpenXrStructs(type: CreateStructs) {
-    dependsOn createGeneratedDir
+    dependsOn createGeneratedDirs
     headerFile = openxrHeaderFile
     outputDir = generatedOutputDir
+    cOutputDir = generatedCOutputDir
 }
 
 // Make sure the CreateStructs task runs before Java compilation
