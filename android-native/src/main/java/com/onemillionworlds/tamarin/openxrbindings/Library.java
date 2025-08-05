@@ -52,4 +52,17 @@ public class Library {
 
     public native int nxrEnumerateInstanceExtensionProperties(String layerName, int propertyCapacityInput, long propertyCountOutput, long properties);
 
+    /**
+     * Gets the properties of an instance
+     * 
+     * @param instance The instance handle
+     * @param instanceProperties The instance properties to populate
+     * @return The error code (if any)
+     */
+    public int xrGetInstanceProperties(long instance, XrInstanceProperties instanceProperties) {
+        return nxrGetInstanceProperties(instance, instanceProperties == null ? MemoryUtil.NULL : instanceProperties.address());
+    }
+
+    public native int nxrGetInstanceProperties(long instance, long instanceProperties);
+
 }

@@ -66,31 +66,19 @@ JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_Library_
 
 /*
  * Class:     com_onemillionworlds_tamarin_openxrbindings_Library
- * Method:    nxrInitializeLoaderKHR
- * Signature: (J)I
+ * Method:    nxrGetInstanceProperties
+ * Signature: (JJ)I
  */
-JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_Library_nxrInitializeLoaderKHR
-  (JNIEnv *env, jobject obj, jlong loaderInitInfo) {
+JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_Library_nxrGetInstanceProperties
+  (JNIEnv *env, jobject obj, jlong instance, jlong instanceProperties) {
 
-    // Convert JNI parameter to native pointer
-    XrLoaderInitInfoBaseHeaderKHR *initInfo = (XrLoaderInitInfoBaseHeaderKHR *)(intptr_t)loaderInitInfo;
+    // Convert JNI parameters to OpenXR parameters
+    XrInstance xrInstance = (XrInstance)(intptr_t)instance;
+    XrInstanceProperties *props = (XrInstanceProperties *)(intptr_t)instanceProperties;
 
-    // Attempt to resolve xrInitializeLoaderKHR dynamically (I don't fully understand why this indirection is required,
-    // it might be to do with opewnXR not being fully booted yet, or it might be because it is not part of core OpenXR)
-    PFN_xrInitializeLoaderKHR pfnInitializeLoader = NULL;
-    XrResult resolveResult = xrGetInstanceProcAddr(
-        XR_NULL_HANDLE,
-        "xrInitializeLoaderKHR",
-        (PFN_xrVoidFunction*)&pfnInitializeLoader
-    );
+    // Call the OpenXR function
+    XrResult result = xrGetInstanceProperties(xrInstance, props);
 
-    if (resolveResult != XR_SUCCESS || pfnInitializeLoader == NULL) {
-        return (jint)XR_ERROR_FUNCTION_UNSUPPORTED;
-    }
-
-    // Call the function
-    XrResult result = pfnInitializeLoader(initInfo);
-
-    // Return result as jint
+    // Return the result as a jint
     return (jint)result;
 }
