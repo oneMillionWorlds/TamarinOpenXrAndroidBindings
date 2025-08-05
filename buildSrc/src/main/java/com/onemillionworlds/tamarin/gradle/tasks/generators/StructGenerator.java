@@ -34,6 +34,13 @@ public class StructGenerator extends FileGenerator {
         "XrPath", "XrSystemId", "XrAsyncRequestIdFB"
     );
 
+    // List of known flag types that should be treated as 64-bit integers
+    private static final List<String> FLAG_TYPES = Arrays.asList(
+        "XrInstanceCreateFlags", "XrSessionCreateFlags", "XrSpaceVelocityFlags", 
+        "XrSpaceLocationFlags", "XrSwapchainCreateFlags", "XrSwapchainUsageFlags", 
+        "XrCompositionLayerFlags", "XrViewStateFlags", "XrInputSourceLocalizedNameFlags"
+    );
+
     // List of enum definitions from the header file
     private final List<EnumDefinition> enums;
 
@@ -214,6 +221,8 @@ public class StructGenerator extends FileGenerator {
                     layoutBuilder.append("Layout.__member(1)");
                 } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType)) {
                     layoutBuilder.append("Layout.__member(8)"); // Handle types and atom types are 64-bit
+                } else if (FLAG_TYPES.contains(fieldType)) {
+                    layoutBuilder.append("Layout.__member(8)"); // Flag types are 64-bit
                 } else if (isInt64Typedef(fieldType)) {
                     layoutBuilder.append("Layout.__member(8)"); // Typedefs of int64_t or uint64_t are 64-bit
                     logger.lifecycle("  Treating '{}' as a 64-bit integer (8 bytes) because it's a typedef of int64_t or uint64_t", fieldType);
@@ -289,7 +298,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
                     writer.write("    public int " + fieldName + "() { return memGetInt(address() + " + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion") || 
-                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
+                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || FLAG_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("    public long " + fieldName + "() { return memGetLong(address() + " + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("float")) {
                     writer.write("    public float " + fieldName + "() { return memGetFloat(address() + " + fieldNameUpper + "); }\n");
@@ -314,7 +323,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldName.equals("next")) {
                     writer.write("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("    public " + struct.getName() + " " + fieldName + "(long value) { memPutAddress(address() + " + fieldNameUpper + ", value); return this; }\n");
-                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
+                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || FLAG_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("    public " + struct.getName() + " " + fieldName + "(long value) { memPutLong(address() + " + fieldNameUpper + ", value); return this; }\n");
                 } else if (isEnumType(fieldType)) {
@@ -528,7 +537,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
                     writer.write("    public static int n" + fieldName + "(long struct) { return memGetInt(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion") || 
-                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
+                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || FLAG_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("    public static long n" + fieldName + "(long struct) { return memGetLong(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("float")) {
                     writer.write("    public static float n" + fieldName + "(long struct) { return memGetFloat(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
@@ -553,7 +562,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldName.equals("next")) {
                     writer.write("    /** Unsafe version of {@link #" + fieldName + "(long) " + fieldName + "}. */\n");
                     writer.write("    public static void n" + fieldName + "(long struct, long value) { memPutAddress(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
-                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
+                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || FLAG_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("    /** Unsafe version of {@link #" + fieldName + "(long) " + fieldName + "}. */\n");
                     writer.write("    public static void n" + fieldName + "(long struct, long value) { memPutLong(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
                 } else if (isEnumType(fieldType)) {
@@ -640,7 +649,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldType.equals("uint32_t") || fieldType.equals("int32_t") || fieldType.equals("XrBool32")) {
                     writer.write("        public int " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                 } else if (fieldType.equals("uint64_t") || fieldType.equals("int64_t") || fieldType.equals("XrVersion") || 
-                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
+                           HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || FLAG_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("        public long " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                 } else if (fieldType.equals("float")) {
                     writer.write("        public float " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
@@ -665,7 +674,7 @@ public class StructGenerator extends FileGenerator {
                 } else if (fieldName.equals("next")) {
                     writer.write("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("        public Buffer " + fieldName + "(long value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
-                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
+                } else if (HANDLE_TYPES.contains(fieldType) || ATOM_TYPES.contains(fieldType) || FLAG_TYPES.contains(fieldType) || isInt64Typedef(fieldType)) {
                     writer.write("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
                     writer.write("        public Buffer " + fieldName + "(long value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
                 } else if (isEnumType(fieldType)) {
@@ -717,6 +726,18 @@ public class StructGenerator extends FileGenerator {
         if (type.equals("double")) return "8";
         if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32")) return "4";
         if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion")) return "8";
+        if (HANDLE_TYPES.contains(type) || ATOM_TYPES.contains(type)) return "8";
+        if (FLAG_TYPES.contains(type)) return "8";
+        if (isInt64Typedef(type)) return "8";
+        if (type.equals("XrVector3f")) return "12";
+        if (type.equals("XrQuaternionf")) return "16";
+        if (type.equals("XrPosef")) return "28";
+        if (type.equals("XrExtent2Df")) return "8";
+        if (type.equals("XrFovf")) return "16";
+        if (type.equals("XrApplicationInfo")) return "344";
+        if (type.equals("XrSystemGraphicsProperties")) return "12";
+        if (type.equals("XrSystemTrackingProperties")) return "8";
+        if (type.equals("XrFormFactor")) return "4";
         return "4"; // Default size
     }
 }
