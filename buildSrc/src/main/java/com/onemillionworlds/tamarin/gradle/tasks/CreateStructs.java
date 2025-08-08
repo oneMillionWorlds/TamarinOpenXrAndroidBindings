@@ -135,7 +135,9 @@ public class CreateStructs extends DefaultTask {
                 Matcher functionMatcher = FunctionParser.functionStartPattern.matcher(line);
                 if (functionMatcher.find()) {
 
-                    FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line);
+                    List<String> knownEnums = enums.stream().map(EnumDefinition::getName).toList();
+
+                    FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line, knownEnums);
 
                     functions.add(functionDefinition);
                     getLogger().lifecycle("Found function: {}", functionDefinition.getName());

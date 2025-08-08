@@ -24,7 +24,7 @@ public class WrapperFunctionGenerator {
 
         // Generate parameter documentation
         for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
-            functionString.append("     * @param " + param.getName() +"\n");
+            functionString.append("     * @param " + param.getName() +param.getExtraDocumentation().map(ed -> " " + ed).orElse("") +"\n");
         }
 
         functionString.append("     * @return " + "The error code (if any)" + "\n");
@@ -79,11 +79,14 @@ public class WrapperFunctionGenerator {
             String paramType = param.getType();
             String paramName = param.getName();
             boolean isPointer = param.isPointer();
-
+            boolean isEnum = param.isEnumType();
             if(isPointer){
                 writer.append(paramName + "Address");
             }else{
                 writer.append(paramName);
+                if(isEnum){
+                    writer.append(".getValue()");
+                }
             }
             if (i < function.getParameters().size() - 1) {
                 writer.append(", ");

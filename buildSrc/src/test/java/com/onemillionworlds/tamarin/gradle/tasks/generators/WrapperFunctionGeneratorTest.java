@@ -11,9 +11,9 @@ class WrapperFunctionGeneratorTest {
     void generateWrapperFunction_xrEnumerateApiLayerProperties() {
 
         FunctionDefinition functionDefinition = new FunctionDefinition("xrEnumerateApiLayerProperties", "XrResult");
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCapacityInput", false, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCountOutput", true, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrApiLayerProperties", "properties", true, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCapacityInput", false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCountOutput", true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrApiLayerProperties", "properties", true, false, false));
 
         String expectedValue = """
                     /**
@@ -40,9 +40,9 @@ class WrapperFunctionGeneratorTest {
     void generateWrapperFunction_xrGetInstanceProcAddr() {
 
         FunctionDefinition functionDefinition = new FunctionDefinition("xrGetInstanceProcAddr", "XrResult");
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "name", true, true));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("PFN_xrVoidFunction", "function", true, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "name", true, true, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("PFN_xrVoidFunction", "function", true, false, false));
 
         String expectedValue = """
                     /**
@@ -57,6 +57,34 @@ class WrapperFunctionGeneratorTest {
                         long nameAddress = name == null ? MemoryUtil.NULL : name.address();
                         long functionAddress = function == null ? MemoryUtil.NULL : function.address();
                         return nxrGetInstanceProcAddr(instance, nameAddress, functionAddress);
+                    }
+                """;
+
+        String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
+
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
+
+    @Test
+    void generateWrapperFunction_xrResultToString() {
+
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrResultToString", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrResult", "value", false, false, true));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "buffer", true, false, false).setExtraDocumentation("Required size XR_MAX_RESULT_STRING_SIZE"));
+
+        String expectedValue = """
+                    /**
+                     * Wrapper for xrResultToString OpenXR function
+                     *\s
+                     * @param instance
+                     * @param value
+                     * @param buffer Required size XR_MAX_RESULT_STRING_SIZE
+                     * @return The error code (if any)
+                     */
+                    public int xrResultToString(int instance, XrResult value, BufferAndAddress buffer) {
+                        long bufferAddress = buffer == null ? MemoryUtil.NULL : buffer.address();
+                        return nxrResultToString(instance, value.getValue(), bufferAddress);
                     }
                 """;
 

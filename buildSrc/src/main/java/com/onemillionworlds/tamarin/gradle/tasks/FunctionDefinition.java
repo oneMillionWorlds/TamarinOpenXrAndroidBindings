@@ -3,6 +3,7 @@ package com.onemillionworlds.tamarin.gradle.tasks;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.onemillionworlds.tamarin.gradle.tasks.generators.X10Generator.HANDLE_TYPES;
 
@@ -64,13 +65,16 @@ public class FunctionDefinition {
         private final boolean isPointer;
         private final boolean isConst;
 
+        private final boolean isEnumType;
+
         private String extraDocumentation;
 
-        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst) {
+        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType) {
             this.type = type;
             this.name = name;
             this.isPointer = isPointer;
             this.isConst = isConst;
+            this.isEnumType = isEnumType;
         }
 
         public String getType() {
@@ -87,6 +91,10 @@ public class FunctionDefinition {
 
         public boolean isConst() {
             return isConst;
+        }
+
+        public boolean isEnumType() {
+            return isEnumType;
         }
 
         public String getHighLevelJavaType() {
@@ -111,6 +119,9 @@ public class FunctionDefinition {
                 if(HANDLE_TYPES.contains(type)){
                     return "int";
                 }
+                if(isEnumType){
+                    return type;
+                }
             }
             throw new RuntimeException("Unexpected pointer type: " + this);
         }
@@ -131,8 +142,8 @@ public class FunctionDefinition {
             return "["+type + " " + name + (isPointer ? " isPointer" : "") + (isConst ? " isConst" : "") + "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
         }
 
-        public String getExtraDocumentation() {
-            return extraDocumentation;
+        public Optional<String> getExtraDocumentation() {
+            return Optional.ofNullable(extraDocumentation);
         }
 
         public FunctionParameter setExtraDocumentation(String extraDocumentation) {

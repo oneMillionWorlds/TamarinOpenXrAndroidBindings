@@ -4,6 +4,7 @@ import com.onemillionworlds.tamarin.gradle.tasks.FunctionDefinition;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,7 +12,7 @@ public class FunctionParser {
     public static Pattern functionStartPattern = Pattern.compile("XRAPI_ATTR\\s+(\\w+)\\s+XRAPI_CALL\\s+(xr\\w+)\\s*.*");
     static Pattern parameterPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s+const)?)\\s+(\\w+)\\s*,?\\s*");
 
-    public static FunctionDefinition parseFunction(BufferedReader readerOngoing, String triggeringLine){
+    public static FunctionDefinition parseFunction(BufferedReader readerOngoing, String triggeringLine, List<String> knownEnumTypes){
         Matcher startMatcher = functionStartPattern.matcher(triggeringLine);
         if(startMatcher.find()){
             String returnType = startMatcher.group(1);
@@ -81,8 +82,8 @@ public class FunctionParser {
 
                         // Remove const from type if present
                         type = type.replace("const", "").trim();
-
-                        FunctionDefinition.FunctionParameter parameter = new FunctionDefinition.FunctionParameter(type, name, isPointer, isConst);
+                        boolean isEnumType = knownEnumTypes.contains(type);
+                        FunctionDefinition.FunctionParameter parameter = new FunctionDefinition.FunctionParameter(type, name, isPointer, isConst, isEnumType);
                         if (extraDocumentation != null) {
                             parameter.setExtraDocumentation(extraDocumentation);
                         }
