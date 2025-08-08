@@ -5,6 +5,10 @@ import com.onemillionworlds.tamarin.gradle.tasks.generators.EnumGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.StructGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.X10Generator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.X10CGenerator;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.DefinePasser;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.EnumParser;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.FunctionParser;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.StructParser;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
@@ -104,26 +108,9 @@ public class CreateStructs extends DefaultTask {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(headerFile))) {
             String line;
-            StringBuilder structBuilder = null;
-            StringBuilder enumBuilder = null;
-            String currentStructName = null;
-            String currentEnumName = null;
-            boolean inEnum = false;
-
-            // Regex patterns
-            Pattern definePattern = Pattern.compile("#define\\s+(XR_[A-Z_]+)\\s+(.+)");
-            Pattern structStartPattern = Pattern.compile("typedef\\s+struct\\s+(Xr[A-Za-z]+)\\s+\\{");
-            Pattern structEndPattern = Pattern.compile("\\}\\s+(Xr[A-Za-z]+);");
-            Pattern structFieldPattern = Pattern.compile("\\s*(\\w+(?:\\*\\s*XR_MAY_ALIAS)?)\\s+(\\w+)(?:\\[(XR_[A-Z_]+)\\])?;");
 
             // Pattern for simple typedefs like "typedef int64_t XrTime;"
             Pattern simpleTypedefPattern = Pattern.compile("typedef\\s+(\\w+)\\s+(Xr[A-Za-z]+);");
-
-            // Patterns for all enum parsing (including XrStructureType)
-            // This pattern handles both named enums (typedef enum XrName {) and unnamed enums (typedef enum {)
-            Pattern enumStartPattern = Pattern.compile("typedef\\s+enum\\s+(?:(Xr[A-Za-z]+)\\s+)?\\{");
-            Pattern enumEndPattern = Pattern.compile("\\}\\s+(Xr[A-Za-z]+);");
-            Pattern enumValuePattern = Pattern.compile("\\s*(XR_[A-Z0-9_]+)\\s*=\\s*([^,]+),?");
 
             // Pattern for function declarations like "XRAPI_ATTR XrResult XRAPI_CALL xrFunctionName(parameters...);"
             Pattern functionPattern = Pattern.compile("XRAPI_ATTR\\s+(\\w+)\\s+XRAPI_CALL\\s+(xr\\w+)\\s*\\(([^\\)]*)\\);");
@@ -140,200 +127,37 @@ public class CreateStructs extends DefaultTask {
                 }
 
                 // Check if we're entering an enum
-                if (!inEnum) {
-                    Matcher enumStartMatcher = enumStartPattern.matcher(line);
-                    if (enumStartMatcher.find()) {
-                        inEnum = true;
-                        // Group 1 might be null if this is an unnamed enum like "typedef enum {"
-                        // In that case, we'll get the name from the end pattern (e.g., "} XrStructureType;")
-                        currentEnumName = enumStartMatcher.group(1);
-                        enumBuilder = new StringBuilder();
-                        enumBuilder.append(line).append("\n");
 
-                        // Create a new enum definition
-                        // If currentEnumName is null, we'll update it when we find the end of the enum
-                        if (currentEnumName != null) {
-                            EnumDefinition enumDef = new EnumDefinition(currentEnumName);
-                            enums.add(enumDef);
-                        }
-                        continue;
-                    }
+                if(EnumParser.enumStartPattern.matcher(line).find()) {
+                    enums.add(EnumParser.parseEnum(reader, line));
                 }
-
-                // If we're inside an enum, extract the values
-                if (inEnum) {
-                    enumBuilder.append(line).append("\n");
-
-                    Matcher enumEndMatcher = enumEndPattern.matcher(line);
-                    if (enumEndMatcher.find()) {
-                        // If we didn't get the enum name from the start pattern, get it from the end pattern
-                        if (currentEnumName == null) {
-                            currentEnumName = enumEndMatcher.group(1);
-                            // Create the enum definition now that we have the name
-                            EnumDefinition enumDef = new EnumDefinition(currentEnumName);
-                            enums.add(enumDef);
-                        }
-
-                        inEnum = false;
-                        currentEnumName = null;
-                        enumBuilder = null;
-                        continue;
-                    }
-
-                    Matcher enumValueMatcher = enumValuePattern.matcher(line);
-                    if (enumValueMatcher.find()) {
-                        String name = enumValueMatcher.group(1);
-                        String value = enumValueMatcher.group(2).trim();
-
-                        // Find the enum definition (if it exists)
-                        if (!enums.isEmpty()) {
-                            EnumDefinition enumDef = enums.get(enums.size() - 1);
-
-                            // Check if the value is a reference to another enum value
-                            if (value.startsWith("XR_") && !value.contains("(") && !value.contains("+") && !value.contains("-") && !value.contains("*") && !value.contains("/")) {
-                                // Look up the referenced value in the current enum
-                                String resolvedValue = null;
-                                for (EnumDefinition.EnumValue existingValue : enumDef.getValues()) {
-                                    if (existingValue.getName().equals(value)) {
-                                        resolvedValue = existingValue.getValue();
-                                        break;
-                                    }
-                                }
-
-                                // If we found the referenced value, use it
-                                if (resolvedValue != null) {
-                                    value = resolvedValue;
-                                }
-                            }
-
-                            // Add the enum value
-                            enumDef.addValue(new EnumDefinition.EnumValue(name, value));
-                        }
-                    }
-                }
-
                 // Check for function declarations
-                Matcher functionMatcher = functionPattern.matcher(line);
+                Matcher functionMatcher = FunctionParser.functionStartPattern.matcher(line);
                 if (functionMatcher.find()) {
-                    String returnType = functionMatcher.group(1);
-                    String functionName = functionMatcher.group(2);
-                    String parameterList = functionMatcher.group(3);
 
-                    FunctionDefinition functionDef = new FunctionDefinition(functionName, returnType);
+                    FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line);
 
-                    // Parse parameters
-                    if (parameterList != null && !parameterList.trim().isEmpty()) {
-                        String[] parameters = parameterList.split(",");
-                        for (String param : parameters) {
-                            param = param.trim();
-                            if (param.equals("void")) {
-                                // Function has no parameters
-                                continue;
-                            }
-
-                            // Handle const and pointer types
-                            boolean isConst = param.startsWith("const ");
-                            if (isConst) {
-                                param = param.substring(6).trim(); // Remove "const "
-                            }
-
-                            boolean isPointer = param.contains("*");
-                            if (isPointer) {
-                                param = param.replace("*", " ").trim();
-                            }
-
-                            // Split the parameter into type and name
-                            String[] parts = param.split("\\s+");
-                            if (parts.length >= 2) {
-                                String paramType = parts[0];
-                                String paramName = parts[parts.length - 1];
-
-                                functionDef.addParameter(new FunctionDefinition.FunctionParameter(paramType, paramName, isPointer, isConst));
-                            }
-                        }
-                    }
-
-                    functions.add(functionDef);
-                    getLogger().lifecycle("Found function: {}", functionName);
+                    functions.add(functionDefinition);
+                    getLogger().lifecycle("Found function: {}", functionDefinition.getName());
                 }
 
                 // Parse #define constants
-                Matcher defineMatcher = definePattern.matcher(line);
+                Matcher defineMatcher = DefinePasser.definePattern.matcher(line);
                 if (defineMatcher.find()) {
-                    String name = defineMatcher.group(1);
-                    String value = defineMatcher.group(2).trim();
-
-                    // Only process constants we're interested in (size constants, etc.)
-                    if (name.startsWith("XR_MAX_") || name.endsWith("_SIZE_EXT")) {
-                        // Special case for XR_MAX_EVENT_DATA_SIZE
-                        if (name.equals("XR_MAX_EVENT_DATA_SIZE")) {
-                            // Use a fixed value for this constant
-                            constants.put(name, "4000"); // Size of XrEventDataBuffer.varying
-                        } else {
-                            // Try to convert the value to an integer if possible
-                            try {
-                                // Handle hexadecimal values
-                                if (value.startsWith("0x")) {
-                                    int intValue = Integer.parseInt(value.substring(2), 16);
-                                    constants.put(name, String.valueOf(intValue));
-                                } else {
-                                    int intValue = Integer.parseInt(value);
-                                    constants.put(name, String.valueOf(intValue));
-                                }
-                            } catch (NumberFormatException e) {
-                                // If it's not a simple integer, store the raw value
-                                constants.put(name, value);
-                            }
-                        }
-                    }
+                    DefinePasser.parseDefine(line).ifPresent(define -> {
+                        String name = define.constantName;
+                        String value = define.constantValue;
+                        constants.put(name, value);
+                    });
                 }
 
-                // Start of struct definition
-                Matcher structStartMatcher = structStartPattern.matcher(line);
-                if (structStartMatcher.find()) {
-                    currentStructName = structStartMatcher.group(1);
-                    structBuilder = new StringBuilder();
-                    structBuilder.append(line).append("\n");
-                    continue;
-                }
-
-                // Inside struct definition
-                if (structBuilder != null) {
-                    structBuilder.append(line).append("\n");
-
-                    // End of struct definition
-                    Matcher structEndMatcher = structEndPattern.matcher(line);
-                    if (structEndMatcher.find()) {
-                        String structContent = structBuilder.toString();
-                        StructDefinition structDef = parseStructDefinition(currentStructName, structContent);
-                        structs.add(structDef);
-
-                        structBuilder = null;
-                        currentStructName = null;
-                    }
+                if(StructParser.structStartPattern.matcher(line).find()) {
+                    structs.add(StructParser.parseStruct(reader, line));
                 }
             }
         }
     }
 
-    private StructDefinition parseStructDefinition(String name, String content) {
-        StructDefinition structDef = new StructDefinition(name);
-
-        // Parse fields
-        Pattern fieldPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s*\\*(?:\\s*XR_MAY_ALIAS)?)?(?:\\s+const)?)\\s+(\\w+)(?:\\[(XR_[A-Z_]+)\\])?;");
-        Matcher matcher = fieldPattern.matcher(content);
-
-        while (matcher.find()) {
-            String type = matcher.group(1);
-            String fieldName = matcher.group(2);
-            String arraySizeConstant = matcher.group(3); // May be null
-
-            StructField field = new StructField(type, fieldName, arraySizeConstant);
-            structDef.addField(field);
-        }
-
-        return structDef;
-    }
 
     /**
      * Gets the size in bytes for a given type.

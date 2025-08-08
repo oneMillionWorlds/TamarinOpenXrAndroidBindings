@@ -1,0 +1,84 @@
+package com.onemillionworlds.tamarin.gradle.tasks.parsers;
+
+import com.onemillionworlds.tamarin.gradle.tasks.FunctionDefinition;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class FunctionParser {
+    public static Pattern functionStartPattern = Pattern.compile("XRAPI_ATTR\\s+(\\w+)\\s+XRAPI_CALL\\s+(xr\\w+)\\s*.*");
+    static Pattern parameterPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s+const)?)\\s+(\\w+)\\s*,?\\s*");
+
+    public static FunctionDefinition parseFunction(BufferedReader readerOngoing, String triggeringLine){
+        Matcher startMatcher = functionStartPattern.matcher(triggeringLine);
+        if(startMatcher.find()){
+            String returnType = startMatcher.group(1);
+            String functionName = startMatcher.group(2);
+
+            FunctionDefinition functionDef = new FunctionDefinition(functionName, returnType);
+
+            // Read lines until we find the end of the function (line ending with ");")
+            try {
+                StringBuilder parameterBuffer = new StringBuilder();
+                String line;
+                while ((line = readerOngoing.readLine()) != null) {
+                    parameterBuffer.append(line.trim()).append(" ");
+
+                    if (line.trim().endsWith(");")) {
+                        // Found the end of the function
+                        break;
+                    }
+                }
+
+                // Extract parameters from the buffer
+                String parameterString = parameterBuffer.toString();
+                // Remove everything after the closing parenthesis
+                int endIndex = parameterString.indexOf(");");
+                if (endIndex != -1) {
+                    parameterString = parameterString.substring(0, endIndex);
+                }
+
+                // Split by commas to get individual parameters
+                String[] parameters = parameterString.split(",");
+                for (String param : parameters) {
+                    param = param.trim();
+                    if (param.isEmpty()) continue;
+
+                    // Extract type and name
+                    String[] parts = param.split("\\s+");
+                    if (parts.length >= 2) {
+                        // The last part is the parameter name
+                        String name = parts[parts.length - 1];
+                        // Everything before the name is the type
+                        StringBuilder typeBuilder = new StringBuilder();
+                        for (int i = 0; i < parts.length - 1; i++) {
+                            typeBuilder.append(parts[i]).append(" ");
+                        }
+                        String type = typeBuilder.toString().trim();
+
+                        // Check if it's a pointer
+                        boolean isPointer = name.startsWith("*") || type.endsWith("*");
+                        name = name.replace("*", "");
+                        type = type.replace("*", "");
+
+                        // Check if it's const
+                        boolean isConst = param.trim().startsWith("const") || param.contains(" const ");
+
+                        // Remove const from type if present
+                        type = type.replace("const", "").trim();
+
+                        functionDef.addParameter(new FunctionDefinition.FunctionParameter(type, name, isPointer, isConst));
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Error reading function parameters", e);
+            }
+
+            return functionDef;
+        }else{
+            throw new RuntimeException("Unexpected not a function: " + triggeringLine);
+        }
+    }
+}

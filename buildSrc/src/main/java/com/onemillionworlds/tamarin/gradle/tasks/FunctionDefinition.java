@@ -2,6 +2,7 @@ package com.onemillionworlds.tamarin.gradle.tasks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class representing a function definition.
@@ -30,6 +31,26 @@ public class FunctionDefinition {
 
     public List<FunctionParameter> getParameters() {
         return parameters;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof FunctionDefinition that)) return false;
+        return Objects.equals(name, that.name) && Objects.equals(returnType, that.returnType) && Objects.equals(parameters, that.parameters);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, returnType, parameters);
+    }
+
+    @Override
+    public String toString() {
+        return "FunctionDefinition{" +
+                "name='" + name + '\'' +
+                ", returnType='" + returnType + '\'' +
+                ", parameters=" + parameters +
+                '}';
     }
 
     /**
@@ -62,6 +83,22 @@ public class FunctionDefinition {
 
         public boolean isConst() {
             return isConst;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof FunctionParameter that)) return false;
+            return isPointer == that.isPointer && isConst == that.isConst && Objects.equals(type, that.type) && Objects.equals(name, that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(type, name, isPointer, isConst);
+        }
+
+        @Override
+        public String toString() {
+            return "["+type + " " + name + (isPointer ? " isPointer" : "") + (isConst ? " isConst" : "") + "]";
         }
     }
 }
