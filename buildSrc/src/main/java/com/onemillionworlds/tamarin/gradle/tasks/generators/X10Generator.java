@@ -249,7 +249,7 @@ public class X10Generator extends FileGenerator {
         if (cType.equals("char") && isPointer) {
             return "String";
         } else if (cType.equals("uint32_t") && isPointer) {
-            return "int";
+            return "long"; // Changed from int to long as it's a pointer (memory address)
         } else if (cType.equals("XrSystemId")) {
             return "long";
         } else if (isHandleType(cType)) {
