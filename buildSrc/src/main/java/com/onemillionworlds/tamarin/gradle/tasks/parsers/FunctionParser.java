@@ -63,13 +63,30 @@ public class FunctionParser {
                         name = name.replace("*", "");
                         type = type.replace("*", "");
 
+                        // Check if it's a buffer with size specification (e.g., buffer[SIZE])
+                        String extraDocumentation = null;
+                        if (name.contains("[") && name.contains("]")) {
+                            int startBracket = name.indexOf("[");
+                            int endBracket = name.indexOf("]");
+                            if (startBracket > 0 && endBracket > startBracket) {
+                                String bufferSize = name.substring(startBracket + 1, endBracket);
+                                extraDocumentation = "Required size " + bufferSize;
+                                name = name.substring(0, startBracket);
+                                isPointer = true;
+                            }
+                        }
+
                         // Check if it's const
                         boolean isConst = param.trim().startsWith("const") || param.contains(" const ");
 
                         // Remove const from type if present
                         type = type.replace("const", "").trim();
 
-                        functionDef.addParameter(new FunctionDefinition.FunctionParameter(type, name, isPointer, isConst));
+                        FunctionDefinition.FunctionParameter parameter = new FunctionDefinition.FunctionParameter(type, name, isPointer, isConst);
+                        if (extraDocumentation != null) {
+                            parameter.setExtraDocumentation(extraDocumentation);
+                        }
+                        functionDef.addParameter(parameter);
                     }
                 }
             } catch (IOException e) {

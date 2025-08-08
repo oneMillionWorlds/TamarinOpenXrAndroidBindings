@@ -27,7 +27,7 @@ class FunctionParserTest {
                 random other garbage
             """;
 
-    
+
     @Test
     void parseFunction_pointers() throws IOException {
         BufferedReader testFunction1Reader = new BufferedReader(new StringReader(testFunction_pointers));
@@ -50,6 +50,29 @@ class FunctionParserTest {
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "name", true, true));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("PFN_xrVoidFunction", "function", true, false));
+
+        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine());
+
+        assertEquals(expectedFunctionDefinition, functionDefinition);
+    }
+
+    @Test
+    void parseFunction_weirdCharBuffer() throws IOException {
+
+        String xrResultToString = """
+            XRAPI_ATTR XrResult XRAPI_CALL xrResultToString(
+                XrInstance                                  instance,
+                XrResult                                    value,
+                char                                        buffer[XR_MAX_RESULT_STRING_SIZE]);
+            random other garbage
+            """;
+
+        BufferedReader testFunction1Reader = new BufferedReader(new StringReader(xrResultToString));
+
+        FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrResultToString", "XrResult");
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrResult", "value", false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "buffer", true, false).setExtraDocumentation("Required size XR_MAX_RESULT_STRING_SIZE"));
 
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine());
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.X10Generator.HANDLE_TYPES;
+
 /**
  * Class representing a function definition.
  */
@@ -62,6 +64,8 @@ public class FunctionDefinition {
         private final boolean isPointer;
         private final boolean isConst;
 
+        private String extraDocumentation;
+
         public FunctionParameter(String type, String name, boolean isPointer, boolean isConst) {
             this.type = type;
             this.name = name;
@@ -85,20 +89,56 @@ public class FunctionDefinition {
             return isConst;
         }
 
+        public String getHighLevelJavaType() {
+            if (isPointer) {
+                if(type.equals("PFN_xrVoidFunction")){
+                    return "PointerBufferView";
+                }
+                if(type.equals("char")){
+                    return "BufferAndAddress";
+                }
+                if(HANDLE_TYPES.contains(type)){
+                    return "PointerBufferView";
+                }
+                if(type.equals("uint32_t")){
+                    return "IntBufferView";
+                }
+                return getType() + ".Buffer";
+            }else{
+                if(type.equals("uint32_t")){
+                    return "int";
+                }
+                if(HANDLE_TYPES.contains(type)){
+                    return "int";
+                }
+            }
+            throw new RuntimeException("Unexpected pointer type: " + this);
+        }
+
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof FunctionParameter that)) return false;
-            return isPointer == that.isPointer && isConst == that.isConst && Objects.equals(type, that.type) && Objects.equals(name, that.name);
+            return isPointer == that.isPointer && isConst == that.isConst && Objects.equals(type, that.type) && Objects.equals(name, that.name) && Objects.equals(extraDocumentation, that.extraDocumentation);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, name, isPointer, isConst);
+            return Objects.hash(type, name, isPointer, isConst, extraDocumentation);
         }
 
         @Override
         public String toString() {
-            return "["+type + " " + name + (isPointer ? " isPointer" : "") + (isConst ? " isConst" : "") + "]";
+            return "["+type + " " + name + (isPointer ? " isPointer" : "") + (isConst ? " isConst" : "") + "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
         }
+
+        public String getExtraDocumentation() {
+            return extraDocumentation;
+        }
+
+        public FunctionParameter setExtraDocumentation(String extraDocumentation) {
+            this.extraDocumentation = extraDocumentation;
+            return this;
+        }
+
     }
 }
