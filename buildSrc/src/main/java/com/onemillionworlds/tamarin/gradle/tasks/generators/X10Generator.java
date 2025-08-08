@@ -16,7 +16,7 @@ public class X10Generator extends FileGenerator {
     private final List<FunctionDefinition> functions;
 
     // List of known handle types that should be treated as 64-bit integers
-    private static final List<String> HANDLE_TYPES = Arrays.asList(
+    public static final List<String> HANDLE_TYPES = Arrays.asList(
         "XrAction", "XrActionSet", "XrInstance", "XrSession", "XrSpace", "XrSwapchain",
         "XrDebugUtilsMessengerEXT", "XrSpatialAnchorMSFT", "XrSpatialGraphNodeBindingMSFT",
         "XrHandTrackerEXT", "XrSceneObserverMSFT", "XrSceneMSFT", "XrFacialTrackerHTC",
@@ -45,10 +45,8 @@ public class X10Generator extends FileGenerator {
             writer.write(" */\n");
             writer.write("package com.onemillionworlds.tamarin.openxrbindings;\n\n");
 
-            writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.IntBufferView;\n");
-            writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.JavaBufferView;\n");
-            writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;\n");
-            writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;\n\n");
+            writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.*;\n");
+            writer.write("import com.onemillionworlds.tamarin.openxrbindings.enums.*\n");
 
             writer.write("import java.nio.IntBuffer;\n");
             writer.write("import java.nio.LongBuffer;\n\n");
@@ -66,9 +64,6 @@ public class X10Generator extends FileGenerator {
 
             // Generate method pairs for each function
             for (FunctionDefinition function : functions) {
-
-
-
                 generateMethodPair(writer, function);
             }
 
@@ -83,38 +78,7 @@ public class X10Generator extends FileGenerator {
         String returnType = mapCTypeToJavaType(function.getReturnType());
 
         // Generate wrapper method
-        writer.write("    /**\n");
-        writer.write("     * " + getJavaDocDescription(function) + "\n");
-        writer.write("     * \n");
-
-        // Generate parameter documentation
-        for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
-            writer.write("     * @param " + param.getName() + " " + getParamDescription(param) + "\n");
-        }
-
-        writer.write("     * @return " + getReturnDescription(function) + "\n");
-        writer.write("     */\n");
-
-        writer.write("    public " + returnType + " " + functionName + "(");
-
-        // Generate parameter list
-        for (int i = 0; i < function.getParameters().size(); i++) {
-            FunctionDefinition.FunctionParameter param = function.getParameters().get(i);
-            String javaType = mapCTypeToJavaParameterType(param);
-
-            writer.write(javaType + " " + param.getName());
-
-            if (i < function.getParameters().size() - 1) {
-                writer.write(", ");
-            }
-        }
-
-        writer.write(") {\n");
-
-        // Generate method body
-        generateWrapperMethodBody(writer, function);
-
-        writer.write("    }\n\n");
+        writer.write(WrapperFunctionGenerator.generateWrapperFunction(function));
 
         // Generate native method
         writer.write("    public native " + returnType + " n" + functionName + "(");
@@ -142,7 +106,11 @@ public class X10Generator extends FileGenerator {
             String paramName = param.getName();
             boolean isPointer = param.isPointer();
 
-            if (isPointer && !paramType.equals("char")) {
+            // Special case for buffer parameters in xrResultToString and xrStructureTypeToString
+            if (paramName.equals("buffer") && isPointer && 
+                (paramType.equals("char") || paramType.equals("int") || paramType.equals("uint32_t"))) {
+                // No need to create an address variable, we'll use output.getAddress() directly
+            } else if (isPointer && !paramType.equals("char")) {
                 if (paramType.equals("uint32_t")) {
                     // IntBufferView
                     writer.write("        long " + paramName + "Address = " + paramName + ".getAddress();\n");
@@ -166,7 +134,12 @@ public class X10Generator extends FileGenerator {
             String paramName = param.getName();
             boolean isPointer = param.isPointer();
 
-            if (paramType.equals("char") && isPointer) {
+            // Special case for buffer parameters in xrResultToString and xrStructureTypeToString
+            if (paramName.equals("buffer") && isPointer && 
+                (paramType.equals("char") || paramType.equals("int") || paramType.equals("uint32_t"))) {
+                // BufferAndAddress parameter
+                writer.write(paramName + ".getAddress()");
+            } else if (paramType.equals("char") && isPointer) {
                 // String parameter
                 writer.write(paramName);
             } else if (paramType.equals("uint32_t") && isPointer) {
@@ -210,8 +183,13 @@ public class X10Generator extends FileGenerator {
     private String mapCTypeToJavaParameterType(FunctionDefinition.FunctionParameter param) {
         String cType = param.getType();
         boolean isPointer = param.isPointer();
+        String paramName = param.getName();
 
-        if (cType.equals("char") && isPointer) {
+        // Special case for xrResultToString and xrStructureTypeToString
+        if ((paramName.equals("buffer") && isPointer) && 
+            (cType.equals("char") || cType.equals("int") || cType.equals("uint32_t"))) {
+            return "BufferAndAddress";
+        } else if (cType.equals("char") && isPointer) {
             return "String";
         } else if (cType.equals("uint32_t") && isPointer) {
             return "IntBufferView";
@@ -245,8 +223,13 @@ public class X10Generator extends FileGenerator {
     private String mapCTypeToJavaNativeParameterType(FunctionDefinition.FunctionParameter param) {
         String cType = param.getType();
         boolean isPointer = param.isPointer();
+        String paramName = param.getName();
 
-        if (cType.equals("char") && isPointer) {
+        // Special case for xrResultToString and xrStructureTypeToString
+        if ((paramName.equals("buffer") && isPointer) && 
+            (cType.equals("char") || cType.equals("int") || cType.equals("uint32_t"))) {
+            return "long"; // BufferAndAddress.getAddress() returns a long
+        } else if (cType.equals("char") && isPointer) {
             return "String";
         } else if (cType.equals("uint32_t") && isPointer) {
             return "long"; // Changed from int to long as it's a pointer (memory address)
@@ -279,9 +262,6 @@ public class X10Generator extends FileGenerator {
         return ATOM_TYPES.contains(type);
     }
 
-    private String getJavaDocDescription(FunctionDefinition function) {
-        return "Wrapper for " + function.getName() + " OpenXR function";
-    }
 
     private String getParamDescription(FunctionDefinition.FunctionParameter param) {
         if (param.isPointer()) {
