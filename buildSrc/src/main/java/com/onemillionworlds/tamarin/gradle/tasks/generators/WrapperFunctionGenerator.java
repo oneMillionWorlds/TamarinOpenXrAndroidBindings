@@ -63,7 +63,6 @@ public class WrapperFunctionGenerator {
         for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
             String paramName = param.getName();
             boolean isPointer = param.isPointer();
-
             if(isPointer){
                 writer.append("        long " + paramName + "Address = " + paramName + " == null ? MemoryUtil.NULL : " + paramName + ".address();\n");
             }

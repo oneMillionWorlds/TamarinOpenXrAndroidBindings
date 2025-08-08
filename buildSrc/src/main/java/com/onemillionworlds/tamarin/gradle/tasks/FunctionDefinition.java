@@ -118,6 +118,9 @@ public class FunctionDefinition {
                 if(type.equals("uint32_t")){
                     return "IntBufferView";
                 }
+                if(isAtom){
+                    return "LongBufferView";
+                }
                 return getType() + ".Buffer";
             }else{
                 if(type.equals("uint32_t")){

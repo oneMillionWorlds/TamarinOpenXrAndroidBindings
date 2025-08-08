@@ -92,4 +92,33 @@ class WrapperFunctionGeneratorTest {
 
         assertEquals(expectedValue.trim(), actualValue.trim());
     }
+
+    @Test
+    void generateWrapperFunction_xrGetSystem() {
+        FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrGetSystem", "XrResult");
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemGetInfo", "getInfo", true, true, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemId", "systemId", true, false, false, true));
+
+        String expectedValue = """
+                    /**
+                     * Wrapper for xrGetSystem OpenXR function
+                     *\s
+                     * @param instance
+                     * @param getInfo
+                     * @param systemId
+                     * @return The error code (if any)
+                     */
+                    public int xrGetSystem(int instance, XrSystemGetInfo.Buffer getInfo, LongBufferView systemId) {
+                        long getInfoAddress = getInfo == null ? MemoryUtil.NULL : getInfo.address();
+                        long systemIdAddress = systemId == null ? MemoryUtil.NULL : systemId.address();
+                        return nxrGetSystem(instance, getInfoAddress, systemIdAddress);
+                    }
+                """;
+
+
+        String actualValue = WrapperFunctionGenerator.generateWrapperFunction(expectedFunctionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+
+    }
 }
