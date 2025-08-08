@@ -66,15 +66,18 @@ public class FunctionDefinition {
         private final boolean isConst;
 
         private final boolean isEnumType;
+        private final boolean isAtom;
+
 
         private String extraDocumentation;
 
-        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType) {
+        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom) {
             this.type = type;
             this.name = name;
             this.isPointer = isPointer;
             this.isConst = isConst;
             this.isEnumType = isEnumType;
+            this.isAtom = isAtom;
         }
 
         public String getType() {
@@ -95,6 +98,10 @@ public class FunctionDefinition {
 
         public boolean isEnumType() {
             return isEnumType;
+        }
+
+        public boolean isAtom() {
+            return isAtom;
         }
 
         public String getHighLevelJavaType() {
@@ -129,17 +136,17 @@ public class FunctionDefinition {
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof FunctionParameter that)) return false;
-            return isPointer == that.isPointer && isConst == that.isConst && Objects.equals(type, that.type) && Objects.equals(name, that.name) && Objects.equals(extraDocumentation, that.extraDocumentation);
+            return isPointer == that.isPointer && isConst == that.isConst && isAtom == that.isAtom && Objects.equals(type, that.type) && Objects.equals(name, that.name) && Objects.equals(extraDocumentation, that.extraDocumentation);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, name, isPointer, isConst, extraDocumentation);
+            return Objects.hash(type, name, isPointer, isConst, isAtom, extraDocumentation);
         }
 
         @Override
         public String toString() {
-            return "["+type + " " + name + (isPointer ? " isPointer" : "") + (isConst ? " isConst" : "") + "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
+            return "[" + type + " " + name + (isPointer ? " isPointer" : "") + (isConst ? " isConst" : "") + (isAtom ? " isAtom" : "") + "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
         }
 
         public Optional<String> getExtraDocumentation() {

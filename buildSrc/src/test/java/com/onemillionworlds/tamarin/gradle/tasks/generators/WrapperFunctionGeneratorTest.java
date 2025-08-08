@@ -11,9 +11,9 @@ class WrapperFunctionGeneratorTest {
     void generateWrapperFunction_xrEnumerateApiLayerProperties() {
 
         FunctionDefinition functionDefinition = new FunctionDefinition("xrEnumerateApiLayerProperties", "XrResult");
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCapacityInput", false, false, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCountOutput", true, false, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrApiLayerProperties", "properties", true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCapacityInput", false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCountOutput", true, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrApiLayerProperties", "properties", true, false, false, false));
 
         String expectedValue = """
                     /**
@@ -40,9 +40,9 @@ class WrapperFunctionGeneratorTest {
     void generateWrapperFunction_xrGetInstanceProcAddr() {
 
         FunctionDefinition functionDefinition = new FunctionDefinition("xrGetInstanceProcAddr", "XrResult");
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "name", true, true, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("PFN_xrVoidFunction", "function", true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "name", true, true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("PFN_xrVoidFunction", "function", true, false, false, false));
 
         String expectedValue = """
                     /**
@@ -69,9 +69,9 @@ class WrapperFunctionGeneratorTest {
     void generateWrapperFunction_xrResultToString() {
 
         FunctionDefinition functionDefinition = new FunctionDefinition("xrResultToString", "XrResult");
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrResult", "value", false, false, true));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "buffer", true, false, false).setExtraDocumentation("Required size XR_MAX_RESULT_STRING_SIZE"));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrResult", "value", false, false, true, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "buffer", true, false, false, false).setExtraDocumentation("Required size XR_MAX_RESULT_STRING_SIZE"));
 
         String expectedValue = """
                     /**

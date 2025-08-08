@@ -17,6 +17,10 @@ class FunctionParserTest {
             "XrActionType"
     );
 
+    private static final List<String> knownAtoms = List.of(
+            "XrSystemId"
+    );
+
     private static final String testFunction_pointers = """
             XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateApiLayerProperties(
                 uint32_t                                    propertyCapacityInput,
@@ -39,11 +43,11 @@ class FunctionParserTest {
         BufferedReader testFunction1Reader = new BufferedReader(new StringReader(testFunction_pointers));
 
         FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrEnumerateApiLayerProperties", "XrResult");
-        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCapacityInput", false, false, false));
-        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCountOutput", true, false, false));
-        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrApiLayerProperties", "properties", true, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCapacityInput", false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCountOutput", true, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrApiLayerProperties", "properties", true, false, false, false));
 
-        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums);
+        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums, knownAtoms);
 
         assertEquals(expectedFunctionDefinition, functionDefinition);
     }
@@ -53,11 +57,11 @@ class FunctionParserTest {
         BufferedReader testFunction1Reader = new BufferedReader(new StringReader(testFunction_charPointer));
 
         FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrGetInstanceProcAddr", "XrResult");
-        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false));
-        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "name", true, true, false));
-        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("PFN_xrVoidFunction", "function", true, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "name", true, true, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("PFN_xrVoidFunction", "function", true, false, false, false));
 
-        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums);
+        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums, knownAtoms);
 
         assertEquals(expectedFunctionDefinition, functionDefinition);
     }
@@ -76,12 +80,36 @@ class FunctionParserTest {
         BufferedReader testFunction1Reader = new BufferedReader(new StringReader(xrResultToString));
 
         FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrResultToString", "XrResult");
-        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false));
-        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrResult", "value", false, false, true));
-        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "buffer", true, false, false).setExtraDocumentation("Required size XR_MAX_RESULT_STRING_SIZE"));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrResult", "value", false, false, true, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "buffer", true, false, false, false).setExtraDocumentation("Required size XR_MAX_RESULT_STRING_SIZE"));
 
-        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums);
+        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums, knownAtoms);
 
         assertEquals(expectedFunctionDefinition, functionDefinition);
     }
+
+    @Test
+    void parseFunction_atomType() throws IOException {
+        String functionString = """
+                XRAPI_ATTR XrResult XRAPI_CALL xrGetSystem(
+                    XrInstance                                  instance,
+                    const XrSystemGetInfo*                      getInfo,
+                    XrSystemId*                                 systemId);
+                random other garbage
+                """;
+
+        BufferedReader testFunction1Reader = new BufferedReader(new StringReader(functionString));
+
+        FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrGetSystem", "XrResult");
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemGetInfo", "getInfo", true, true, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemId", "systemId", true, false, false, true));
+
+        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums, knownAtoms);
+        assertEquals(expectedFunctionDefinition, functionDefinition);
+    }
+
+
+
 }

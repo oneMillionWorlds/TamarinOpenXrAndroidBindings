@@ -5,6 +5,7 @@ import com.onemillionworlds.tamarin.gradle.tasks.generators.EnumGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.StructGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.X10Generator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.X10CGenerator;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.AtomParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.DefinePasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.EnumParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.FunctionParser;
@@ -79,8 +80,9 @@ public class CreateStructs extends DefaultTask {
         List<EnumDefinition> enums = new ArrayList<>();
         List<FunctionDefinition> functions = new ArrayList<>();
         Map<String, String> typedefs = new HashMap<>();
+        List<String> atoms = new ArrayList<>();
 
-        parseHeaderFile(header, constants, structs, enums, functions, typedefs);
+        parseHeaderFile(header, constants, structs, enums, functions, typedefs, atoms);
 
         // Generate XR10Constants.java
         new ConstantsGenerator(getLogger(), constants).generate(output);
@@ -104,7 +106,7 @@ public class CreateStructs extends DefaultTask {
         }
     }
 
-    private void parseHeaderFile(File headerFile, Map<String, String> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, Map<String, String> typedefs) throws IOException {
+    private void parseHeaderFile(File headerFile, Map<String, String> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, Map<String, String> typedefs, List<String> atoms) throws IOException {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(headerFile))) {
             String line;
@@ -137,7 +139,7 @@ public class CreateStructs extends DefaultTask {
 
                     List<String> knownEnums = enums.stream().map(EnumDefinition::getName).toList();
 
-                    FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line, knownEnums);
+                    FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line, knownEnums, atoms);
 
                     functions.add(functionDefinition);
                     getLogger().lifecycle("Found function: {}", functionDefinition.getName());
@@ -152,6 +154,9 @@ public class CreateStructs extends DefaultTask {
                         constants.put(name, value);
                     });
                 }
+
+                // Parse atom definitions
+                AtomParser.parseAtom(line).ifPresent(atoms::add);
 
                 if(StructParser.structStartPattern.matcher(line).find()) {
                     structs.add(StructParser.parseStruct(reader, line));
