@@ -68,12 +68,14 @@ public class WrapperFunctionGenerator {
 
                 if (isPointer) {
                     functionString.append("long " + paramName);
-                } else if (paramType.equals("uint32_t")) {
+                } else if (paramType.equals("uint32_t") || param.isTypeDefInt()) {
                     functionString.append("int " + paramName);
-                } else if (HANDLE_TYPES.contains(paramType)) {
-                    functionString.append("int " + paramName);
+                } else if (param.isHandle()) {
+                    functionString.append("long " + paramName);
                 } else if (isEnum) {
                     functionString.append("int " + paramName);
+                } else if (param.isTypeDefLong()) {
+                    functionString.append("long " + paramName);
                 } else {
                     functionString.append("int " + paramName); // Default to int for other types
                 }

@@ -69,10 +69,11 @@ public class FunctionDefinition {
         private final boolean isAtom;
         private final boolean isTypeDefInt;
         private final boolean isTypeDefLong;
+        private final boolean isHandle;
 
         private String extraDocumentation;
 
-        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong) {
+        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong, boolean isHandle) {
             this.type = type;
             this.name = name;
             this.isPointer = isPointer;
@@ -81,6 +82,7 @@ public class FunctionDefinition {
             this.isAtom = isAtom;
             this.isTypeDefInt = isTypeDefInt;
             this.isTypeDefLong = isTypeDefLong;
+            this.isHandle = isHandle;
         }
 
         public String getType() {
@@ -115,6 +117,10 @@ public class FunctionDefinition {
             return isTypeDefLong;
         }
 
+        public boolean isHandle() {
+            return isHandle;
+        }
+
         public String getHighLevelJavaType() {
             if (isPointer) {
                 if(type.equals("PFN_xrVoidFunction")){
@@ -137,8 +143,8 @@ public class FunctionDefinition {
                 if(type.equals("uint32_t") || isTypeDefInt){
                     return "int";
                 }
-                if(HANDLE_TYPES.contains(type)){
-                    return "int";
+                if(isHandle){
+                    return "long";
                 }
                 if(isEnumType){
                     return type;
@@ -159,6 +165,7 @@ public class FunctionDefinition {
                    isAtom == that.isAtom && 
                    isTypeDefInt == that.isTypeDefInt && 
                    isTypeDefLong == that.isTypeDefLong && 
+                   isHandle == that.isHandle && 
                    Objects.equals(type, that.type) && 
                    Objects.equals(name, that.name) && 
                    Objects.equals(extraDocumentation, that.extraDocumentation);
@@ -166,7 +173,7 @@ public class FunctionDefinition {
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, extraDocumentation);
+            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, isHandle, extraDocumentation);
         }
 
         @Override
@@ -177,6 +184,7 @@ public class FunctionDefinition {
                 (isAtom ? " isAtom" : "") + 
                 (isTypeDefInt ? " isTypeDefInt" : "") + 
                 (isTypeDefLong ? " isTypeDefLong" : "") + 
+                (isHandle ? " isHandle" : "") + 
                 "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
         }
 

@@ -12,7 +12,7 @@ public class FunctionParser {
     public static Pattern functionStartPattern = Pattern.compile("XRAPI_ATTR\\s+(\\w+)\\s+XRAPI_CALL\\s+(xr\\w+)\\s*.*");
     static Pattern parameterPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s+const)?)\\s+(\\w+)\\s*,?\\s*");
 
-    public static FunctionDefinition parseFunction(BufferedReader readerOngoing, String triggeringLine, List<String> knownEnumTypes, List<String> knownAtoms, List<String> knownTypeDefInts, List<String> knownTypeDefLongs){
+    public static FunctionDefinition parseFunction(BufferedReader readerOngoing, String triggeringLine, List<String> knownEnumTypes, List<String> knownAtoms, List<String> knownTypeDefInts, List<String> knownTypeDefLongs, List<String> knownHandles){
         Matcher startMatcher = functionStartPattern.matcher(triggeringLine);
         if(startMatcher.find()){
             String returnType = startMatcher.group(1);
@@ -86,7 +86,8 @@ public class FunctionParser {
                         boolean isAtomType = knownAtoms.contains(type);
                         boolean isTypeDefInt = knownTypeDefInts.contains(type);
                         boolean isTypeDefLong = knownTypeDefLongs.contains(type);
-                        FunctionDefinition.FunctionParameter parameter = new FunctionDefinition.FunctionParameter(type, name, isPointer, isConst, isEnumType, isAtomType, isTypeDefInt, isTypeDefLong);
+                        boolean isHandle = knownHandles.contains(type);
+                        FunctionDefinition.FunctionParameter parameter = new FunctionDefinition.FunctionParameter(type, name, isPointer, isConst, isEnumType, isAtomType, isTypeDefInt, isTypeDefLong, isHandle);
                         if (extraDocumentation != null) {
                             parameter.setExtraDocumentation(extraDocumentation);
                         }
