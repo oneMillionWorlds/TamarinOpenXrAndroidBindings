@@ -132,8 +132,11 @@ public class FunctionDefinition {
                 if(isEnumType){
                     return type;
                 }
+                if(isAtom){
+                    return "long";
+                }
+                throw new RuntimeException("Unexpected non pointer type: " + this);
             }
-            throw new RuntimeException("Unexpected pointer type: " + this);
         }
 
         @Override

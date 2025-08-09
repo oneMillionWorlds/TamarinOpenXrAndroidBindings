@@ -9,6 +9,8 @@ import com.onemillionworlds.tamarin.gradle.tasks.parsers.AtomParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.DefinePasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.EnumParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.FunctionParser;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.IntTypeDefPasser;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.LongTypeDefPasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.StructParser;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
@@ -81,8 +83,21 @@ public class CreateStructs extends DefaultTask {
         List<FunctionDefinition> functions = new ArrayList<>();
         Map<String, String> typedefs = new HashMap<>();
         List<String> atoms = new ArrayList<>();
+        List<String> intTypedefs = new ArrayList<>();
+        List<String> longTypedefs = new ArrayList<>();
 
-        parseHeaderFile(header, constants, structs, enums, functions, typedefs, atoms);
+        parseHeaderFile(header, constants, structs, enums, functions, typedefs, atoms, intTypedefs, longTypedefs);
+
+        // Log the parsed int and long typedefs
+        getLogger().lifecycle("Found {} int typedefs:", intTypedefs.size());
+        for (String intTypedef : intTypedefs) {
+            getLogger().lifecycle("  {}", intTypedef);
+        }
+
+        getLogger().lifecycle("Found {} long typedefs:", longTypedefs.size());
+        for (String longTypedef : longTypedefs) {
+            getLogger().lifecycle("  {}", longTypedef);
+        }
 
         // Generate XR10Constants.java
         new ConstantsGenerator(getLogger(), constants).generate(output);
@@ -106,7 +121,7 @@ public class CreateStructs extends DefaultTask {
         }
     }
 
-    private void parseHeaderFile(File headerFile, Map<String, String> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, Map<String, String> typedefs, List<String> atoms) throws IOException {
+    private void parseHeaderFile(File headerFile, Map<String, String> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, Map<String, String> typedefs, List<String> atoms, List<String> intTypedefs, List<String> longTypedefs) throws IOException {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(headerFile))) {
             String line;
@@ -157,6 +172,12 @@ public class CreateStructs extends DefaultTask {
 
                 // Parse atom definitions
                 AtomParser.parseAtom(line).ifPresent(atoms::add);
+
+                // Parse int typedefs
+                IntTypeDefPasser.parseIntTypedef(line).ifPresent(intTypedefs::add);
+
+                // Parse long typedefs
+                LongTypeDefPasser.parseLongTypedef(line).ifPresent(longTypedefs::add);
 
                 if(StructParser.structStartPattern.matcher(line).find()) {
                     structs.add(StructParser.parseStruct(reader, line));

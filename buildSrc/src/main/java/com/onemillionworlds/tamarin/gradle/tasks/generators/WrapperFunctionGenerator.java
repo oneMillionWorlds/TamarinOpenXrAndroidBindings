@@ -14,76 +14,81 @@ public class WrapperFunctionGenerator {
      * This is the non-native function that unwraps buffers to addresses etc
      */
     public static String generateWrapperFunction(FunctionDefinition function){
-        StringBuilder functionString = new StringBuilder();
+        try {
 
-        String functionName = function.getName();
-        String returnType = "int"; // all the methods just return a success/failure code
+            StringBuilder functionString = new StringBuilder();
 
-        // Generate wrapper method
-        functionString.append("    /**\n");
-        functionString.append("     * " + getJavaDocDescription(function) + "\n");
-        functionString.append("     * \n");
+            String functionName = function.getName();
+            String returnType = "int"; // all the methods just return a success/failure code
 
-        // Generate parameter documentation
-        for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
-            functionString.append("     * @param " + param.getName() +param.getExtraDocumentation().map(ed -> " " + ed).orElse("") +"\n");
-        }
+            // Generate wrapper method
+            functionString.append("    /**\n");
+            functionString.append("     * " + getJavaDocDescription(function) + "\n");
+            functionString.append("     * \n");
 
-        functionString.append("     * @return " + "The error code (if any)" + "\n");
-        functionString.append("     */\n");
-
-        functionString.append("    public " + returnType + " " + functionName + "(");
-
-        // Generate parameter list
-        for (int i = 0; i < function.getParameters().size(); i++) {
-            FunctionDefinition.FunctionParameter param = function.getParameters().get(i);
-            String javaType = param.getHighLevelJavaType();
-
-            functionString.append(javaType + " " + param.getName());
-
-            if (i < function.getParameters().size() - 1) {
-                functionString.append(", ");
-            }
-        }
-
-        functionString.append(") {\n");
-
-        // Generate method body
-        generateWrapperMethodBody(functionString, function);
-
-        functionString.append("    }\n\n");
-
-        // Generate native method declaration
-        functionString.append("    public native " + returnType + " n" + functionName + "(");
-
-        // Generate parameter list for native method
-        for (int i = 0; i < function.getParameters().size(); i++) {
-            FunctionDefinition.FunctionParameter param = function.getParameters().get(i);
-            String paramType = param.getType();
-            String paramName = param.getName();
-            boolean isPointer = param.isPointer();
-            boolean isEnum = param.isEnumType();
-
-            if (isPointer) {
-                functionString.append("long " + paramName);
-            } else if (paramType.equals("uint32_t")) {
-                functionString.append("int " + paramName);
-            } else if (HANDLE_TYPES.contains(paramType)) {
-                functionString.append("int " + paramName);
-            } else if (isEnum) {
-                functionString.append("int " + paramName);
-            } else {
-                functionString.append("int " + paramName); // Default to int for other types
+            // Generate parameter documentation
+            for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
+                functionString.append("     * @param " + param.getName() + param.getExtraDocumentation().map(ed -> " " + ed).orElse("") + "\n");
             }
 
-            if (i < function.getParameters().size() - 1) {
-                functionString.append(", ");
+            functionString.append("     * @return " + "The error code (if any)" + "\n");
+            functionString.append("     */\n");
+
+            functionString.append("    public " + returnType + " " + functionName + "(");
+
+            // Generate parameter list
+            for (int i = 0; i < function.getParameters().size(); i++) {
+                FunctionDefinition.FunctionParameter param = function.getParameters().get(i);
+                String javaType = param.getHighLevelJavaType();
+
+                functionString.append(javaType + " " + param.getName());
+
+                if (i < function.getParameters().size() - 1) {
+                    functionString.append(", ");
+                }
             }
+
+            functionString.append(") {\n");
+
+            // Generate method body
+            generateWrapperMethodBody(functionString, function);
+
+            functionString.append("    }\n\n");
+
+            // Generate native method declaration
+            functionString.append("    public native " + returnType + " n" + functionName + "(");
+
+            // Generate parameter list for native method
+            for (int i = 0; i < function.getParameters().size(); i++) {
+                FunctionDefinition.FunctionParameter param = function.getParameters().get(i);
+                String paramType = param.getType();
+                String paramName = param.getName();
+                boolean isPointer = param.isPointer();
+                boolean isEnum = param.isEnumType();
+
+                if (isPointer) {
+                    functionString.append("long " + paramName);
+                } else if (paramType.equals("uint32_t")) {
+                    functionString.append("int " + paramName);
+                } else if (HANDLE_TYPES.contains(paramType)) {
+                    functionString.append("int " + paramName);
+                } else if (isEnum) {
+                    functionString.append("int " + paramName);
+                } else {
+                    functionString.append("int " + paramName); // Default to int for other types
+                }
+
+                if (i < function.getParameters().size() - 1) {
+                    functionString.append(", ");
+                }
+            }
+
+            functionString.append(");\n");
+
+            return functionString.toString();
+        }catch (Exception e){
+            throw new RuntimeException("Error generating wrapper function for " + function.getName() + ": " + e.getMessage(), e);
         }
-
-        functionString.append(");\n");
-
-        return functionString.toString();
     }
 
     private static String getJavaDocDescription(FunctionDefinition function) {

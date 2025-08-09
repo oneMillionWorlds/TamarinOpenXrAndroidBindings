@@ -111,5 +111,18 @@ class FunctionParserTest {
     }
 
 
+    @Test
+    void parseFunction_xrTime() throws IOException {
+
+        String functionString = """
+                XRAPI_ATTR XrResult XRAPI_CALL xrLocateSpace(
+                    XrSpace                                     space,
+                    XrSpace                                     baseSpace,
+                    XrTime                                      time,
+                    XrSpaceLocation*                            location);
+                """;
+
+    }
+
 
 }

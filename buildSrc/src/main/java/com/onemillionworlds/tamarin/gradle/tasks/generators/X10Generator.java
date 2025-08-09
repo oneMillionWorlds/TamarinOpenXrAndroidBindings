@@ -60,8 +60,6 @@ public class X10Generator extends FileGenerator {
             writer.write("        System.loadLibrary(\"openxrjni\");\n");
             writer.write("    }\n\n");
 
-            logger.lifecycle("rjt " + functions.size());
-
             // Generate method pairs for each function
             for (FunctionDefinition function : functions) {
                 generateMethodPair(writer, function);
