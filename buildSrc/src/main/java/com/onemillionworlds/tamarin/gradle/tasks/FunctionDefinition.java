@@ -67,17 +67,20 @@ public class FunctionDefinition {
 
         private final boolean isEnumType;
         private final boolean isAtom;
-
+        private final boolean isTypeDefInt;
+        private final boolean isTypeDefLong;
 
         private String extraDocumentation;
 
-        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom) {
+        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong) {
             this.type = type;
             this.name = name;
             this.isPointer = isPointer;
             this.isConst = isConst;
             this.isEnumType = isEnumType;
             this.isAtom = isAtom;
+            this.isTypeDefInt = isTypeDefInt;
+            this.isTypeDefLong = isTypeDefLong;
         }
 
         public String getType() {
@@ -104,6 +107,14 @@ public class FunctionDefinition {
             return isAtom;
         }
 
+        public boolean isTypeDefInt() {
+            return isTypeDefInt;
+        }
+
+        public boolean isTypeDefLong() {
+            return isTypeDefLong;
+        }
+
         public String getHighLevelJavaType() {
             if (isPointer) {
                 if(type.equals("PFN_xrVoidFunction")){
@@ -115,15 +126,15 @@ public class FunctionDefinition {
                 if(HANDLE_TYPES.contains(type)){
                     return "PointerBufferView";
                 }
-                if(type.equals("uint32_t")){
+                if(type.equals("uint32_t") || isTypeDefInt){
                     return "IntBufferView";
                 }
-                if(isAtom){
+                if(isAtom || isTypeDefLong){
                     return "LongBufferView";
                 }
                 return getType() + ".Buffer";
             }else{
-                if(type.equals("uint32_t")){
+                if(type.equals("uint32_t") || isTypeDefInt){
                     return "int";
                 }
                 if(HANDLE_TYPES.contains(type)){
@@ -132,7 +143,7 @@ public class FunctionDefinition {
                 if(isEnumType){
                     return type;
                 }
-                if(isAtom){
+                if(isAtom || isTypeDefLong){
                     return "long";
                 }
                 throw new RuntimeException("Unexpected non pointer type: " + this);
@@ -142,17 +153,31 @@ public class FunctionDefinition {
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof FunctionParameter that)) return false;
-            return isPointer == that.isPointer && isConst == that.isConst && isAtom == that.isAtom && Objects.equals(type, that.type) && Objects.equals(name, that.name) && Objects.equals(extraDocumentation, that.extraDocumentation);
+            return isPointer == that.isPointer && 
+                   isConst == that.isConst && 
+                   isEnumType == that.isEnumType && 
+                   isAtom == that.isAtom && 
+                   isTypeDefInt == that.isTypeDefInt && 
+                   isTypeDefLong == that.isTypeDefLong && 
+                   Objects.equals(type, that.type) && 
+                   Objects.equals(name, that.name) && 
+                   Objects.equals(extraDocumentation, that.extraDocumentation);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, name, isPointer, isConst, isAtom, extraDocumentation);
+            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, extraDocumentation);
         }
 
         @Override
         public String toString() {
-            return "[" + type + " " + name + (isPointer ? " isPointer" : "") + (isConst ? " isConst" : "") + (isAtom ? " isAtom" : "") + "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
+            return "[" + type + " " + name + 
+                (isPointer ? " isPointer" : "") + 
+                (isConst ? " isConst" : "") + 
+                (isAtom ? " isAtom" : "") + 
+                (isTypeDefInt ? " isTypeDefInt" : "") + 
+                (isTypeDefLong ? " isTypeDefLong" : "") + 
+                "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
         }
 
         public Optional<String> getExtraDocumentation() {

@@ -154,7 +154,7 @@ public class CreateStructs extends DefaultTask {
 
                     List<String> knownEnums = enums.stream().map(EnumDefinition::getName).toList();
 
-                    FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line, knownEnums, atoms);
+                    FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line, knownEnums, atoms, intTypedefs, longTypedefs);
 
                     functions.add(functionDefinition);
                     getLogger().lifecycle("Found function: {}", functionDefinition.getName());
