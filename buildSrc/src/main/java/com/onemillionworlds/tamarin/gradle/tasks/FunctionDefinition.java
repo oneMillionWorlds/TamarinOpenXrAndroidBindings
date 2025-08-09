@@ -70,10 +70,11 @@ public class FunctionDefinition {
         private final boolean isTypeDefInt;
         private final boolean isTypeDefLong;
         private final boolean isHandle;
+        private final boolean isFlag;
 
         private String extraDocumentation;
 
-        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong, boolean isHandle) {
+        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong, boolean isHandle, boolean isFlag) {
             this.type = type;
             this.name = name;
             this.isPointer = isPointer;
@@ -83,6 +84,7 @@ public class FunctionDefinition {
             this.isTypeDefInt = isTypeDefInt;
             this.isTypeDefLong = isTypeDefLong;
             this.isHandle = isHandle;
+            this.isFlag = isFlag;
         }
 
         public String getType() {
@@ -121,6 +123,10 @@ public class FunctionDefinition {
             return isHandle;
         }
 
+        public boolean isFlag() {
+            return isFlag;
+        }
+
         public String getHighLevelJavaType() {
             if (isPointer) {
                 if(type.equals("PFN_xrVoidFunction")){
@@ -135,7 +141,7 @@ public class FunctionDefinition {
                 if(type.equals("uint32_t") || isTypeDefInt){
                     return "IntBufferView";
                 }
-                if(isAtom || isTypeDefLong){
+                if(isAtom || isTypeDefLong || isFlag){
                     return "LongBufferView";
                 }
                 return getType() + ".Buffer";
@@ -149,8 +155,11 @@ public class FunctionDefinition {
                 if(isEnumType){
                     return type;
                 }
-                if(isAtom || isTypeDefLong){
+                if(isAtom || isTypeDefLong || isFlag){
                     return "long";
+                }
+                if(type.equals("float")){
+                    return "float";
                 }
                 throw new RuntimeException("Unexpected non pointer type: " + this);
             }
@@ -166,6 +175,7 @@ public class FunctionDefinition {
                    isTypeDefInt == that.isTypeDefInt && 
                    isTypeDefLong == that.isTypeDefLong && 
                    isHandle == that.isHandle && 
+                   isFlag == that.isFlag && 
                    Objects.equals(type, that.type) && 
                    Objects.equals(name, that.name) && 
                    Objects.equals(extraDocumentation, that.extraDocumentation);
@@ -173,7 +183,7 @@ public class FunctionDefinition {
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, isHandle, extraDocumentation);
+            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, isHandle, isFlag, extraDocumentation);
         }
 
         @Override
@@ -185,6 +195,7 @@ public class FunctionDefinition {
                 (isTypeDefInt ? " isTypeDefInt" : "") + 
                 (isTypeDefLong ? " isTypeDefLong" : "") + 
                 (isHandle ? " isHandle" : "") + 
+                (isFlag ? " isFlag" : "") + 
                 "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
         }
 

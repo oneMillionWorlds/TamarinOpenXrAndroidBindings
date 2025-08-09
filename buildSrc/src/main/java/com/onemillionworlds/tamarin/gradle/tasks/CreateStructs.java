@@ -8,6 +8,7 @@ import com.onemillionworlds.tamarin.gradle.tasks.generators.X10CGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.AtomParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.DefinePasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.EnumParser;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.FlagsParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.FunctionParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.HandleParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.IntTypeDefPasser;
@@ -82,13 +83,13 @@ public class CreateStructs extends DefaultTask {
         List<StructDefinition> structs = new ArrayList<>();
         List<EnumDefinition> enums = new ArrayList<>();
         List<FunctionDefinition> functions = new ArrayList<>();
-        Map<String, String> typedefs = new HashMap<>();
         List<String> atoms = new ArrayList<>();
         List<String> intTypedefs = new ArrayList<>();
         List<String> longTypedefs = new ArrayList<>();
         List<String> handles = new ArrayList<>();
+        List<String> flags = new ArrayList<>();
 
-        parseHeaderFile(header, constants, structs, enums, functions, typedefs, atoms, intTypedefs, longTypedefs, handles);
+        parseHeaderFile(header, constants, structs, enums, functions, atoms, intTypedefs, longTypedefs, handles, flags);
 
         // Log the parsed int and long typedefs
         getLogger().lifecycle("Found {} int typedefs:", intTypedefs.size());
@@ -107,12 +108,18 @@ public class CreateStructs extends DefaultTask {
             getLogger().lifecycle("  {}", handle);
         }
 
+        // Log the parsed flags
+        getLogger().lifecycle("Found {} flags:", flags.size());
+        for (String flag : flags) {
+            getLogger().lifecycle("  {}", flag);
+        }
+
         // Generate XR10Constants.java
         new ConstantsGenerator(getLogger(), constants).generate(output);
 
         // Generate struct classes
         for (StructDefinition struct : structs) {
-            new StructGenerator(getLogger(), struct, constants, enums, typedefs).generate(output);
+            new StructGenerator(getLogger(), struct, constants, enums, intTypedefs, longTypedefs).generate(output);
         }
 
         // Generate enum classes
@@ -129,28 +136,12 @@ public class CreateStructs extends DefaultTask {
         }
     }
 
-    private void parseHeaderFile(File headerFile, Map<String, String> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, Map<String, String> typedefs, List<String> atoms, List<String> intTypedefs, List<String> longTypedefs, List<String> handles) throws IOException {
+    private void parseHeaderFile(File headerFile, Map<String, String> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, List<String> atoms, List<String> intTypedefs, List<String> longTypedefs, List<String> handles, List<String> flags) throws IOException {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(headerFile))) {
             String line;
 
-            // Pattern for simple typedefs like "typedef int64_t XrTime;"
-            Pattern simpleTypedefPattern = Pattern.compile("typedef\\s+(\\w+)\\s+(Xr[A-Za-z]+);");
-
-            // Pattern for function declarations like "XRAPI_ATTR XrResult XRAPI_CALL xrFunctionName(parameters...);"
-            Pattern functionPattern = Pattern.compile("XRAPI_ATTR\\s+(\\w+)\\s+XRAPI_CALL\\s+(xr\\w+)\\s*\\(([^\\)]*)\\);");
-
             while ((line = reader.readLine()) != null) {
-                // Check for simple typedefs like "typedef int64_t XrTime;"
-                Matcher simpleTypedefMatcher = simpleTypedefPattern.matcher(line);
-                if (simpleTypedefMatcher.find()) {
-                    String baseType = simpleTypedefMatcher.group(1);
-                    String typedefName = simpleTypedefMatcher.group(2);
-                    typedefs.put(typedefName, baseType);
-                    getLogger().lifecycle("Found typedef: {} -> {}", typedefName, baseType);
-                    continue;
-                }
-
                 // Check if we're entering an enum
 
                 if(EnumParser.enumStartPattern.matcher(line).find()) {
@@ -162,7 +153,7 @@ public class CreateStructs extends DefaultTask {
 
                     List<String> knownEnums = enums.stream().map(EnumDefinition::getName).toList();
 
-                    FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line, knownEnums, atoms, intTypedefs, longTypedefs, handles);
+                    FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line, knownEnums, atoms, intTypedefs, longTypedefs, handles, flags);
 
                     functions.add(functionDefinition);
                     getLogger().lifecycle("Found function: {}", functionDefinition.getName());
@@ -184,11 +175,19 @@ public class CreateStructs extends DefaultTask {
                 // Parse int typedefs
                 IntTypeDefPasser.parseIntTypedef(line).ifPresent(intTypedefs::add);
 
+
+                if(line.contains("typedef int64_t XrTime;")){
+                    System.out.println("RJT found XrTime");
+                    System.out.println(LongTypeDefPasser.parseLongTypedef(line));
+                }
                 // Parse long typedefs
                 LongTypeDefPasser.parseLongTypedef(line).ifPresent(longTypedefs::add);
 
                 // Parse handle definitions
                 HandleParser.parseHandle(line).ifPresent(handles::add);
+
+                // Parse flag definitions
+                FlagsParser.parseFlags(line).ifPresent(flags::add);
 
                 if(StructParser.structStartPattern.matcher(line).find()) {
                     structs.add(StructParser.parseStruct(reader, line));

@@ -74,7 +74,7 @@ public class WrapperFunctionGenerator {
                     functionString.append("long " + paramName);
                 } else if (isEnum) {
                     functionString.append("int " + paramName);
-                } else if (param.isTypeDefLong()) {
+                } else if (param.isTypeDefLong() || param.isFlag()) {
                     functionString.append("long " + paramName);
                 } else {
                     functionString.append("int " + paramName); // Default to int for other types
