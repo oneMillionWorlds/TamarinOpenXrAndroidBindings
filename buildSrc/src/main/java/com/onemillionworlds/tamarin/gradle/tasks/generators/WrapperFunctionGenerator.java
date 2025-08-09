@@ -5,6 +5,8 @@ import com.onemillionworlds.tamarin.gradle.tasks.FunctionDefinition;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.X10Generator.HANDLE_TYPES;
+
 @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class WrapperFunctionGenerator {
 
@@ -50,6 +52,36 @@ public class WrapperFunctionGenerator {
         generateWrapperMethodBody(functionString, function);
 
         functionString.append("    }\n\n");
+
+        // Generate native method declaration
+        functionString.append("    public native " + returnType + " n" + functionName + "(");
+
+        // Generate parameter list for native method
+        for (int i = 0; i < function.getParameters().size(); i++) {
+            FunctionDefinition.FunctionParameter param = function.getParameters().get(i);
+            String paramType = param.getType();
+            String paramName = param.getName();
+            boolean isPointer = param.isPointer();
+            boolean isEnum = param.isEnumType();
+
+            if (isPointer) {
+                functionString.append("long " + paramName);
+            } else if (paramType.equals("uint32_t")) {
+                functionString.append("int " + paramName);
+            } else if (HANDLE_TYPES.contains(paramType)) {
+                functionString.append("int " + paramName);
+            } else if (isEnum) {
+                functionString.append("int " + paramName);
+            } else {
+                functionString.append("int " + paramName); // Default to int for other types
+            }
+
+            if (i < function.getParameters().size() - 1) {
+                functionString.append(", ");
+            }
+        }
+
+        functionString.append(");\n");
 
         return functionString.toString();
     }

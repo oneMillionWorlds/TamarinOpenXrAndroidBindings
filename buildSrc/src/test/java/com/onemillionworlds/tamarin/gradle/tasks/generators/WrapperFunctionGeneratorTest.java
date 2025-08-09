@@ -29,6 +29,8 @@ class WrapperFunctionGeneratorTest {
                         long propertiesAddress = properties == null ? MemoryUtil.NULL : properties.address();
                         return nxrEnumerateApiLayerProperties(propertyCapacityInput, propertyCountOutputAddress, propertiesAddress);
                     }
+                
+                    public native int nxrEnumerateApiLayerProperties(int propertyCapacityInput, long propertyCountOutput, long properties);
                 """;
 
         String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
@@ -58,6 +60,8 @@ class WrapperFunctionGeneratorTest {
                         long functionAddress = function == null ? MemoryUtil.NULL : function.address();
                         return nxrGetInstanceProcAddr(instance, nameAddress, functionAddress);
                     }
+                
+                    public native int nxrGetInstanceProcAddr(int instance, long name, long function);
                 """;
 
         String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
@@ -86,6 +90,8 @@ class WrapperFunctionGeneratorTest {
                         long bufferAddress = buffer == null ? MemoryUtil.NULL : buffer.address();
                         return nxrResultToString(instance, value.getValue(), bufferAddress);
                     }
+                
+                    public native int nxrResultToString(int instance, int value, long buffer);
                 """;
 
         String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
@@ -114,6 +120,8 @@ class WrapperFunctionGeneratorTest {
                         long systemIdAddress = systemId == null ? MemoryUtil.NULL : systemId.address();
                         return nxrGetSystem(instance, getInfoAddress, systemIdAddress);
                     }
+                
+                    public native int nxrGetSystem(int instance, long getInfo, long systemId);
                 """;
 
 
