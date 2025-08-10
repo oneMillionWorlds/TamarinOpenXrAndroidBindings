@@ -157,6 +157,9 @@ public class FunctionDefinition {
                 if(type.equals("uint64_t") || type.equals("int64_t") || isAtom || isTypeDefLong || isFlag){
                     return "LongBufferView";
                 }
+                if(type.equals("float")){
+                    return "FloatBufferView";
+                }
                 return getType() + ".Buffer";
             }else{
                 if(type.equals("uint32_t") || isTypeDefInt){
@@ -175,6 +178,34 @@ public class FunctionDefinition {
                     return "float";
                 }
                 throw new RuntimeException("Unexpected non pointer type: " + this);
+            }
+        }
+
+        /**
+         * This is the java method that has the native keyword
+         */
+        public String getLowLevelJavaType() {
+            String paramType = getType();
+            String paramName = getName();
+            boolean isPointer = isPointer();
+            boolean isAtom = isAtom();
+            boolean isStructByValue = isStructByValue();
+            boolean isEnum = isEnumType();
+
+            if (isPointer || isStructByValue ||isAtom) {
+                return "long";
+            } else if (paramType.equals("uint32_t") || isTypeDefInt()) {
+                return "int";
+            } else if (isHandle()) {
+                return "long";
+            } else if (isEnum) {
+                return "int";
+            } else if (isTypeDefLong() || isFlag()) {
+                return "long";
+            } else if (paramType.equals("float")) {
+                return "float";
+            } else {
+                return "int";
             }
         }
 

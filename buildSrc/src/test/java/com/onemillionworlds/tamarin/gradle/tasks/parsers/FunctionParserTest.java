@@ -16,7 +16,9 @@ class FunctionParserTest {
             "XrResult",
             "XrActionType",
             "XrEnvironmentBlendMode",
-            "XrViewConfigurationType"
+            "XrViewConfigurationType",
+            "XrPerfSettingsDomainEXT",
+            "XrPerfSettingsNotificationLevelEXT"
     );
 
     private static final List<String> knownAtoms = List.of(
@@ -256,6 +258,33 @@ class FunctionParserTest {
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "formatCapacityInput", false, false, false, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "formatCountOutput", true, false, false, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("int64_t", "formats", true, false, false, false, false, false, false, false, false));
+
+        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
+        assertEquals(expectedFunctionDefinition, functionDefinition);
+    }
+
+    /**
+     * This test tests float pointer parsing for the xrThermalGetTemperatureTrendEXT function.
+     */
+    @Test
+    void parseFunction_xrThermalGetTemperatureTrendEXT() throws IOException {
+        String functionString = """
+                XRAPI_ATTR XrResult XRAPI_CALL xrThermalGetTemperatureTrendEXT(
+                    XrSession                                   session,
+                    XrPerfSettingsDomainEXT                     domain,
+                    XrPerfSettingsNotificationLevelEXT*         notificationLevel,
+                    float*                                      tempHeadroom,
+                    float*                                      tempSlope);
+                """;
+
+        BufferedReader testFunctionReader = new BufferedReader(new StringReader(functionString));
+
+        FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrThermalGetTemperatureTrendEXT", "XrResult");
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPerfSettingsDomainEXT", "domain", false, false, true, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPerfSettingsNotificationLevelEXT", "notificationLevel", true, false, true, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("float", "tempHeadroom", true, false, false, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("float", "tempSlope", true, false, false, false, false, false, false, false, false));
 
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
         assertEquals(expectedFunctionDefinition, functionDefinition);

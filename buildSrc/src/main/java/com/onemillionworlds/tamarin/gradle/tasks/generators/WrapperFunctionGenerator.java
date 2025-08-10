@@ -58,26 +58,10 @@ public class WrapperFunctionGenerator {
             // Generate parameter list for native method
             for (int i = 0; i < function.getParameters().size(); i++) {
                 FunctionDefinition.FunctionParameter param = function.getParameters().get(i);
-                String paramType = param.getType();
+                String paramType = param.getLowLevelJavaType();
                 String paramName = param.getName();
-                boolean isPointer = param.isPointer();
-                boolean isAtom = param.isAtom();
-                boolean isStructByValue = param.isStructByValue();
-                boolean isEnum = param.isEnumType();
 
-                if (isPointer || isStructByValue ||isAtom) {
-                    functionString.append("long " + paramName);
-                } else if (paramType.equals("uint32_t") || param.isTypeDefInt()) {
-                    functionString.append("int " + paramName);
-                } else if (param.isHandle()) {
-                    functionString.append("long " + paramName);
-                } else if (isEnum) {
-                    functionString.append("int " + paramName);
-                } else if (param.isTypeDefLong() || param.isFlag()) {
-                    functionString.append("long " + paramName);
-                } else {
-                    functionString.append("int " + paramName); // Default to int for other types
-                }
+                functionString.append(paramType +  " " + paramName);
 
                 if (i < function.getParameters().size() - 1) {
                     functionString.append(", ");

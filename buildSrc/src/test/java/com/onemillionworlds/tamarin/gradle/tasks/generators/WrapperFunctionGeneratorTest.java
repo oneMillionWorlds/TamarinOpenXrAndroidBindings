@@ -255,5 +255,39 @@ class WrapperFunctionGeneratorTest {
         assertEquals(expectedValue.trim(), actualValue.trim());
     }
 
+    @Test
+    void generateWrapperFunction_xrThermalGetTemperatureTrendEXT() {
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrThermalGetTemperatureTrendEXT", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPerfSettingsDomainEXT", "domain", false, false, true, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPerfSettingsNotificationLevelEXT", "notificationLevel", true, false, true, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("float", "tempHeadroom", true, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("float", "tempSlope", true, false, false, false, false, false, false, false, false));
+
+        String expectedValue = """
+                    /**
+                     * Wrapper for xrThermalGetTemperatureTrendEXT OpenXR function
+                     *\s
+                     * @param session (XrSession)
+                     * @param domain (XrPerfSettingsDomainEXT)
+                     * @param notificationLevel (XrPerfSettingsNotificationLevelEXT)
+                     * @param tempHeadroom (float)
+                     * @param tempSlope (float)
+                     * @return The XrResult status code
+                     */
+                    public XrResult xrThermalGetTemperatureTrendEXT(long session, XrPerfSettingsDomainEXT domain, IntBufferView notificationLevel, FloatBufferView tempHeadroom, FloatBufferView tempSlope) {
+                        long notificationLevelAddress = notificationLevel == null ? MemoryUtil.NULL : notificationLevel.address();
+                        long tempHeadroomAddress = tempHeadroom == null ? MemoryUtil.NULL : tempHeadroom.address();
+                        long tempSlopeAddress = tempSlope == null ? MemoryUtil.NULL : tempSlope.address();
+                        return XrResult.fromValue(nxrThermalGetTemperatureTrendEXT(session, domain.getValue(), notificationLevelAddress, tempHeadroomAddress, tempSlopeAddress));
+                    }
+                
+                    public native int nxrThermalGetTemperatureTrendEXT(long session, int domain, long notificationLevel, long tempHeadroom, long tempSlope);
+                """;
+
+        String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
+
 
 }
