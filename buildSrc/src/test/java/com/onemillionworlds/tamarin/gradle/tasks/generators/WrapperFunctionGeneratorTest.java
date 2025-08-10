@@ -223,4 +223,37 @@ class WrapperFunctionGeneratorTest {
         String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
         assertEquals(expectedValue.trim(), actualValue.trim());
     }
+
+    @Test
+    void generateWrapperFunction_xrEnumerateSwapchainFormats() {
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrEnumerateSwapchainFormats", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "formatCapacityInput", false, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "formatCountOutput", true, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("int64_t", "formats", true, false, false, false, false, false, false, false, false));
+
+        String expectedValue = """
+                    /**
+                     * Wrapper for xrEnumerateSwapchainFormats OpenXR function
+                     *\s
+                     * @param session (XrSession)
+                     * @param formatCapacityInput (uint32_t)
+                     * @param formatCountOutput (uint32_t)
+                     * @param formats (int64_t)
+                     * @return The XrResult status code
+                     */
+                    public XrResult xrEnumerateSwapchainFormats(long session, int formatCapacityInput, IntBufferView formatCountOutput, LongBufferView formats) {
+                        long formatCountOutputAddress = formatCountOutput == null ? MemoryUtil.NULL : formatCountOutput.address();
+                        long formatsAddress = formats == null ? MemoryUtil.NULL : formats.address();
+                        return XrResult.fromValue(nxrEnumerateSwapchainFormats(session, formatCapacityInput, formatCountOutputAddress, formatsAddress));
+                    }
+                
+                    public native int nxrEnumerateSwapchainFormats(long session, int formatCapacityInput, long formatCountOutput, long formats);
+                """;
+
+        String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
+
+
 }

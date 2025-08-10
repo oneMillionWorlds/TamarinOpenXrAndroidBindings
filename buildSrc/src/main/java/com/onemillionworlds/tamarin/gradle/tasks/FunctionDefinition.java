@@ -151,10 +151,10 @@ public class FunctionDefinition {
                 if(isHandle){
                     return "PointerBufferView";
                 }
-                if(type.equals("uint32_t") || isTypeDefInt || isEnumType){
+                if(type.equals("uint32_t") || type.equals("int32_t") || isTypeDefInt || isEnumType){
                     return "IntBufferView";
                 }
-                if(isAtom || isTypeDefLong || isFlag){
+                if(type.equals("uint64_t") || type.equals("int64_t") || isAtom || isTypeDefLong || isFlag){
                     return "LongBufferView";
                 }
                 return getType() + ".Buffer";

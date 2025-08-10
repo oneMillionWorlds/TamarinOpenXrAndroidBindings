@@ -236,5 +236,30 @@ class FunctionParserTest {
         assertEquals(expectedFunctionDefinition, functionDefinition);
     }
 
+    /**
+     * This test tests pointer to long (int64_t*) parsing for the xrEnumerateSwapchainFormats function.
+     */
+    @Test
+    void parseFunction_xrEnumerateSwapchainFormats() throws IOException {
+        String functionString = """
+                XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateSwapchainFormats(
+                    XrSession                                   session,
+                    uint32_t                                    formatCapacityInput,
+                    uint32_t*                                   formatCountOutput,
+                    int64_t*                                    formats);
+                """;
+
+        BufferedReader testFunctionReader = new BufferedReader(new StringReader(functionString));
+
+        FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrEnumerateSwapchainFormats", "XrResult");
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "formatCapacityInput", false, false, false, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "formatCountOutput", true, false, false, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("int64_t", "formats", true, false, false, false, false, false, false, false, false));
+
+        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
+        assertEquals(expectedFunctionDefinition, functionDefinition);
+    }
+
 
 }
