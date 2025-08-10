@@ -203,7 +203,7 @@ public class FunctionDefinition {
                 return "long";
             } else if (isEnum) {
                 return "int";
-            } else if (isTypeDefLong() || isFlag()) {
+            } else if (isTypeDefLong() || isFlag() || paramType.equals("uint64_t")) {
                 return "long";
             } else if (paramType.equals("float")) {
                 return "float";
