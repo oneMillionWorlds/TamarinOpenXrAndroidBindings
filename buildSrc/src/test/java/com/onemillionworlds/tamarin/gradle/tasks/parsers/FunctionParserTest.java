@@ -47,7 +47,8 @@ class FunctionParserTest {
     private static final List<String> knownStructs = List.of(
             "XrApiLayerProperties",
             "XrSystemGetInfo",
-            "XrSpaceLocation"
+            "XrSpaceLocation",
+            "XrVector2f"
     );
 
     private static final String testFunction_pointers = """
@@ -158,6 +159,29 @@ class FunctionParserTest {
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSpace", "baseSpace", false, false, false, false, false, false, true, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrTime", "time", false, false, false, false, false, true, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSpaceLocation", "location", true, false, false, false, false, false, false, false, true));
+
+        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
+        assertEquals(expectedFunctionDefinition, functionDefinition);
+    }
+
+    @Test
+    void parseFunction_structByValue() throws IOException {
+        String functionString = """
+                XRAPI_ATTR XrResult XRAPI_CALL xrSetInputDeviceStateVector2fEXT(
+                    XrSession                                   session,
+                    XrPath                                      topLevelPath,
+                    XrPath                                      inputSourcePath,
+                    XrVector2f                                  state);
+                random other garbage
+                """;
+
+        BufferedReader testFunctionReader = new BufferedReader(new StringReader(functionString));
+
+        FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrSetInputDeviceStateVector2fEXT", "XrResult");
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "topLevelPath", false, false, false, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "inputSourcePath", false, false, false, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrVector2f", "state", false, false, false, false, false, false, false, false, true));
 
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
         assertEquals(expectedFunctionDefinition, functionDefinition);
