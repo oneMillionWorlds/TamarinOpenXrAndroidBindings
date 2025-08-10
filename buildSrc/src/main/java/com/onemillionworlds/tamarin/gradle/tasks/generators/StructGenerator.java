@@ -185,6 +185,8 @@ public class StructGenerator extends FileGenerator {
                     layoutBuilder.append("Layout.__member(4)");
                 } else if (fieldType.contains("*")) {
                     layoutBuilder.append("Layout.__member(POINTER_SIZE)");
+                } else if (fieldType.equals("int16_t")){
+                    layoutBuilder.append("Layout.__member(2)");
                 } else if (fieldType.equals("uint32_t")) {
                     layoutBuilder.append("Layout.__member(4)");
                 } else if (fieldType.equals("int32_t")) {
@@ -288,6 +290,8 @@ public class StructGenerator extends FileGenerator {
                     writer.write("    public float " + fieldName + "() { return memGetFloat(address() + " + fieldNameUpper + "); }\n");
                 } else if (fieldType.equals("double")) {
                     writer.write("    public double " + fieldName + "() { return memGetDouble(address() + " + fieldNameUpper + "); }\n");
+                } else if (fieldType.equals("int16_t")) {
+                    writer.write("    public double " + fieldName + "() { return memGetShort(address() + " + fieldNameUpper + "); }\n");
                 } else {
                     // For other types, assume it's a struct
                     writer.write("    public " + fieldType + " " + fieldName + "() { return " + fieldType + ".create(address() + " + fieldNameUpper + "); }\n");
@@ -639,6 +643,8 @@ public class StructGenerator extends FileGenerator {
                     writer.write("        public float " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                 } else if (fieldType.equals("double")) {
                     writer.write("        public double " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
+                } else if (fieldType.equals("int16_t")) {
+                    writer.write("        public short " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
                 } else {
                     // For other types, assume it's a struct
                     writer.write("        public " + fieldType + " " + fieldName + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");

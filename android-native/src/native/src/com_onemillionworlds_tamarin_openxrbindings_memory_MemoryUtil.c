@@ -153,6 +153,20 @@ JNIEXPORT jfloat JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory
 
 /*
  * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
+ * Method:    memGetShort
+ * Signature: (J)S
+ */
+JNIEXPORT jshort JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil_memGetShort
+  (JNIEnv *env, jclass cls, jlong address) {
+    void *ptr = (void*)(intptr_t)address;
+    if (ptr == NULL) {
+        return 0;
+    }
+    return *(jshort*)ptr;
+}
+
+/*
+ * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
  * Method:    memGetAddress
  * Signature: (J)J
  */

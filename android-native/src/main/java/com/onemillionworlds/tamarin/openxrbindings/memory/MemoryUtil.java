@@ -200,6 +200,14 @@ public class MemoryUtil {
     public static native float memGetFloat(long address);
 
     /**
+     * Gets a short value from the specified memory address.
+     * 
+     * @param address the memory address
+     * @return the short value
+     */
+    public static native short memGetShort(long address);
+
+    /**
      * Gets an address value from the specified memory address.
      * 
      * @param address the memory address
