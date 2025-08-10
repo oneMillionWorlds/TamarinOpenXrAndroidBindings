@@ -14,7 +14,9 @@ class FunctionParserTest {
 
     private static final List<String> knownEnums = List.of(
             "XrResult",
-            "XrActionType"
+            "XrActionType",
+            "XrEnvironmentBlendMode",
+            "XrViewConfigurationType"
     );
 
     private static final List<String> knownAtoms = List.of(
@@ -182,6 +184,32 @@ class FunctionParserTest {
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "topLevelPath", false, false, false, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "inputSourcePath", false, false, false, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrVector2f", "state", false, false, false, false, false, false, false, false, true));
+
+        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
+        assertEquals(expectedFunctionDefinition, functionDefinition);
+    }
+
+    @Test
+    void parseFunction_pointerToEnum() throws IOException {
+        String functionString = """
+                XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateEnvironmentBlendModes(
+                    XrInstance                                  instance,
+                    XrSystemId                                  systemId,
+                    XrViewConfigurationType                     viewConfigurationType,
+                    uint32_t                                    environmentBlendModeCapacityInput,
+                    uint32_t*                                   environmentBlendModeCountOutput,
+                    XrEnvironmentBlendMode*                     environmentBlendModes);
+                """;
+
+        BufferedReader testFunctionReader = new BufferedReader(new StringReader(functionString));
+
+        FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrEnumerateEnvironmentBlendModes", "XrResult");
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false, false, false, true, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemId", "systemId", false, false, false, true, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrViewConfigurationType", "viewConfigurationType", false, false, true, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "environmentBlendModeCapacityInput", false, false, false, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "environmentBlendModeCountOutput", true, false, false, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrEnvironmentBlendMode", "environmentBlendModes", true, false, true, false, false, false, false, false, false));
 
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
         assertEquals(expectedFunctionDefinition, functionDefinition);

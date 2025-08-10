@@ -48,9 +48,9 @@ public class FunctionDefinition {
     @Override
     public String toString() {
         return "FunctionDefinition{" +
-                "name='" + name + '\'' +
-                ", returnType='" + returnType + '\'' +
-                ", parameters=" + parameters +
+                "name='" + name + "'\n" +
+                ", returnType='" + returnType + "'\n"  +
+                ", parameters=\n" + parameters.stream().map(p -> "  " + p + "\n").reduce(String::concat).orElse("") +
                 '}';
     }
 
@@ -151,7 +151,7 @@ public class FunctionDefinition {
                 if(isHandle){
                     return "PointerBufferView";
                 }
-                if(type.equals("uint32_t") || isTypeDefInt){
+                if(type.equals("uint32_t") || isTypeDefInt || isEnumType){
                     return "IntBufferView";
                 }
                 if(isAtom || isTypeDefLong || isFlag){
@@ -210,7 +210,8 @@ public class FunctionDefinition {
                 (isTypeDefLong ? " isTypeDefLong" : "") + 
                 (isHandle ? " isHandle" : "") + 
                 (isFlag ? " isFlag" : "") + 
-                (isStruct ? " isStruct" : "") + 
+                (isStruct ? " isStruct" : "") +
+                (isEnumType ? " isEnumType" : "") +
                 "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
         }
 

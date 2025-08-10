@@ -40,6 +40,7 @@ public class X10Generator extends FileGenerator {
 
             writer.write("/**\n");
             writer.write(" * Main class for OpenXR bindings\n");
+            writer.write(" * @noinspection unused");
             writer.write(" */\n");
             writer.write("public class X10 {\n\n");
 

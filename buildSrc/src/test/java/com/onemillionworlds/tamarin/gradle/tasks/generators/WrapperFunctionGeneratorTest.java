@@ -188,4 +188,39 @@ class WrapperFunctionGeneratorTest {
         String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
         assertEquals(expectedValue.trim(), actualValue.trim());
     }
+
+    @Test
+    void generateWrapperFunction_xrEnumerateEnvironmentBlendModes() {
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrEnumerateEnvironmentBlendModes", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false, false, false, true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemId", "systemId", false, false, false, true, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrViewConfigurationType", "viewConfigurationType", false, false, true, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "environmentBlendModeCapacityInput", false, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "environmentBlendModeCountOutput", true, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrEnvironmentBlendMode", "environmentBlendModes", true, false, true, false, false, false, false, false, false));
+
+        String expectedValue = """
+                    /**
+                     * Wrapper for xrEnumerateEnvironmentBlendModes OpenXR function
+                     *\s
+                     * @param instance (XrInstance)
+                     * @param systemId (XrSystemId)
+                     * @param viewConfigurationType (XrViewConfigurationType)
+                     * @param environmentBlendModeCapacityInput (uint32_t)
+                     * @param environmentBlendModeCountOutput (uint32_t)
+                     * @param environmentBlendModes (XrEnvironmentBlendMode)
+                     * @return The XrResult status code
+                     */
+                    public XrResult xrEnumerateEnvironmentBlendModes(long instance, long systemId, XrViewConfigurationType viewConfigurationType, int environmentBlendModeCapacityInput, IntBufferView environmentBlendModeCountOutput, IntBufferView environmentBlendModes) {
+                        long environmentBlendModeCountOutputAddress = environmentBlendModeCountOutput == null ? MemoryUtil.NULL : environmentBlendModeCountOutput.address();
+                        long environmentBlendModesAddress = environmentBlendModes == null ? MemoryUtil.NULL : environmentBlendModes.address();
+                        return XrResult.fromValue(nxrEnumerateEnvironmentBlendModes(instance, systemId, viewConfigurationType.getValue(), environmentBlendModeCapacityInput, environmentBlendModeCountOutputAddress, environmentBlendModesAddress));
+                    }
+                
+                    public native int nxrEnumerateEnvironmentBlendModes(long instance, long systemId, int viewConfigurationType, int environmentBlendModeCapacityInput, long environmentBlendModeCountOutput, long environmentBlendModes);
+                """;
+
+        String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
 }

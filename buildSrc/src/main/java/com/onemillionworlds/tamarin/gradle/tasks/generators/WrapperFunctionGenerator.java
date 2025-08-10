@@ -24,7 +24,6 @@ public class WrapperFunctionGenerator {
 
             // Generate parameter documentation
             for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
-                String javaType = param.getHighLevelJavaType();
                 String cType = param.getType();
                 functionString.append("     * @param " + param.getName() + " (" + cType + ")" + param.getExtraDocumentation().map(ed -> " " + ed).orElse("") + "\n");
             }
@@ -62,10 +61,11 @@ public class WrapperFunctionGenerator {
                 String paramType = param.getType();
                 String paramName = param.getName();
                 boolean isPointer = param.isPointer();
+                boolean isAtom = param.isAtom();
                 boolean isStructByValue = param.isStructByValue();
                 boolean isEnum = param.isEnumType();
 
-                if (isPointer || isStructByValue) {
+                if (isPointer || isStructByValue ||isAtom) {
                     functionString.append("long " + paramName);
                 } else if (paramType.equals("uint32_t") || param.isTypeDefInt()) {
                     functionString.append("int " + paramName);
