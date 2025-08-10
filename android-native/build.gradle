@@ -107,6 +107,14 @@ tasks.withType(JavaCompile) {
     dependsOn createOpenXrStructs
 }
 
+// Ensure extractDebugAnnotations task depends on createOpenXrStructs
+android.libraryVariants.all { variant ->
+    tasks.matching { task -> task.name.startsWith("extract") && task.name.endsWith("Annotations") }.all { task ->
+        task.dependsOn createOpenXrStructs
+    }
+}
+
+
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api libs.commons.math3
