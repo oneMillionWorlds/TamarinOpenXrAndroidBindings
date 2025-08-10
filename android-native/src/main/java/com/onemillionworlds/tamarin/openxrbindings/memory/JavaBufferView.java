@@ -30,7 +30,7 @@ public class JavaBufferView<T> {
     /**
      * A native address of the raw bytes, used for passing to native functions.
      */
-    public long getAddress() {
+    public long address() {
         return address;
     }
 }

@@ -15,7 +15,7 @@ public class BufferAndAddress {
         return buffer;
     }
 
-    public long getAddress() {
+    public long address() {
         return address;
     }
 }

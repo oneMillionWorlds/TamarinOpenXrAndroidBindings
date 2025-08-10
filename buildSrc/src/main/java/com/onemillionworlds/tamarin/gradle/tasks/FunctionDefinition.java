@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.onemillionworlds.tamarin.gradle.tasks.generators.X10Generator.HANDLE_TYPES;
-
 /**
  * Class representing a function definition.
  */
@@ -71,10 +69,11 @@ public class FunctionDefinition {
         private final boolean isTypeDefLong;
         private final boolean isHandle;
         private final boolean isFlag;
+        private final boolean isStruct;
 
         private String extraDocumentation;
 
-        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong, boolean isHandle, boolean isFlag) {
+        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong, boolean isHandle, boolean isFlag, boolean isStructType) {
             this.type = type;
             this.name = name;
             this.isPointer = isPointer;
@@ -85,6 +84,7 @@ public class FunctionDefinition {
             this.isTypeDefLong = isTypeDefLong;
             this.isHandle = isHandle;
             this.isFlag = isFlag;
+            this.isStruct = isStructType;
         }
 
         public String getType() {
@@ -127,6 +127,10 @@ public class FunctionDefinition {
             return isFlag;
         }
 
+        public boolean isStruct() {
+            return isStruct;
+        }
+
         public String getHighLevelJavaType() {
             if (isPointer) {
                 if(type.equals("PFN_xrVoidFunction")){
@@ -135,7 +139,7 @@ public class FunctionDefinition {
                 if(type.equals("char")){
                     return "BufferAndAddress";
                 }
-                if(HANDLE_TYPES.contains(type)){
+                if(isHandle){
                     return "PointerBufferView";
                 }
                 if(type.equals("uint32_t") || isTypeDefInt){
@@ -176,6 +180,7 @@ public class FunctionDefinition {
                    isTypeDefLong == that.isTypeDefLong && 
                    isHandle == that.isHandle && 
                    isFlag == that.isFlag && 
+                   isStruct == that.isStruct && 
                    Objects.equals(type, that.type) && 
                    Objects.equals(name, that.name) && 
                    Objects.equals(extraDocumentation, that.extraDocumentation);
@@ -183,7 +188,7 @@ public class FunctionDefinition {
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, isHandle, isFlag, extraDocumentation);
+            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct, extraDocumentation);
         }
 
         @Override
@@ -196,6 +201,7 @@ public class FunctionDefinition {
                 (isTypeDefLong ? " isTypeDefLong" : "") + 
                 (isHandle ? " isHandle" : "") + 
                 (isFlag ? " isFlag" : "") + 
+                (isStruct ? " isStruct" : "") + 
                 "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
         }
 

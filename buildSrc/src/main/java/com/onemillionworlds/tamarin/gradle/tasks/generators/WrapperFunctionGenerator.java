@@ -2,10 +2,6 @@ package com.onemillionworlds.tamarin.gradle.tasks.generators;
 
 import com.onemillionworlds.tamarin.gradle.tasks.FunctionDefinition;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-
-import static com.onemillionworlds.tamarin.gradle.tasks.generators.X10Generator.HANDLE_TYPES;
 
 @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class WrapperFunctionGenerator {
