@@ -22,7 +22,8 @@ class FunctionParserTest {
     );
 
     private static final List<String> knownAtoms = List.of(
-            "XrSystemId"
+            "XrSystemId",
+            "XrControllerModelKeyMSFT"
     );
 
     private static final List<String> knownTypeDefInts = List.of(
@@ -285,6 +286,33 @@ class FunctionParserTest {
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPerfSettingsNotificationLevelEXT", "notificationLevel", true, false, true, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("float", "tempHeadroom", true, false, false, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("float", "tempSlope", true, false, false, false, false, false, false, false, false));
+
+        FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
+        assertEquals(expectedFunctionDefinition, functionDefinition);
+    }
+
+    /**
+     * This test tests byte pointer (uint8_t*) parsing for the xrLoadControllerModelMSFT function.
+     */
+    @Test
+    void parseFunction_xrLoadControllerModelMSFT() throws IOException {
+        String functionString = """
+                XRAPI_ATTR XrResult XRAPI_CALL xrLoadControllerModelMSFT(
+                    XrSession                                   session,
+                    XrControllerModelKeyMSFT                    modelKey,
+                    uint32_t                                    bufferCapacityInput,
+                    uint32_t*                                   bufferCountOutput,
+                    uint8_t*                                    buffer);
+                """;
+
+        BufferedReader testFunctionReader = new BufferedReader(new StringReader(functionString));
+
+        FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrLoadControllerModelMSFT", "XrResult");
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrControllerModelKeyMSFT", "modelKey", false, false, false, true, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "bufferCapacityInput", false, false, false, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "bufferCountOutput", true, false, false, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint8_t", "buffer", true, false, false, false, false, false, false, false, false));
 
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
         assertEquals(expectedFunctionDefinition, functionDefinition);

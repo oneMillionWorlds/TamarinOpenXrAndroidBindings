@@ -157,6 +157,9 @@ public class FunctionDefinition {
                 if(type.equals("uint64_t") || type.equals("int64_t") || isAtom || isTypeDefLong || isFlag){
                     return "LongBufferView";
                 }
+                if(type.equals("uint8_t")){
+                    return "BufferAndAddress";
+                }
                 if(type.equals("float")){
                     return "FloatBufferView";
                 }

@@ -289,5 +289,38 @@ class WrapperFunctionGeneratorTest {
         assertEquals(expectedValue.trim(), actualValue.trim());
     }
 
+    @Test
+    void generateWrapperFunction_xrLoadControllerModelMSFT() {
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrLoadControllerModelMSFT", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrControllerModelKeyMSFT", "modelKey", false, false, false, true, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "bufferCapacityInput", false, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "bufferCountOutput", true, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint8_t", "buffer", true, false, false, false, false, false, false, false, false));
+
+        String expectedValue = """
+                    /**
+                     * Wrapper for xrLoadControllerModelMSFT OpenXR function
+                     *\s
+                     * @param session (XrSession)
+                     * @param modelKey (XrControllerModelKeyMSFT)
+                     * @param bufferCapacityInput (uint32_t)
+                     * @param bufferCountOutput (uint32_t)
+                     * @param buffer (uint8_t)
+                     * @return The XrResult status code
+                     */
+                    public XrResult xrLoadControllerModelMSFT(long session, long modelKey, int bufferCapacityInput, IntBufferView bufferCountOutput, BufferAndAddress buffer) {
+                        long bufferCountOutputAddress = bufferCountOutput == null ? MemoryUtil.NULL : bufferCountOutput.address();
+                        long bufferAddress = buffer == null ? MemoryUtil.NULL : buffer.address();
+                        return XrResult.fromValue(nxrLoadControllerModelMSFT(session, modelKey, bufferCapacityInput, bufferCountOutputAddress, bufferAddress));
+                    }
+                
+                    public native int nxrLoadControllerModelMSFT(long session, long modelKey, int bufferCapacityInput, long bufferCountOutput, long buffer);
+                """;
+
+        String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
+
 
 }
