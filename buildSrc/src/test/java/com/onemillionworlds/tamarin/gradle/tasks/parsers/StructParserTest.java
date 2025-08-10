@@ -1,15 +1,13 @@
 package com.onemillionworlds.tamarin.gradle.tasks.parsers;
 
-import com.onemillionworlds.tamarin.gradle.tasks.CreateStructs;
+import com.onemillionworlds.tamarin.gradle.tasks.StructDefinition;
+import com.onemillionworlds.tamarin.gradle.tasks.StructField;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StructParserTest {
@@ -25,11 +23,11 @@ class StructParserTest {
 
         BufferedReader reader = new BufferedReader(new StringReader(structString));
 
-        CreateStructs.StructDefinition expectedStruct = new CreateStructs.StructDefinition("XrVector2f");
-        expectedStruct.addField(new CreateStructs.StructField("float", "x", null));
-        expectedStruct.addField(new CreateStructs.StructField("float", "y", null));
+        StructDefinition expectedStruct = new StructDefinition("XrVector2f");
+        expectedStruct.addField(new StructField("float", "x", null));
+        expectedStruct.addField(new StructField("float", "y", null));
 
-        CreateStructs.StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine());
+        StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine());
 
         assertEquals(expectedStruct, actualStruct);
     }
@@ -45,11 +43,11 @@ class StructParserTest {
 
         BufferedReader reader = new BufferedReader(new StringReader(structString));
 
-        CreateStructs.StructDefinition expectedStruct = new CreateStructs.StructDefinition("XrSwapchainImageBaseHeader");
-        expectedStruct.addField(new CreateStructs.StructField("XrStructureType", "type", null));
-        expectedStruct.addField(new CreateStructs.StructField("void*", "next", null));
+        StructDefinition expectedStruct = new StructDefinition("XrSwapchainImageBaseHeader");
+        expectedStruct.addField(new StructField("XrStructureType", "type", null));
+        expectedStruct.addField(new StructField("void*", "next", null));
 
-        CreateStructs.StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine());
+        StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine());
 
         assertEquals(expectedStruct, actualStruct);
     }

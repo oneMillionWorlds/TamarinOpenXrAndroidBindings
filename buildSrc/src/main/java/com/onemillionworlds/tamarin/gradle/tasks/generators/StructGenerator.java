@@ -1,7 +1,7 @@
 package com.onemillionworlds.tamarin.gradle.tasks.generators;
 
-import com.onemillionworlds.tamarin.gradle.tasks.CreateStructs.StructDefinition;
-import com.onemillionworlds.tamarin.gradle.tasks.CreateStructs.StructField;
+import com.onemillionworlds.tamarin.gradle.tasks.StructDefinition;
+import com.onemillionworlds.tamarin.gradle.tasks.StructField;
 import com.onemillionworlds.tamarin.gradle.tasks.EnumDefinition;
 import org.gradle.api.logging.Logger;
 
