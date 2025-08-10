@@ -59,8 +59,9 @@ public class FunctionParser {
                         }
                         String type = typeBuilder.toString().trim();
 
-                        // Check if it's a pointer
-                        boolean isPointer = name.startsWith("*") || type.endsWith("*");
+                        // Check if it's a pointer or double pointer
+                        boolean isDoublePointer = name.startsWith("**") || type.endsWith("**");
+                        boolean isPointer = isDoublePointer || name.startsWith("*") || type.endsWith("*");
                         name = name.replace("*", "");
                         type = type.replace("*", "");
 
@@ -89,7 +90,7 @@ public class FunctionParser {
                         boolean isHandle = knownHandles.contains(type);
                         boolean isFlag = knownFlags.contains(type);
                         boolean isStruct = knownStructs.contains(type);
-                        FunctionDefinition.FunctionParameter parameter = new FunctionDefinition.FunctionParameter(type, name, isPointer, isConst, isEnumType, isAtomType, isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct);
+                        FunctionDefinition.FunctionParameter parameter = new FunctionDefinition.FunctionParameter(type, name, isPointer, isConst, isEnumType, isAtomType, isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct, isDoublePointer);
                         if (extraDocumentation != null) {
                             parameter.setExtraDocumentation(extraDocumentation);
                         }

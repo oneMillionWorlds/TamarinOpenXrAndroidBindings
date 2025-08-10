@@ -70,10 +70,11 @@ public class FunctionDefinition {
         private final boolean isHandle;
         private final boolean isFlag;
         private final boolean isStruct;
+        private final boolean isDoublePointer;
 
         private String extraDocumentation;
 
-        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong, boolean isHandle, boolean isFlag, boolean isStructType) {
+        public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong, boolean isHandle, boolean isFlag, boolean isStructType, boolean isDoublePointer) {
             this.type = type;
             this.name = name;
             this.isPointer = isPointer;
@@ -85,6 +86,7 @@ public class FunctionDefinition {
             this.isHandle = isHandle;
             this.isFlag = isFlag;
             this.isStruct = isStructType;
+            this.isDoublePointer = isDoublePointer;
         }
 
         public String getType() {
@@ -129,6 +131,10 @@ public class FunctionDefinition {
 
         public boolean isStruct() {
             return isStruct;
+        }
+
+        public boolean isDoublePointer() {
+            return isDoublePointer;
         }
 
         /**
@@ -224,6 +230,7 @@ public class FunctionDefinition {
                    isHandle == that.isHandle && 
                    isFlag == that.isFlag && 
                    isStruct == that.isStruct && 
+                   isDoublePointer == that.isDoublePointer && 
                    Objects.equals(type, that.type) && 
                    Objects.equals(name, that.name) && 
                    Objects.equals(extraDocumentation, that.extraDocumentation);
@@ -231,7 +238,7 @@ public class FunctionDefinition {
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct, extraDocumentation);
+            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct, isDoublePointer, extraDocumentation);
         }
 
         @Override
@@ -246,6 +253,7 @@ public class FunctionDefinition {
                 (isFlag ? " isFlag" : "") + 
                 (isStruct ? " isStruct" : "") +
                 (isEnumType ? " isEnumType" : "") +
+                (isDoublePointer ? " isDoublePointer" : "") +
                 "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
         }
 
