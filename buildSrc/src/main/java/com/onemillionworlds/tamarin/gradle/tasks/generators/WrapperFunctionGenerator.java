@@ -24,7 +24,9 @@ public class WrapperFunctionGenerator {
 
             // Generate parameter documentation
             for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
-                functionString.append("     * @param " + param.getName() + param.getExtraDocumentation().map(ed -> " " + ed).orElse("") + "\n");
+                String javaType = param.getHighLevelJavaType();
+                String cType = param.getType();
+                functionString.append("     * @param " + param.getName() + " (" + cType + ")" + param.getExtraDocumentation().map(ed -> " " + ed).orElse("") + "\n");
             }
 
             functionString.append("     * @return " + "The error code (if any)" + "\n");

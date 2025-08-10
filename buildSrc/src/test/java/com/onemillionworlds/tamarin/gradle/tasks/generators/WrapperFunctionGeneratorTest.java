@@ -19,9 +19,9 @@ class WrapperFunctionGeneratorTest {
                     /**
                      * Wrapper for xrEnumerateApiLayerProperties OpenXR function
                      *\s
-                     * @param propertyCapacityInput
-                     * @param propertyCountOutput
-                     * @param properties
+                     * @param propertyCapacityInput (uint32_t)
+                     * @param propertyCountOutput (uint32_t)
+                     * @param properties (XrApiLayerProperties)
                      * @return The error code (if any)
                      */
                     public int xrEnumerateApiLayerProperties(int propertyCapacityInput, IntBufferView propertyCountOutput, XrApiLayerProperties.Buffer properties) {
@@ -50,9 +50,9 @@ class WrapperFunctionGeneratorTest {
                     /**
                      * Wrapper for xrGetInstanceProcAddr OpenXR function
                      *\s
-                     * @param instance
-                     * @param name
-                     * @param function
+                     * @param instance (XrInstance)
+                     * @param name (char)
+                     * @param function (PFN_xrVoidFunction)
                      * @return The error code (if any)
                      */
                     public int xrGetInstanceProcAddr(long instance, BufferAndAddress name, PointerBufferView function) {
@@ -81,9 +81,9 @@ class WrapperFunctionGeneratorTest {
                     /**
                      * Wrapper for xrResultToString OpenXR function
                      *\s
-                     * @param instance
-                     * @param value
-                     * @param buffer Required size XR_MAX_RESULT_STRING_SIZE
+                     * @param instance (XrInstance)
+                     * @param value (XrResult)
+                     * @param buffer (char) Required size XR_MAX_RESULT_STRING_SIZE
                      * @return The error code (if any)
                      */
                     public int xrResultToString(long instance, XrResult value, BufferAndAddress buffer) {
@@ -110,9 +110,9 @@ class WrapperFunctionGeneratorTest {
                     /**
                      * Wrapper for xrGetSystem OpenXR function
                      *\s
-                     * @param instance
-                     * @param getInfo
-                     * @param systemId
+                     * @param instance (XrInstance)
+                     * @param getInfo (XrSystemGetInfo)
+                     * @param systemId (XrSystemId)
                      * @return The error code (if any)
                      */
                     public int xrGetSystem(long instance, XrSystemGetInfo.Buffer getInfo, LongBufferView systemId) {
@@ -141,10 +141,10 @@ class WrapperFunctionGeneratorTest {
                     /**
                      * Wrapper for xrLocateSpace OpenXR function
                      *\s
-                     * @param space
-                     * @param baseSpace
-                     * @param time
-                     * @param location
+                     * @param space (XrSpace)
+                     * @param baseSpace (XrSpace)
+                     * @param time (XrTime)
+                     * @param location (XrSpaceLocation)
                      * @return The error code (if any)
                      */
                     public int xrLocateSpace(long space, long baseSpace, long time, XrSpaceLocation.Buffer location) {
@@ -171,10 +171,10 @@ class WrapperFunctionGeneratorTest {
                     /**
                      * Wrapper for xrSetInputDeviceStateVector2fEXT OpenXR function
                      *\s
-                     * @param session
-                     * @param topLevelPath
-                     * @param inputSourcePath
-                     * @param state
+                     * @param session (XrSession)
+                     * @param topLevelPath (XrPath)
+                     * @param inputSourcePath (XrPath)
+                     * @param state (XrVector2f)
                      * @return The error code (if any)
                      */
                     public int xrSetInputDeviceStateVector2fEXT(long session, long topLevelPath, long inputSourcePath, XrVector2f.Buffer state) {
