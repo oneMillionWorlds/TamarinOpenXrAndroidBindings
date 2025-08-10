@@ -131,8 +131,17 @@ public class FunctionDefinition {
             return isStruct;
         }
 
+        /**
+         * Structs by value are weird. On the java side we still treat them as pointers but then deferernce them on
+         * the native side to be passed by value. This is because we can't cope with passing structs by reference on the
+         * java side.
+         */
+        public boolean isStructByValue(){
+            return isStruct && !isPointer;
+        }
+
         public String getHighLevelJavaType() {
-            if (isPointer) {
+            if (isPointer || isStructByValue()) {
                 if(type.equals("PFN_xrVoidFunction")){
                     return "PointerBufferView";
                 }

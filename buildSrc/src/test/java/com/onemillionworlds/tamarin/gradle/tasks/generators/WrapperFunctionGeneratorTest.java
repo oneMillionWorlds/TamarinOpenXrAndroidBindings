@@ -158,4 +158,34 @@ class WrapperFunctionGeneratorTest {
         String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
         assertEquals(expectedValue.trim(), actualValue.trim());
     }
+
+    @Test
+    void generateWrapperFunction_xrSetInputDeviceStateVector2fEXT() {
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrSetInputDeviceStateVector2fEXT", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "topLevelPath", false, false, false, false, false, false, true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "inputSourcePath", false, false, false, false, false, false, true, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrVector2f", "state", false, false, false, false, false, false, false, false, true));
+
+        String expectedValue = """
+                    /**
+                     * Wrapper for xrSetInputDeviceStateVector2fEXT OpenXR function
+                     *\s
+                     * @param session
+                     * @param topLevelPath
+                     * @param inputSourcePath
+                     * @param state
+                     * @return The error code (if any)
+                     */
+                    public int xrSetInputDeviceStateVector2fEXT(long session, long topLevelPath, long inputSourcePath, XrVector2f.Buffer state) {
+                        long stateAddress = state == null ? MemoryUtil.NULL : state.address();
+                        return nxrSetInputDeviceStateVector2fEXT(session, topLevelPath, inputSourcePath, stateAddress);
+                    }
+
+                    public native int nxrSetInputDeviceStateVector2fEXT(long session, long topLevelPath, long inputSourcePath, long state);
+                """;
+
+        String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
 }

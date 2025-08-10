@@ -60,9 +60,10 @@ public class WrapperFunctionGenerator {
                 String paramType = param.getType();
                 String paramName = param.getName();
                 boolean isPointer = param.isPointer();
+                boolean isStructByValue = param.isStructByValue();
                 boolean isEnum = param.isEnumType();
 
-                if (isPointer) {
+                if (isPointer || isStructByValue) {
                     functionString.append("long " + paramName);
                 } else if (paramType.equals("uint32_t") || param.isTypeDefInt()) {
                     functionString.append("int " + paramName);
@@ -98,7 +99,8 @@ public class WrapperFunctionGenerator {
         for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
             String paramName = param.getName();
             boolean isPointer = param.isPointer();
-            if(isPointer){
+            boolean isStructByValue = param.isStructByValue();
+            if(isPointer || isStructByValue){
                 writer.append("        long " + paramName + "Address = " + paramName + " == null ? MemoryUtil.NULL : " + paramName + ".address();\n");
             }
 
@@ -113,8 +115,9 @@ public class WrapperFunctionGenerator {
             String paramType = param.getType();
             String paramName = param.getName();
             boolean isPointer = param.isPointer();
+            boolean isStructByValue = param.isStructByValue();
             boolean isEnum = param.isEnumType();
-            if(isPointer){
+            if(isPointer || isStructByValue){
                 writer.append(paramName + "Address");
             }else{
                 writer.append(paramName);
