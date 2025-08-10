@@ -198,7 +198,9 @@ public class CreateStructs extends DefaultTask {
                 FlagsParser.parseFlags(line).ifPresent(flags::add);
 
                 if(StructParser.structStartPattern.matcher(line).find()) {
-                    structs.add(StructParser.parseStruct(reader, line));
+                    List<String> knownEnums = enums.stream().map(EnumDefinition::getName).toList();
+                    List<String> knownStructs = structs.stream().map(StructDefinition::getName).toList();
+                    structs.add(StructParser.parseStruct(reader, line, knownEnums, atoms, intTypedefs, longTypedefs, handles, flags, knownStructs));
                 }
             }
         }
