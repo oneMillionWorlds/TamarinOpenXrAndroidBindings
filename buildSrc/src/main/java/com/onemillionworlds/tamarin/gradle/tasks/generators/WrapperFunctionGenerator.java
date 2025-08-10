@@ -15,7 +15,7 @@ public class WrapperFunctionGenerator {
             StringBuilder functionString = new StringBuilder();
 
             String functionName = function.getName();
-            String returnType = "int"; // all the methods just return a success/failure code
+            String returnType = "XrResult"; // all the methods just return a success/failure code
 
             // Generate wrapper method
             functionString.append("    /**\n");
@@ -29,7 +29,7 @@ public class WrapperFunctionGenerator {
                 functionString.append("     * @param " + param.getName() + " (" + cType + ")" + param.getExtraDocumentation().map(ed -> " " + ed).orElse("") + "\n");
             }
 
-            functionString.append("     * @return " + "The error code (if any)" + "\n");
+            functionString.append("     * @return " + "The XrResult status code" + "\n");
             functionString.append("     */\n");
 
             functionString.append("    public " + returnType + " " + functionName + "(");
@@ -54,7 +54,7 @@ public class WrapperFunctionGenerator {
             functionString.append("    }\n\n");
 
             // Generate native method declaration
-            functionString.append("    public native " + returnType + " n" + functionName + "(");
+            functionString.append("    public native int n" + functionName + "(");
 
             // Generate parameter list for native method
             for (int i = 0; i < function.getParameters().size(); i++) {
@@ -109,7 +109,7 @@ public class WrapperFunctionGenerator {
         }
 
         // Generate native method call
-        writer.append("        return n" + function.getName() + "(");
+        writer.append("        return XrResult.fromValue(n" + function.getName() + "(");
 
         // Generate arguments for native method call
         for (int i = 0; i < function.getParameters().size(); i++) {
@@ -132,7 +132,7 @@ public class WrapperFunctionGenerator {
             }
         }
 
-        writer.append(");\n");
+        writer.append("));\n");
     }
 
 }

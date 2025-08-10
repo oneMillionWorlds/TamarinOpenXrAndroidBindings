@@ -22,12 +22,12 @@ class WrapperFunctionGeneratorTest {
                      * @param propertyCapacityInput (uint32_t)
                      * @param propertyCountOutput (uint32_t)
                      * @param properties (XrApiLayerProperties)
-                     * @return The error code (if any)
+                     * @return The XrResult status code
                      */
-                    public int xrEnumerateApiLayerProperties(int propertyCapacityInput, IntBufferView propertyCountOutput, XrApiLayerProperties.Buffer properties) {
+                    public XrResult xrEnumerateApiLayerProperties(int propertyCapacityInput, IntBufferView propertyCountOutput, XrApiLayerProperties.Buffer properties) {
                         long propertyCountOutputAddress = propertyCountOutput == null ? MemoryUtil.NULL : propertyCountOutput.address();
                         long propertiesAddress = properties == null ? MemoryUtil.NULL : properties.address();
-                        return nxrEnumerateApiLayerProperties(propertyCapacityInput, propertyCountOutputAddress, propertiesAddress);
+                        return XrResult.fromValue(nxrEnumerateApiLayerProperties(propertyCapacityInput, propertyCountOutputAddress, propertiesAddress));
                     }
 
                     public native int nxrEnumerateApiLayerProperties(int propertyCapacityInput, long propertyCountOutput, long properties);
@@ -53,12 +53,12 @@ class WrapperFunctionGeneratorTest {
                      * @param instance (XrInstance)
                      * @param name (char)
                      * @param function (PFN_xrVoidFunction)
-                     * @return The error code (if any)
+                     * @return The XrResult status code
                      */
-                    public int xrGetInstanceProcAddr(long instance, BufferAndAddress name, PointerBufferView function) {
+                    public XrResult xrGetInstanceProcAddr(long instance, BufferAndAddress name, PointerBufferView function) {
                         long nameAddress = name == null ? MemoryUtil.NULL : name.address();
                         long functionAddress = function == null ? MemoryUtil.NULL : function.address();
-                        return nxrGetInstanceProcAddr(instance, nameAddress, functionAddress);
+                        return XrResult.fromValue(nxrGetInstanceProcAddr(instance, nameAddress, functionAddress));
                     }
 
                     public native int nxrGetInstanceProcAddr(long instance, long name, long function);
@@ -84,11 +84,11 @@ class WrapperFunctionGeneratorTest {
                      * @param instance (XrInstance)
                      * @param value (XrResult)
                      * @param buffer (char) Required size XR_MAX_RESULT_STRING_SIZE
-                     * @return The error code (if any)
+                     * @return The XrResult status code
                      */
-                    public int xrResultToString(long instance, XrResult value, BufferAndAddress buffer) {
+                    public XrResult xrResultToString(long instance, XrResult value, BufferAndAddress buffer) {
                         long bufferAddress = buffer == null ? MemoryUtil.NULL : buffer.address();
-                        return nxrResultToString(instance, value.getValue(), bufferAddress);
+                        return XrResult.fromValue(nxrResultToString(instance, value.getValue(), bufferAddress));
                     }
 
                     public native int nxrResultToString(long instance, int value, long buffer);
@@ -113,12 +113,12 @@ class WrapperFunctionGeneratorTest {
                      * @param instance (XrInstance)
                      * @param getInfo (XrSystemGetInfo)
                      * @param systemId (XrSystemId)
-                     * @return The error code (if any)
+                     * @return The XrResult status code
                      */
-                    public int xrGetSystem(long instance, XrSystemGetInfo.Buffer getInfo, LongBufferView systemId) {
+                    public XrResult xrGetSystem(long instance, XrSystemGetInfo.Buffer getInfo, LongBufferView systemId) {
                         long getInfoAddress = getInfo == null ? MemoryUtil.NULL : getInfo.address();
                         long systemIdAddress = systemId == null ? MemoryUtil.NULL : systemId.address();
-                        return nxrGetSystem(instance, getInfoAddress, systemIdAddress);
+                        return XrResult.fromValue(nxrGetSystem(instance, getInfoAddress, systemIdAddress));
                     }
 
                     public native int nxrGetSystem(long instance, long getInfo, long systemId);
@@ -145,11 +145,11 @@ class WrapperFunctionGeneratorTest {
                      * @param baseSpace (XrSpace)
                      * @param time (XrTime)
                      * @param location (XrSpaceLocation)
-                     * @return The error code (if any)
+                     * @return The XrResult status code
                      */
-                    public int xrLocateSpace(long space, long baseSpace, long time, XrSpaceLocation.Buffer location) {
+                    public XrResult xrLocateSpace(long space, long baseSpace, long time, XrSpaceLocation.Buffer location) {
                         long locationAddress = location == null ? MemoryUtil.NULL : location.address();
-                        return nxrLocateSpace(space, baseSpace, time, locationAddress);
+                        return XrResult.fromValue(nxrLocateSpace(space, baseSpace, time, locationAddress));
                     }
 
                     public native int nxrLocateSpace(long space, long baseSpace, long time, long location);
@@ -175,11 +175,11 @@ class WrapperFunctionGeneratorTest {
                      * @param topLevelPath (XrPath)
                      * @param inputSourcePath (XrPath)
                      * @param state (XrVector2f)
-                     * @return The error code (if any)
+                     * @return The XrResult status code
                      */
-                    public int xrSetInputDeviceStateVector2fEXT(long session, long topLevelPath, long inputSourcePath, XrVector2f.Buffer state) {
+                    public XrResult xrSetInputDeviceStateVector2fEXT(long session, long topLevelPath, long inputSourcePath, XrVector2f.Buffer state) {
                         long stateAddress = state == null ? MemoryUtil.NULL : state.address();
-                        return nxrSetInputDeviceStateVector2fEXT(session, topLevelPath, inputSourcePath, stateAddress);
+                        return XrResult.fromValue(nxrSetInputDeviceStateVector2fEXT(session, topLevelPath, inputSourcePath, stateAddress));
                     }
 
                     public native int nxrSetInputDeviceStateVector2fEXT(long session, long topLevelPath, long inputSourcePath, long state);
