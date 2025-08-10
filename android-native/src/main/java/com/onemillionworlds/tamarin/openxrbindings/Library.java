@@ -29,7 +29,7 @@ public class Library {
      */
     public int xrEnumerateApiLayerProperties(IntBufferView propertyCapacityInput, XrApiLayerProperties.Buffer properties){
         int remaining = properties == null ? 0 : propertyCapacityInput.getBufferView().remaining();
-        long propertyCapacityAddress = propertyCapacityInput.getAddress();
+        long propertyCapacityAddress = propertyCapacityInput.address();
         return nxrEnumerateApiLayerProperties(remaining, propertyCapacityAddress, properties == null ? MemoryUtil.NULL : properties.address);
     }
 
@@ -46,7 +46,7 @@ public class Library {
      */
     public int xrEnumerateInstanceExtensionProperties(String layerName, JavaBufferView<IntBuffer> propertyCapacityInput, XrExtensionProperties.Buffer properties){
         int remaining = properties == null ? 0 :  properties.remaining();
-        long propertyCapacityAddress = propertyCapacityInput.getAddress();
+        long propertyCapacityAddress = propertyCapacityInput.address();
         return nxrEnumerateInstanceExtensionProperties(layerName, remaining, propertyCapacityAddress, properties == null ? MemoryUtil.NULL : properties.address);
     }
 
