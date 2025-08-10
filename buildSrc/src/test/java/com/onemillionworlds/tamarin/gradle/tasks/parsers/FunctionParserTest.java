@@ -70,37 +70,46 @@ class FunctionParserTest {
             """;
 
 
+    /**
+     * This test tests pointers parsing for the xrEnumerateApiLayerProperties function.
+     */
     @Test
-    void parseFunction_pointers() throws IOException {
+    void parseFunction_xrEnumerateApiLayerProperties() throws IOException {
         BufferedReader testFunction1Reader = new BufferedReader(new StringReader(testFunction_pointers));
-
+    
         FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrEnumerateApiLayerProperties", "XrResult");
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCapacityInput", false, false, false, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCountOutput", true, false, false, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrApiLayerProperties", "properties", true, false, false, false, false, false, false, false, true));
-
+    
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
-
+    
         assertEquals(expectedFunctionDefinition, functionDefinition);
     }
-
+    
+    /**
+     * This test tests char array parsing for the xrGetInstanceProcAddr function.
+     */
     @Test
-    void parseFunction_charArray() throws IOException {
+    void parseFunction_xrGetInstanceProcAddr() throws IOException {
         BufferedReader testFunction1Reader = new BufferedReader(new StringReader(testFunction_charPointer));
-
+    
         FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrGetInstanceProcAddr", "XrResult");
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false, false, false, true, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "name", true, true, false, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("PFN_xrVoidFunction", "function", true, false, false, false, false, false, false, false, false));
-
+    
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
-
+    
         assertEquals(expectedFunctionDefinition, functionDefinition);
     }
-
+    
+    /**
+     * This test tests weird char buffer parsing for the xrResultToString function.
+     */
     @Test
-    void parseFunction_weirdCharBuffer() throws IOException {
-
+    void parseFunction_xrResultToString() throws IOException {
+    
         String xrResultToString = """
             XRAPI_ATTR XrResult XRAPI_CALL xrResultToString(
                 XrInstance                                  instance,
@@ -108,21 +117,24 @@ class FunctionParserTest {
                 char                                        buffer[XR_MAX_RESULT_STRING_SIZE]);
             random other garbage
             """;
-
+    
         BufferedReader testFunction1Reader = new BufferedReader(new StringReader(xrResultToString));
-
+    
         FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrResultToString", "XrResult");
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false, false, false, true, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrResult", "value", false, false, true, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("char", "buffer", true, false, false, false, false, false, false, false, false).setExtraDocumentation("Required size XR_MAX_RESULT_STRING_SIZE"));
-
+    
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
-
+    
         assertEquals(expectedFunctionDefinition, functionDefinition);
     }
-
+    
+    /**
+     * This test tests atom type parsing for the xrGetSystem function.
+     */
     @Test
-    void parseFunction_atomType() throws IOException {
+    void parseFunction_xrGetSystem() throws IOException {
         String functionString = """
                 XRAPI_ATTR XrResult XRAPI_CALL xrGetSystem(
                     XrInstance                                  instance,
@@ -130,22 +142,25 @@ class FunctionParserTest {
                     XrSystemId*                                 systemId);
                 random other garbage
                 """;
-
+    
         BufferedReader testFunction1Reader = new BufferedReader(new StringReader(functionString));
-
+    
         FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrGetSystem", "XrResult");
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false, false, false, true, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemGetInfo", "getInfo", true, true, false, false, false, false, false, false, true));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemId", "systemId", true, false, false, true, false, false, false, false, false));
-
+    
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunction1Reader, testFunction1Reader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
         assertEquals(expectedFunctionDefinition, functionDefinition);
     }
-
-
+    
+    
+    /**
+     * This test tests typedef long parsing for the xrLocateSpace function.
+     */
     @Test
-    void parseFunction_typeDefLong() throws IOException {
-
+    void parseFunction_xrLocateSpace() throws IOException {
+    
         String functionString = """
                 XRAPI_ATTR XrResult XRAPI_CALL xrLocateSpace(
                     XrSpace                                     space,
@@ -153,21 +168,24 @@ class FunctionParserTest {
                     XrTime                                      time,
                     XrSpaceLocation*                            location);
                 """;
-
+    
         BufferedReader testFunctionReader = new BufferedReader(new StringReader(functionString));
-
+    
         FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrLocateSpace", "XrResult");
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSpace", "space", false, false, false, false, false, false, true, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSpace", "baseSpace", false, false, false, false, false, false, true, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrTime", "time", false, false, false, false, false, true, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSpaceLocation", "location", true, false, false, false, false, false, false, false, true));
-
+    
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
         assertEquals(expectedFunctionDefinition, functionDefinition);
     }
-
+    
+    /**
+     * This test tests struct by value parsing for the xrSetInputDeviceStateVector2fEXT function.
+     */
     @Test
-    void parseFunction_structByValue() throws IOException {
+    void parseFunction_xrSetInputDeviceStateVector2fEXT() throws IOException {
         String functionString = """
                 XRAPI_ATTR XrResult XRAPI_CALL xrSetInputDeviceStateVector2fEXT(
                     XrSession                                   session,
@@ -176,21 +194,24 @@ class FunctionParserTest {
                     XrVector2f                                  state);
                 random other garbage
                 """;
-
+    
         BufferedReader testFunctionReader = new BufferedReader(new StringReader(functionString));
-
+    
         FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrSetInputDeviceStateVector2fEXT", "XrResult");
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "topLevelPath", false, false, false, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "inputSourcePath", false, false, false, false, false, false, false, false, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrVector2f", "state", false, false, false, false, false, false, false, false, true));
-
+    
         FunctionDefinition functionDefinition = FunctionParser.parseFunction(testFunctionReader, testFunctionReader.readLine(), knownEnums, knownAtoms, knownTypeDefInts, knownTypeDefLongs, knownHandles, knownFlags, knownStructs);
         assertEquals(expectedFunctionDefinition, functionDefinition);
     }
-
+    
+    /**
+     * This test tests pointer to enum parsing for the xrEnumerateEnvironmentBlendModes function.
+     */
     @Test
-    void parseFunction_pointerToEnum() throws IOException {
+    void parseFunction_xrEnumerateEnvironmentBlendModes() throws IOException {
         String functionString = """
                 XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateEnvironmentBlendModes(
                     XrInstance                                  instance,
