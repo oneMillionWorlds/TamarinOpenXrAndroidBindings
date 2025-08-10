@@ -168,7 +168,7 @@ public class FunctionDefinition {
                 if(isEnumType){
                     return type;
                 }
-                if(isAtom || isTypeDefLong || isFlag){
+                if(isAtom || isTypeDefLong || isFlag || type.equals("uint64_t") ){
                     return "long";
                 }
                 if(type.equals("float")){
