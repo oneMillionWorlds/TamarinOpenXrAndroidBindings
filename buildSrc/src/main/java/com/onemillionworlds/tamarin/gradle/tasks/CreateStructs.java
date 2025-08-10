@@ -157,8 +157,12 @@ public class CreateStructs extends DefaultTask {
 
                     FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line, knownEnums, atoms, intTypedefs, longTypedefs, handles, flags, knownStructs);
 
+                    if(functionDefinition.hasADoublePointer()){
+                        getLogger().lifecycle("Function {} has a double pointer, skipping", functionDefinition.getName());
+                    }
+
                     functions.add(functionDefinition);
-                    getLogger().lifecycle("Found function: {}", functionDefinition.getName());
+
                 }
 
                 // Parse #define constants

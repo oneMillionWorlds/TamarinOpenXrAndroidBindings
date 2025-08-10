@@ -54,6 +54,10 @@ public class FunctionDefinition {
                 '}';
     }
 
+    public boolean hasADoublePointer() {
+        return parameters.stream().anyMatch(FunctionParameter::isDoublePointer);
+    }
+
     /**
      * Class representing a function parameter.
      */
