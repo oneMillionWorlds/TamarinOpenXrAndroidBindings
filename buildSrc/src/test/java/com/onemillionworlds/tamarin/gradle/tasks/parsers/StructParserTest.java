@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StructParserTest {
 
@@ -23,26 +24,35 @@ class StructParserTest {
                 """;
 
         BufferedReader reader = new BufferedReader(new StringReader(structString));
-        String firstLine = reader.readLine();
-
-        System.out.println("[DEBUG_LOG] First line: '" + firstLine + "'");
 
         CreateStructs.StructDefinition expectedStruct = new CreateStructs.StructDefinition("XrVector2f");
         expectedStruct.addField(new CreateStructs.StructField("float", "x", null));
         expectedStruct.addField(new CreateStructs.StructField("float", "y", null));
 
-        CreateStructs.StructDefinition actualStruct = StructParser.parseStruct(reader, firstLine);
+        CreateStructs.StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine());
 
-        assertEquals(expectedStruct.getName(), actualStruct.getName());
-        assertEquals(expectedStruct.getFields().size(), actualStruct.getFields().size());
-
-        for (int i = 0; i < expectedStruct.getFields().size(); i++) {
-            CreateStructs.StructField expectedField = expectedStruct.getFields().get(i);
-            CreateStructs.StructField actualField = actualStruct.getFields().get(i);
-
-            assertEquals(expectedField.getType(), actualField.getType());
-            assertEquals(expectedField.getName(), actualField.getName());
-            assertEquals(expectedField.getArraySizeConstant(), actualField.getArraySizeConstant());
-        }
+        assertEquals(expectedStruct, actualStruct);
     }
+
+    @Test
+    void passStruct_mayAlias() throws IOException {
+        String structString = """
+                typedef struct XR_MAY_ALIAS XrSwapchainImageBaseHeader {
+                    XrStructureType       type;
+                    void* XR_MAY_ALIAS    next;
+                } XrSwapchainImageBaseHeader;
+                """;
+
+        BufferedReader reader = new BufferedReader(new StringReader(structString));
+
+        CreateStructs.StructDefinition expectedStruct = new CreateStructs.StructDefinition("XrSwapchainImageBaseHeader");
+        expectedStruct.addField(new CreateStructs.StructField("XrStructureType", "type", null));
+        expectedStruct.addField(new CreateStructs.StructField("void*", "next", null));
+
+        CreateStructs.StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine());
+
+        assertEquals(expectedStruct, actualStruct);
+    }
+
+
 }

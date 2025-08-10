@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -251,6 +252,25 @@ public class CreateStructs extends DefaultTask {
         public List<StructField> getFields() {
             return fields;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof StructDefinition that)) return false;
+            return Objects.equals(name, that.name) && Objects.equals(fields, that.fields);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, fields);
+        }
+
+        @Override
+        public String toString() {
+            return "StructDefinition{" +
+                    "name='" + name + "'\n" +
+                    ", fields=\n" + fields.stream().map(f -> "  " + f + "\n").reduce(String::concat).orElse("") +
+                    '}';
+        }
     }
 
     /**
@@ -277,6 +297,26 @@ public class CreateStructs extends DefaultTask {
 
         public String getArraySizeConstant() {
             return arraySizeConstant;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof StructField that)) return false;
+            return Objects.equals(type, that.type) && Objects.equals(name, that.name) && Objects.equals(arraySizeConstant, that.arraySizeConstant);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(type, name, arraySizeConstant);
+        }
+
+        @Override
+        public String toString() {
+            return "StructField{" +
+                    "type='" + type + "' " +
+                    ", name='" + name + "' " +
+                    ", arraySizeConstant='" + arraySizeConstant + "' " +
+                    '}';
         }
     }
 }

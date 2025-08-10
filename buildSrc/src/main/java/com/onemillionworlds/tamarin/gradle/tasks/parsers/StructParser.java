@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class StructParser {
 
-    public static Pattern structStartPattern = Pattern.compile("\\s*typedef\\s+struct\\s+(\\w+)\\s*\\{");
+    public static Pattern structStartPattern = Pattern.compile("\\s*typedef\\s+struct\\s+(?:XR_MAY_ALIAS\\s+)?(\\w+)\\s*\\{");
     static Pattern structEndPattern = Pattern.compile("\\s*\\}\\s+(\\w+);");
     static Pattern fieldPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s*\\*(?:\\s*XR_MAY_ALIAS)?)?(?:\\s+const)?)\\s+(\\w+)(?:\\[(XR_[A-Z_]+)\\])?;");
 
@@ -21,7 +21,7 @@ public class StructParser {
             String currentStructName = structStartMatcher.group(1);
             CreateStructs.StructDefinition structDefinition = new CreateStructs.StructDefinition(currentStructName);
             while (true) {
-                String nextLine = readerOngoing.readLine();
+                String nextLine = readerOngoing.readLine().replace("XR_MAY_ALIAS", "");
                 if (structEndPattern.matcher(nextLine).find()) {
                     return structDefinition;
                 }
