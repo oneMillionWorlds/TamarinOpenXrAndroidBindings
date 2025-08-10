@@ -158,10 +158,14 @@ public class CreateStructs extends DefaultTask {
                     FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line, knownEnums, atoms, intTypedefs, longTypedefs, handles, flags, knownStructs);
 
                     if(functionDefinition.hasADoublePointer()){
+                        // these double pointers are a pain to generate for and we don't plan to use them anyway
                         getLogger().lifecycle("Function {} has a double pointer, skipping", functionDefinition.getName());
+                    } else if(functionDefinition.getName().endsWith("META") || functionDefinition.getName().endsWith("METAFunc")){
+                        // these meta methods seem to fail to compile and we aren't going to use them anyway
+                        getLogger().lifecycle("Skipping META function {}", functionDefinition.getName());
+                    } else {
+                        functions.add(functionDefinition);
                     }
-
-                    functions.add(functionDefinition);
 
                 }
 
