@@ -20,6 +20,13 @@ public class StructField {
     private final boolean isStruct;
     private final boolean isDoublePointer;
 
+    // Constants for memory sizes
+    private static final String SIZE_1_BYTE = "1";
+    private static final String SIZE_2_BYTES = "2";
+    private static final String SIZE_4_BYTES = "4";
+    private static final String SIZE_8_BYTES = "8";
+    private static final String SIZE_POINTER = "POINTER_SIZE";
+
     public StructField(String type, String name, String arraySizeConstant, boolean isPointer, boolean isConst, 
                       boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong, 
                       boolean isHandle, boolean isFlag, boolean isStruct, boolean isDoublePointer) {
@@ -97,6 +104,115 @@ public class StructField {
      */
     public boolean isStructByValue() {
         return isStruct && !isPointer;
+    }
+
+    /**
+     * Returns the memory size of this field in bytes as a string.
+     * For special sizes like pointer size, returns the constant name (e.g., "POINTER_SIZE").
+     * 
+     * @return The memory size as a string
+     */
+    public String getMemorySize() {
+        if (type.equals("char")) return SIZE_1_BYTE;
+        if (type.equals("int16_t")) return SIZE_2_BYTES;
+        if (type.equals("float")) return SIZE_4_BYTES;
+        if (type.equals("double")) return SIZE_8_BYTES;
+        if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) return SIZE_4_BYTES;
+        if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") || 
+            isHandle || isAtom || isFlag || isTypeDefLong) return SIZE_8_BYTES;
+        if (type.equals("XrStructureType")) return SIZE_4_BYTES;
+        if (isPointer) return SIZE_POINTER;
+
+        // Special struct sizes
+        if (type.equals("XrVector3f")) return "12";
+        if (type.equals("XrQuaternionf")) return "16";
+        if (type.equals("XrPosef")) return "28";
+        if (type.equals("XrExtent2Df")) return "8";
+        if (type.equals("XrFovf")) return "16";
+        if (type.equals("XrApplicationInfo")) return "344";
+        if (type.equals("XrSystemGraphicsProperties")) return "12";
+        if (type.equals("XrSystemTrackingProperties")) return "8";
+        if (type.equals("XrFormFactor")) return "4";
+
+        // Default size for other types
+        return SIZE_4_BYTES;
+    }
+
+    /**
+     * Returns the Java type to use for this field in getters and setters.
+     * 
+     * @return The Java type as a string
+     */
+    public String getJavaType() {
+        if (arraySizeConstant != null) {
+            return "ByteBuffer";
+        } else if (isEnumType) {
+            return type;
+        } else if (isPointer) {
+            return "long";
+        } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
+            return "int";
+        } else if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") || 
+                  isHandle || isAtom || isFlag || isTypeDefLong) {
+            return "long";
+        } else if (type.equals("float")) {
+            return "float";
+        } else if (type.equals("double")) {
+            return "double";
+        } else if (type.equals("int16_t")) {
+            return "short";
+        } else if (isStructByValue()) {
+            return type;
+        }
+
+        // Default to the type itself for other types (likely structs)
+        return type;
+    }
+
+    /**
+     * Returns the memory access method to use for this field in getters.
+     * 
+     * @return The memory access method as a string
+     */
+    public String getMemoryAccessMethod() {
+        if (arraySizeConstant != null) {
+            if (type.equals("char")) {
+                return "memByteBuffer";
+            } else {
+                return "memByteBuffer";
+            }
+        } else if (isEnumType) {
+            return "memGetInt";
+        } else if (isPointer) {
+            return "memGetAddress";
+        } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
+            return "memGetInt";
+        } else if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") || 
+                  isHandle || isAtom || isFlag || isTypeDefLong) {
+            return "memGetLong";
+        } else if (type.equals("float")) {
+            return "memGetFloat";
+        } else if (type.equals("double")) {
+            return "memGetDouble";
+        } else if (type.equals("int16_t")) {
+            return "memGetShort";
+        }
+
+        // For other types, assume it's a struct
+        return "create";
+    }
+
+    /**
+     * Returns the layout member code for this field.
+     * 
+     * @return The layout member code as a string
+     */
+    public String getLayoutMember() {
+        if (arraySizeConstant != null) {
+            return "Layout.__array(" + SIZE_1_BYTE + ", " + arraySizeConstant + ")";
+        } else {
+            return "Layout.__member(" + getMemorySize() + ")";
+        }
     }
 
     @Override
