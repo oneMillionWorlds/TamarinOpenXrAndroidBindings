@@ -118,7 +118,7 @@ public class CreateStructs extends DefaultTask {
 
         // Generate struct classes
         for (StructDefinition struct : structs) {
-            new StructGenerator(getLogger(), struct, constants, enums, intTypedefs, longTypedefs, handles, atoms, flags).generate(output);
+            new StructGenerator(getLogger(), struct).generate(output);
         }
 
         // Generate enum classes
@@ -205,37 +205,5 @@ public class CreateStructs extends DefaultTask {
             }
         }
     }
-
-
-    /**
-     * Gets the size in bytes for a given type.
-     */
-    private String getSizeForType(String type) {
-        if (type.equals("char")) return "1";
-        if (type.equals("float")) return "4";
-        if (type.equals("double")) return "8";
-        if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32")) return "4";
-        if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion")) return "8";
-        return "4"; // Default size
-    }
-
-    /**
-     * Converts a struct name to its corresponding type constant.
-     * For example, "XrExtensionProperties" -> "XR_TYPE_EXTENSION_PROPERTIES"
-     */
-    private String getTypeConstantForStruct(String structName) {
-        // Convert camel case to underscore format for the type constant
-        String name = structName.substring(2); // Remove "Xr" prefix
-        StringBuilder typeConstantBuilder = new StringBuilder("XR_TYPE_");
-        for (int i = 0; i < name.length(); i++) {
-            char c = name.charAt(i);
-            if (i > 0 && Character.isUpperCase(c)) {
-                typeConstantBuilder.append('_');
-            }
-            typeConstantBuilder.append(Character.toUpperCase(c));
-        }
-        return typeConstantBuilder.toString();
-    }
-
 
 }

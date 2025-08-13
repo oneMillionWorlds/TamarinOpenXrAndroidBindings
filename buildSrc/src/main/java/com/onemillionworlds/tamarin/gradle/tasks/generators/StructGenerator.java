@@ -17,48 +17,10 @@ import java.util.Map;
  */
 public class StructGenerator extends FileGenerator {
     private final StructDefinition struct;
-    private final Map<String, String> constants;
 
-    // Lists of types that should be treated as 64-bit integers
-    private final List<String> handleTypes;
-    private final List<String> atomTypes;
-    private final List<String> flagTypes;
-
-    // List of enum definitions from the header file
-    private final List<EnumDefinition> enums;
-
-    private final List<String> intTypeDefs;
-    private final List<String> longTypeDefs;
-
-    public StructGenerator(Logger logger, StructDefinition struct, Map<String, String> constants, List<EnumDefinition> enums, 
-                          List<String> intTypeDefs, List<String> longTypeDefs, List<String> handleTypes, List<String> atomTypes, List<String> flagTypes) {
+    public StructGenerator(Logger logger, StructDefinition struct) {
         super(logger);
         this.struct = struct;
-        this.constants = constants;
-        this.enums = enums;
-        this.intTypeDefs = intTypeDefs;
-        this.longTypeDefs = longTypeDefs;
-        this.handleTypes = handleTypes;
-        this.atomTypes = atomTypes;
-        this.flagTypes = flagTypes;
-    }
-
-    /**
-     * Checks if the given type is an enum type.
-     * 
-     * @param type The type to check
-     * @return true if the type is an enum type, false otherwise
-     */
-    private boolean isEnumType(String type) {
-        logger.lifecycle("Checking if type '{}' is an enum type", type);
-        for (EnumDefinition enumDef : enums) {
-            if (enumDef.getName().equals(type)) {
-                logger.lifecycle("  Found match: '{}' is an enum type", type);
-                return true;
-            }
-        }
-        logger.lifecycle("  No match found: '{}' is not an enum type", type);
-        return false;
     }
 
     /**
@@ -69,16 +31,6 @@ public class StructGenerator extends FileGenerator {
      */
     private String getEnumImport(String type) {
         return "import com.onemillionworlds.tamarin.openxrbindings.enums." + type + ";\n";
-    }
-
-    /**
-     * Checks if the given type is a typedef of int64_t or uint64_t.
-     * 
-     * @param type The type to check
-     * @return true if the type is a typedef of int64_t or uint64_t, false otherwise
-     */
-    private boolean isLongTypeDef(String type) {
-        return longTypeDefs.contains(type);
     }
 
     @Override
@@ -92,15 +44,10 @@ public class StructGenerator extends FileGenerator {
             writer.write(" */\n");
             writer.write("package com.onemillionworlds.tamarin.openxrbindings;\n\n");
 
+            writer.write("import com.onemillionworlds.tamarin.openxrbindings.enums.*;\n");
             writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;\n");
             writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;\n");
 
-            // Add imports for enum types if needed
-            for (StructField field : struct.getFields()) {
-                if (isEnumType(field.getType())) {
-                    writer.write(getEnumImport(field.getType()));
-                }
-            }
 
             writer.write("\nimport java.nio.ByteBuffer;\n\n");
             writer.write("import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;\n");
