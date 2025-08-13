@@ -5,6 +5,7 @@ import com.onemillionworlds.tamarin.gradle.tasks.StructField;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,8 +16,7 @@ public class StructParser {
     static Pattern structEndPattern = Pattern.compile("\\s*\\}\\s+(\\w+);");
     static Pattern fieldPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s*\\*(?:\\s*XR_MAY_ALIAS)?)?(?:\\s+const)?)\\s+(\\w+)(?:\\[(XR_[A-Z_]+)\\])?;");
 
-
-    public static StructDefinition parseStruct(BufferedReader readerOngoing, String triggeringLine, List<String> knownEnumTypes, 
+    public static StructDefinition parseStruct(BufferedReader readerOngoing, String triggeringLine, List<String> knownEnumTypes,
                                               List<String> knownAtoms, List<String> knownTypeDefInts, List<String> knownTypeDefLongs, 
                                               List<String> knownHandles, List<String> knownFlags, List<String> knownStructs) throws IOException {
         Matcher structStartMatcher = structStartPattern.matcher(triggeringLine);
@@ -64,11 +64,5 @@ public class StructParser {
             throw new RuntimeException("Unexpected not a struct: " + triggeringLine);
         }
     }
-
-    /**
-     * Legacy method for backward compatibility
-     */
-    public static StructDefinition parseStruct(BufferedReader readerOngoing, String triggeringLine) throws IOException {
-        return parseStruct(readerOngoing, triggeringLine, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
-    }
+    
 }
