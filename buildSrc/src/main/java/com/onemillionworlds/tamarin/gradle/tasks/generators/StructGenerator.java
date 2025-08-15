@@ -15,6 +15,7 @@ import java.util.Map;
 /**
  * Generator for struct classes.
  */
+@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class StructGenerator extends FileGenerator {
     private final StructDefinition struct;
 
@@ -81,11 +82,22 @@ public class StructGenerator extends FileGenerator {
             String fieldName = field.getName();
             String arraySizeConstant = field.getArraySizeConstant();
 
-            if (arraySizeConstant != null) {
-                writer.append(" *     " + fieldType + " " + fieldName + "[" + arraySizeConstant + "];\n");
-            } else {
-                writer.append(" *     " + fieldType + " " + fieldName + ";\n");
+            writer.append(" *     ");
+
+            if(field.isConst()){
+                writer.append("const ");
             }
+            writer.append(fieldType);
+            if(field.isPointer()){
+                writer.append("*");
+            }
+            writer.append(" ");
+            writer.append(fieldName);
+
+            if(arraySizeConstant != null){
+                writer.append("[").append(arraySizeConstant).append("]");
+            }
+            writer.append(";\n");
         }
 
         writer.append(" * }</code></pre>\n");
@@ -215,23 +227,7 @@ public class StructGenerator extends FileGenerator {
 
         // Generate setters for type, next fields, and handle/atom types
         for (StructField field : struct.getFields()) {
-            String fieldType = field.getType();
-            String fieldName = field.getName();
-            String fieldNameUpper = fieldName.toUpperCase();
-
-            if (fieldName.equals("type")) {
-                writer.append("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
-                writer.append("    public " + struct.getName() + " " + fieldName + "(int value) { memPutInt(address() + " + fieldNameUpper + ", value); return this; }\n");
-            } else if (fieldName.equals("next")) {
-                writer.append("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
-                writer.append("    public " + struct.getName() + " " + fieldName + "(long value) { memPutAddress(address() + " + fieldNameUpper + ", value); return this; }\n");
-            } else if (field.isHandle() || field.isAtom() || field.isFlag() || field.isTypeDefLong()) {
-                writer.append("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
-                writer.append("    public " + struct.getName() + " " + fieldName + "(long value) { memPutLong(address() + " + fieldNameUpper + ", value); return this; }\n");
-            } else if (field.isEnumType()) {
-                writer.append("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
-                writer.append("    public " + struct.getName() + " " + fieldName + "(" + fieldType + " value) { memPutInt(address() + " + fieldNameUpper + ", value.getValue()); return this; }\n");
-            }
+            writer.append(generateFieldSetter(struct, field));
         }
 
         // Add type$Default method if the struct has a type field
@@ -252,27 +248,15 @@ public class StructGenerator extends FileGenerator {
         StringBuilder setParamsBuilder = new StringBuilder();
         StringBuilder setBodyBuilder = new StringBuilder();
 
-        List<StructField> settableFields = new ArrayList<>();
-        for (StructField field : struct.getFields()) {
-            if (field.getName().equals("type") || field.getName().equals("next")) {
-                settableFields.add(field);
-            }
-        }
 
-        for (int i = 0; i < settableFields.size(); i++) {
-            StructField field = settableFields.get(i);
-            String fieldType = field.getType();
+        for (int i=0;i<struct.getFields().size();i++ ) {
+            StructField field = struct.getFields().get(i);
+            String fieldJavaType = field.getJavaType();
             String fieldName = field.getName();
 
-            if (fieldType.equals("XrStructureType")) {
-                setParamsBuilder.append("        int ").append(fieldName);
-            } else if (fieldType.contains("*")) {
-                setParamsBuilder.append("        long ").append(fieldName);
-            } else {
-                setParamsBuilder.append("        ").append(fieldType).append(" ").append(fieldName);
-            }
+            setParamsBuilder.append("        " + fieldJavaType).append(" ").append(fieldName);
 
-            if (i < settableFields.size() - 1) {
+            if (i < struct.getFields().size() - 1) {
                 setParamsBuilder.append(",\n");
             } else {
                 setParamsBuilder.append("\n");
@@ -564,29 +548,25 @@ public class StructGenerator extends FileGenerator {
 
         // Generate setters for Buffer
         for (StructField field : struct.getFields()) {
-            String fieldType = field.getType();
+            String fieldType = field.getJavaType();
             String fieldName = field.getName();
 
-            if (fieldName.equals("type")) {
-                writer.append("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
-                writer.append("        public Buffer " + fieldName + "(int value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
-            } else if (fieldName.equals("next")) {
-                writer.append("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
-                writer.append("        public Buffer " + fieldName + "(long value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
-            } else if (field.isHandle() || field.isAtom() || field.isFlag() || field.isTypeDefLong()) {
-                writer.append("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
-                writer.append("        public Buffer " + fieldName + "(long value) { " + struct.getName() + ".n" + fieldName + "(address(), value); return this; }\n");
-            } else if (field.isEnumType()) {
-                writer.append("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
-                writer.append("        public Buffer " + fieldName + "(" + fieldType + " value) { " + struct.getName() + ".n" + fieldName + "(address(), value.getValue()); return this; }\n");
+            writer.append("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
+            writer.append("        public Buffer " + fieldName + "(" + fieldType + " value) { \n");
+            if(field.isEnumType()){
+                writer.append("            " + struct.getName() + ".n" + fieldName + "(address(), value.getValue());\n");
+            }else{
+                writer.append("            " + struct.getName() + ".n" + fieldName + "(address(), value);\n");
             }
+            writer.append("            return this;\n");
+            writer.append("        }\n");
         }
 
         // Add type$Default method for Buffer if the struct has a type field
         if (hasTypeField) {
             String typeConstant = getTypeConstantForStruct(struct.getName());
             writer.append("        /** Sets the specified value to the {@code type} field. */\n");
-            writer.append("        public Buffer type$Default() { return type(XrStructureType." + typeConstant + ".getValue()); }\n");
+            writer.append("        public Buffer type$Default() { return type(XrStructureType." + typeConstant + "); }\n");
         }
 
         writer.append("    }\n");
@@ -594,7 +574,55 @@ public class StructGenerator extends FileGenerator {
 
         return writer.toString();
     }
-    
+
+    private static String generateFieldSetter(StructDefinition struct, StructField field) {
+        StringBuilder writer = new StringBuilder();
+
+        String fieldName = field.getName();
+        String fieldNameUpper = fieldName.toUpperCase();
+        String fieldType = field.getJavaType();
+
+        if(fieldType.equals("ByteBuffer")){
+            // buffers don't have setters. You use the "getter" to get the ByteBuffer representation and
+            // then feed bytes into that
+            return "";
+        }
+
+        writer.append("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
+        writer.append("    public " + struct.getName() + " " + fieldName + "(" + fieldType + " value) { \n");
+
+        String valueMutator;
+
+        if(field.isEnumType()){
+            valueMutator = "value.getValue()";
+        } else if(field.isStruct()){
+            valueMutator = "value.address()";
+        }else{
+            valueMutator = "value";
+        }
+
+        String putMemMethod;
+        if(field.isPointer()) {
+            putMemMethod = "memPutAddress";
+        }else if (field.isEnumType()) {
+            putMemMethod = "memPutInt";
+        }else if(field.isStruct()){
+            putMemMethod = "memCopy";
+        }else{
+            putMemMethod = switch (fieldType) {
+                case "int" -> "memPutInt";
+                case "long" -> "memPutLong";
+                default -> throw new RuntimeException("Unsupported type: " + fieldType + " for field: " + fieldName + " in struct: " + struct.getName());
+            };
+        }
+
+        writer.append("        " + putMemMethod + "(address() + " + fieldNameUpper + ", " + valueMutator + ");\n");
+        writer.append("        return this;\n");
+        writer.append("    }\n");
+
+        return writer.toString();
+    }
+
     /**
      * Converts a struct name to its corresponding type constant.
      * For example, "XrExtensionProperties" -> "XR_TYPE_EXTENSION_PROPERTIES"

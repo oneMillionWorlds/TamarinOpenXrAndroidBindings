@@ -127,19 +127,36 @@ public class StructGeneratorTest {
                 public int priority() { return memGetInt(address() + PRIORITY); }
             
                 /** Sets the specified value to the {@code type} field. */
-                public XrActionSetCreateInfo type(int value) { memPutInt(address() + TYPE, value); return this; }
+                public XrActionSetCreateInfo type(XrStructureType value) {\s
+                    memPutInt(address() + TYPE, value.getValue());
+                    return this;
+                }
                 /** Sets the specified value to the {@code next} field. */
-                public XrActionSetCreateInfo next(long value) { memPutAddress(address() + NEXT, value); return this; }
+                public XrActionSetCreateInfo next(long value) {\s
+                    memPutAddress(address() + NEXT, value);
+                    return this;
+                }
+                /** Sets the specified value to the {@code priority} field. */
+                public XrActionSetCreateInfo priority(int value) {\s
+                    memPutInt(address() + PRIORITY, value);
+                    return this;
+                }
                 /** Sets the specified value to the {@code type} field. */
                 public XrActionSetCreateInfo type$Default() { return type(XrStructureType.XR_TYPE_ACTION_SET_CREATE_INFO.getValue()); }
             
                 /** Initializes this struct with the specified values. */
                 public XrActionSetCreateInfo set(
-                    int type,
-                    long next
+                    XrStructureType type,
+                    long next,
+                    ByteBuffer actionSetName,
+                    ByteBuffer localizedActionSetName,
+                    int priority
                 ) {
                     type(type);
                     next(next);
+                    actionSetName(actionSetName);
+                    localizedActionSetName(localizedActionSetName);
+                    priority(priority);
             
                     return this;
                 }
@@ -356,11 +373,32 @@ public class StructGeneratorTest {
                     public int priority() { return XrActionSetCreateInfo.npriority(address()); }
             
                     /** Sets the specified value to the {@code type} field. */
-                    public Buffer type(int value) { XrActionSetCreateInfo.ntype(address(), value); return this; }
+                    public Buffer type(XrStructureType value) {\s
+                        XrActionSetCreateInfo.ntype(address(), value.getValue());
+                        return this;
+                    }
                     /** Sets the specified value to the {@code next} field. */
-                    public Buffer next(long value) { XrActionSetCreateInfo.nnext(address(), value); return this; }
+                    public Buffer next(long value) {\s
+                        XrActionSetCreateInfo.nnext(address(), value);
+                        return this;
+                    }
+                    /** Sets the specified value to the {@code actionSetName} field. */
+                    public Buffer actionSetName(ByteBuffer value) {\s
+                        XrActionSetCreateInfo.nactionSetName(address(), value);
+                        return this;
+                    }
+                    /** Sets the specified value to the {@code localizedActionSetName} field. */
+                    public Buffer localizedActionSetName(ByteBuffer value) {\s
+                        XrActionSetCreateInfo.nlocalizedActionSetName(address(), value);
+                        return this;
+                    }
+                    /** Sets the specified value to the {@code priority} field. */
+                    public Buffer priority(int value) {\s
+                        XrActionSetCreateInfo.npriority(address(), value);
+                        return this;
+                    }
                     /** Sets the specified value to the {@code type} field. */
-                    public Buffer type$Default() { return type(XrStructureType.XR_TYPE_ACTION_SET_CREATE_INFO.getValue()); }
+                    public Buffer type$Default() { return type(XrStructureType.XR_TYPE_ACTION_SET_CREATE_INFO); }
                 }
             }
             """;
