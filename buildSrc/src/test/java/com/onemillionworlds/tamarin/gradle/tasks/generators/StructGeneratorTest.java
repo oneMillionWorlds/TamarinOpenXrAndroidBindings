@@ -142,7 +142,7 @@ public class StructGeneratorTest {
                     return this;
                 }
                 /** Sets the specified value to the {@code type} field. */
-                public XrActionSetCreateInfo type$Default() { return type(XrStructureType.XR_TYPE_ACTION_SET_CREATE_INFO.getValue()); }
+                public XrActionSetCreateInfo type$Default() { return type(XrStructureType.XR_TYPE_ACTION_SET_CREATE_INFO); }
             
                 /** Initializes this struct with the specified values. */
                 public XrActionSetCreateInfo set(

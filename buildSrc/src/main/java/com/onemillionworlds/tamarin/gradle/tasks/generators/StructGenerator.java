@@ -236,7 +236,7 @@ public class StructGenerator extends FileGenerator {
         if (hasTypeField) {
             String typeConstant = getTypeConstantForStruct(struct.getName());
             writer.append("    /** Sets the specified value to the {@code type} field. */\n");
-            writer.append("    public " + struct.getName() + " type$Default() { return type(XrStructureType." + typeConstant + ".getValue()); }\n");
+            writer.append("    public " + struct.getName() + " type$Default() { return type(XrStructureType." + typeConstant + "); }\n");
         }
 
         writer.append("\n");
@@ -577,7 +577,6 @@ public class StructGenerator extends FileGenerator {
 
     private static String generateFieldSetter(StructDefinition struct, StructField field) {
         StringBuilder writer = new StringBuilder();
-
         String fieldName = field.getName();
         String fieldNameUpper = fieldName.toUpperCase();
         String fieldType = field.getJavaType();
@@ -591,32 +590,38 @@ public class StructGenerator extends FileGenerator {
         writer.append("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
         writer.append("    public " + struct.getName() + " " + fieldName + "(" + fieldType + " value) { \n");
 
-        String valueMutator;
+        if(field.isStruct()){
+            writer.append("        memCopy(address() + " + fieldNameUpper + ", value.address(), "+ fieldType +".SIZEOF);\n");
+        }else {
 
-        if(field.isEnumType()){
-            valueMutator = "value.getValue()";
-        } else if(field.isStruct()){
-            valueMutator = "value.address()";
-        }else{
-            valueMutator = "value";
+            String valueMutator;
+
+            if (field.isEnumType()) {
+                valueMutator = "value.getValue()";
+            } else if (field.isStruct()) {
+                valueMutator = "value.address()";
+            } else {
+                valueMutator = "value";
+            }
+
+            String putMemMethod;
+            if (field.isPointer()) {
+                putMemMethod = "memPutAddress";
+            } else if (field.isEnumType()) {
+                putMemMethod = "memPutInt";
+            } else if (field.isStruct()) {
+                putMemMethod = "memCopy";
+            } else {
+                putMemMethod = switch (fieldType) {
+                    case "int" -> "memPutInt";
+                    case "long" -> "memPutLong";
+                    default ->
+                            throw new RuntimeException("Unsupported type: " + fieldType + " for field: " + fieldName + " in struct: " + struct.getName());
+                };
+            }
+
+            writer.append("        " + putMemMethod + "(address() + " + fieldNameUpper + ", " + valueMutator + ");\n");
         }
-
-        String putMemMethod;
-        if(field.isPointer()) {
-            putMemMethod = "memPutAddress";
-        }else if (field.isEnumType()) {
-            putMemMethod = "memPutInt";
-        }else if(field.isStruct()){
-            putMemMethod = "memCopy";
-        }else{
-            putMemMethod = switch (fieldType) {
-                case "int" -> "memPutInt";
-                case "long" -> "memPutLong";
-                default -> throw new RuntimeException("Unsupported type: " + fieldType + " for field: " + fieldName + " in struct: " + struct.getName());
-            };
-        }
-
-        writer.append("        " + putMemMethod + "(address() + " + fieldNameUpper + ", " + valueMutator + ");\n");
         writer.append("        return this;\n");
         writer.append("    }\n");
 
