@@ -606,27 +606,11 @@ public class StructGenerator extends FileGenerator {
 
             if (field.isEnumType()) {
                 valueMutator = "value.getValue()";
-            } else if (field.isStruct()) {
-                valueMutator = "value.address()";
             } else {
                 valueMutator = "value";
             }
 
-            String putMemMethod;
-            if (field.isPointer()) {
-                putMemMethod = "memPutAddress";
-            } else if (field.isEnumType()) {
-                putMemMethod = "memPutInt";
-            } else if (field.isStruct()) {
-                putMemMethod = "memCopy";
-            } else {
-                putMemMethod = switch (fieldType) {
-                    case "int" -> "memPutInt";
-                    case "long" -> "memPutLong";
-                    default ->
-                            throw new RuntimeException("Unsupported type: " + fieldType + " for field: " + fieldName + " in struct: " + struct.getName());
-                };
-            }
+            String putMemMethod = field.getMemorySetMethod();
 
             writer.append("        " + putMemMethod + "(address() + " + fieldNameUpper + ", " + valueMutator + ");\n");
         }

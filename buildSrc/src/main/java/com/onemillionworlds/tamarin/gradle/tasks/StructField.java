@@ -208,20 +208,20 @@ public class StructField {
                 return "memByteBuffer";
             }
         } else if (isEnumType) {
-            return "memSetInt";
+            return "memPutInt";
         } else if (isPointer) {
-            return "memSetAddress";
+            return "memPutAddress";
         } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
-            return "memSetInt";
+            return "memPutInt";
         } else if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") ||
                 isHandle || isAtom || isFlag || isTypeDefLong) {
-            return "memSetLong";
+            return "memPutLong";
         } else if (type.equals("float")) {
-            return "memSetFloat";
+            return "memPutFloat";
         } else if (type.equals("double")) {
-            return "memSetDouble";
+            return "memPutDouble";
         } else if (type.equals("int16_t")) {
-            return "memSetShort";
+            return "memPutShort";
         }
         throw new RuntimeException("Unexpected type: " + this);
     }
