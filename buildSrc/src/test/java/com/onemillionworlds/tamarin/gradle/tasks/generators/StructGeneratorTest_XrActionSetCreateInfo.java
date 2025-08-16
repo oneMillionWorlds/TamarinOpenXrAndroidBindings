@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class StructGeneratorTest {
+public class StructGeneratorTest_XrActionSetCreateInfo {
 
     // Static constants for known types
     private static final List<String> KNOWN_ENUM_TYPES =List.of("XrStructureType", "XrActionType");
