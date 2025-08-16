@@ -148,6 +148,8 @@ public class StructField {
             return "ByteBuffer";
         } else if (isEnumType) {
             return type;
+        } else if(isStruct && isPointer){
+            return type + ".Buffer";
         } else if (isPointer || type.startsWith("PFN")) {
             return "long";
         } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {

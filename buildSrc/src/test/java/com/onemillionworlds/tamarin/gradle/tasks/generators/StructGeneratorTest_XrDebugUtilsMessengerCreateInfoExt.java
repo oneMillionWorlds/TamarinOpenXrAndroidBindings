@@ -7,8 +7,14 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Collections;
-import java.util.List;
+
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_ATOMS;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_ENUM_TYPES;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_FLAGS;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_HANDLES;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_STRUCTS;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_TYPEDEF_INTS;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_TYPEDEF_LONGS;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,15 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * This is a pointer to a function
  */
 public class StructGeneratorTest_XrDebugUtilsMessengerCreateInfoExt {
-
-    // Static constants for known types
-    private static final List<String> KNOWN_ENUM_TYPES = List.of("XrStructureType");
-    private static final List<String> KNOWN_ATOMS = Collections.emptyList();
-    private static final List<String> KNOWN_TYPEDEF_INTS = Collections.emptyList();
-    private static final List<String> KNOWN_TYPEDEF_LONGS = Collections.emptyList();
-    private static final List<String> KNOWN_HANDLES = Collections.emptyList();
-    private static final List<String> KNOWN_FLAGS = List.of("XrDebugUtilsMessageSeverityFlagsEXT", "XrDebugUtilsMessageTypeFlagsEXT");
-    private static final List<String> KNOWN_STRUCTS = Collections.emptyList();
 
     private static final String expectedXrDebugUtilsMessengerCreateInfoEXT = """
             /*

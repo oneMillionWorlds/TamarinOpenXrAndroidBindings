@@ -2,15 +2,11 @@ package com.onemillionworlds.tamarin.gradle.tasks.generators;
 
 import com.onemillionworlds.tamarin.gradle.tasks.StructDefinition;
 import com.onemillionworlds.tamarin.gradle.tasks.StructField;
-import com.onemillionworlds.tamarin.gradle.tasks.EnumDefinition;
 import org.gradle.api.logging.Logger;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Generator for struct classes.
@@ -196,7 +192,7 @@ public class StructGenerator extends FileGenerator {
         // Generate getters
         for (StructField field : struct.getFields()) {
             try{
-                generateFieldGetter(field, writer);
+                generateFieldGetter(struct, field, writer);
             }catch (Exception e) {
                 throw new RuntimeException("Failed to generate getter for field " + field.getName() + " in struct " + struct.getName(), e);
             }
@@ -500,7 +496,7 @@ public class StructGenerator extends FileGenerator {
         return writer.toString();
     }
 
-    private static void generateFieldGetter(StructField field, StringBuilder writer) {
+    private static void generateFieldGetter(StructDefinition struct, StructField field, StringBuilder writer) {
         String fieldType = field.getType();
         String javaType = field.getJavaType();
         String fieldName = field.getName();
@@ -522,7 +518,15 @@ public class StructGenerator extends FileGenerator {
         } else if (fieldType.equals("int16_t")) {
             writer.append("    public short " + fieldName + "() { return memGetShort(address() + " + fieldNameUpper + "); }\n");
         } else if(field.isStruct()){
-            writer.append("    public " + javaType + " " + fieldName + "() { return " +javaType + ".create(address() + " + fieldNameUpper + "); }\n");
+            if(field.isPointer()){
+                String countMethodName = "count" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                writer.append("    public " + javaType + " " + fieldName + "() {\n");
+                writer.append("        long address = memGetAddress( address() + " + struct.getName() + "." + fieldNameUpper + ");\n" );
+                writer.append("        return " + fieldType + ".createSafe(address,"+ countMethodName +"());\n");
+                writer.append("    }\n");
+            }else {
+                writer.append("    public " + javaType + " " + fieldName + "() { return " + javaType + ".create(address() + " + fieldNameUpper + "); }\n");
+            }
         } else {
             String accessMethod = field.getMemoryAccessMethod();
 
@@ -537,14 +541,32 @@ public class StructGenerator extends FileGenerator {
     private static String generateUnsafeGetterAndSetter(StructDefinition struct, StructField field) {
         StringBuilder writer = new StringBuilder();
         String fieldName = field.getName();
+        String fieldType = field.getType();
         String javaType = field.getJavaType();
         String fieldNameUpper = fieldName.toUpperCase();
 
         writer.append("    /** Unsafe version of {@link #" + fieldName + "}. */\n");
 
         if(field.isStruct()) {
-            writer.append("    public static " + javaType + " n" + fieldName + "(long struct) { return " + javaType + ".create(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
-            writer.append("    public static void n" + fieldName + "(long struct, " + javaType + " value) { memCopy(value.address(), struct +" + struct.getName() + "." + fieldNameUpper + "," + javaType + ".SIZEOF); }\n");
+            if(field.isPointer()){
+                String countMethodName = "ncount" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+
+                writer.append("    public static " + javaType + " n" + fieldName + "(long struct) {\n");
+                writer.append("        int count = " + countMethodName + "(struct);\n");
+                writer.append("        return " + fieldType + ".createSafe(memGetAddress(struct + " + struct.getName() + "." + fieldNameUpper + "),count);\n" );
+                writer.append("    }\n");
+
+                writer.append("    public static void n" + fieldName + "(long struct, " + javaType + " value){\n");
+                writer.append("        long address = value == null ? NULL : value.address();\n");
+                writer.append("        memPutAddress(struct + " + fieldNameUpper + ", address);\n");
+                writer.append("        if(value!=null){\n");
+                writer.append("            "+countMethodName+ "(struct, value.remaining());\n");
+                writer.append("        }\n");
+                writer.append("    }\n");
+            }else {
+                writer.append("    public static " + javaType + " n" + fieldName + "(long struct) { return " + javaType + ".create(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
+                writer.append("    public static void n" + fieldName + "(long struct, " + javaType + " value) { memCopy(value.address(), struct +" + struct.getName() + "." + fieldNameUpper + "," + javaType + ".SIZEOF); }\n");
+            }
         } else if (javaType.equals("ByteBuffer")) {
             writer.append("    public static ByteBuffer n" + fieldName + "(long struct) { return memByteBuffer(struct + " + struct.getName() + "." + fieldNameUpper + ", " + field.getArraySizeConstant() + "); }\n");
             writer.append("    /** Unsafe version of {@link #" + fieldName + "String}. */\n");
@@ -582,7 +604,17 @@ public class StructGenerator extends FileGenerator {
         writer.append("    public " + struct.getName() + " " + fieldName + "(" + fieldType + " value) { \n");
 
         if(field.isStruct()){
-            writer.append("        memCopy(address() + " + fieldNameUpper + ", value.address(), "+ fieldType +".SIZEOF);\n");
+            if(field.isPointer()){
+                String countMethodName = "count" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+
+                writer.append("        long address = value == null ? NULL : value.address();\n");
+                writer.append("        memPutAddress(address() + " + fieldNameUpper + ", address);\n");
+                writer.append("        if(value!=null){\n");
+                writer.append("            "+countMethodName+ "(value.remaining());\n");
+                writer.append("        }\n");
+            }else{
+                writer.append("        memCopy(address() + " + fieldNameUpper + ", value.address(), "+ fieldType +".SIZEOF);\n");
+            }
         }else {
 
             String valueMutator;
