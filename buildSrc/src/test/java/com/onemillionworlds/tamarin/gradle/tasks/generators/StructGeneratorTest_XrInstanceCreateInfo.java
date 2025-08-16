@@ -37,6 +37,7 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
             import java.nio.ByteBuffer;
             
             import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
+            import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
             import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
             
             /**

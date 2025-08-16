@@ -35,6 +35,7 @@ public class StructGeneratorTest_XrActionSetCreateInfo {
             import java.nio.ByteBuffer;
             
             import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
+            import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
             import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
             
             /**
@@ -132,6 +133,16 @@ public class StructGeneratorTest_XrActionSetCreateInfo {
                 /** Sets the specified value to the {@code next} field. */
                 public XrActionSetCreateInfo next(long value) {\s
                     memPutAddress(address() + NEXT, value);
+                    return this;
+                }
+                /** Sets the specified value to the {@code actionSetName} field. */
+                public XrActionSetCreateInfo actionSetName(ByteBuffer value) {\s
+                    nactionSetName(address(), value);
+                    return this;
+                }
+                /** Sets the specified value to the {@code localizedActionSetName} field. */
+                public XrActionSetCreateInfo localizedActionSetName(ByteBuffer value) {\s
+                    nlocalizedActionSetName(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code priority} field. */
@@ -292,10 +303,20 @@ public class StructGeneratorTest_XrActionSetCreateInfo {
                 public static ByteBuffer nactionSetName(long struct) { return memByteBuffer(struct + XrActionSetCreateInfo.ACTIONSETNAME, XR_MAX_ACTION_SET_NAME_SIZE); }
                 /** Unsafe version of {@link #actionSetNameString}. */
                 public static String nactionSetNameString(long struct) { return memUTF8(struct + XrActionSetCreateInfo.ACTIONSETNAME); }
+                /** max length XR_MAX_ACTION_SET_NAME_SIZE */
+                public static void nactionSetName(long struct, ByteBuffer value) {
+                    byteBufferLengthCheck(value,XR_MAX_ACTION_SET_NAME_SIZE);
+                    memCopy(memAddress(value), struct + XrActionSetCreateInfo.ACTIONSETNAME, value.remaining());
+                }
                 /** Unsafe version of {@link #localizedActionSetName}. */
                 public static ByteBuffer nlocalizedActionSetName(long struct) { return memByteBuffer(struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME, XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE); }
                 /** Unsafe version of {@link #localizedActionSetNameString}. */
                 public static String nlocalizedActionSetNameString(long struct) { return memUTF8(struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME); }
+                /** max length XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE */
+                public static void nlocalizedActionSetName(long struct, ByteBuffer value) {
+                    byteBufferLengthCheck(value,XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE);
+                    memCopy(memAddress(value), struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME, value.remaining());
+                }
                 /** Unsafe version of {@link #priority}. */
                 public static int npriority(long struct) { return memGetInt(struct + XrActionSetCreateInfo.PRIORITY); }
                 public static void npriority(long struct, int value) { memPutInt(struct + XrActionSetCreateInfo.PRIORITY, value); }

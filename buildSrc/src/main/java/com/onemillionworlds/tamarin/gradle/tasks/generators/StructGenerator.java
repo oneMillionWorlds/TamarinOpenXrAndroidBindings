@@ -60,6 +60,7 @@ public class StructGenerator extends FileGenerator {
 
         writer.append("\nimport java.nio.ByteBuffer;\n\n");
         writer.append("import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;\n");
+        writer.append("import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;\n");
         writer.append("import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;\n");
 
         writer.append("\n");
@@ -571,6 +572,18 @@ public class StructGenerator extends FileGenerator {
             writer.append("    public static ByteBuffer n" + fieldName + "(long struct) { return memByteBuffer(struct + " + struct.getName() + "." + fieldNameUpper + ", " + field.getArraySizeConstant() + "); }\n");
             writer.append("    /** Unsafe version of {@link #" + fieldName + "String}. */\n");
             writer.append("    public static String n" + fieldName + "String(long struct) { return memUTF8(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
+
+            if(field.getArraySizeConstant() != null) {
+                writer.append("    /** max length " + field.getArraySizeConstant() + " */\n");
+            }
+
+            writer.append("    public static void n" + fieldName + "(long struct, ByteBuffer value) {\n");
+            if(field.getArraySizeConstant() != null) {
+                writer.append("        byteBufferLengthCheck(value," + field.getArraySizeConstant() + ");\n");
+            }
+
+            writer.append("        memCopy(memAddress(value), struct + " + struct.getName() + "." + fieldNameUpper + ", value.remaining());\n");
+            writer.append("    }\n");
         }else {
             String accessMethod = field.getMemoryAccessMethod();
             String setMethod = field.getMemorySetMethod();
@@ -594,16 +607,13 @@ public class StructGenerator extends FileGenerator {
         String fieldNameUpper = fieldName.toUpperCase();
         String fieldType = field.getJavaType();
 
-        if(fieldType.equals("ByteBuffer")){
-            // buffers don't have setters. You use the "getter" to get the ByteBuffer representation and
-            // then feed bytes into that
-            return "";
-        }
 
         writer.append("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
         writer.append("    public " + struct.getName() + " " + fieldName + "(" + fieldType + " value) { \n");
-
-        if(field.isStruct()){
+        if(fieldType.equals("ByteBuffer")){
+            // buffers are weird, they are a mem copy instead
+            writer.append("        n"+fieldName+"(address(), value);\n");
+        }else if(field.isStruct()){
             if(field.isPointer()){
                 String countMethodName = "count" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
