@@ -286,10 +286,10 @@ public class StructGeneratorTest {
             
                 /** Unsafe version of {@link #type}. */
                 public static int ntype(long struct) { return memGetInt(struct + XrActionSetCreateInfo.TYPE); }
-                public static void ntype(long struct, int value ) { return memPutInt(struct + XrActionSetCreateInfo.TYPE, value); }
+                public static void ntype(long struct, int value ) { memPutInt(struct + XrActionSetCreateInfo.TYPE, value); }
                 /** Unsafe version of {@link #next}. */
                 public static long nnext(long struct) { return memGetAddress(struct + XrActionSetCreateInfo.NEXT); }
-                public static void nnext(long struct, long value) { return memPutAddress(struct + XrActionSetCreateInfo.NEXT, value); }
+                public static void nnext(long struct, long value) { memPutAddress(struct + XrActionSetCreateInfo.NEXT, value); }
                 /** Unsafe version of {@link #actionSetName}. */
                 public static ByteBuffer nactionSetName(long struct) { return memByteBuffer(struct + XrActionSetCreateInfo.ACTIONSETNAME, XR_MAX_ACTION_SET_NAME_SIZE); }
                 /** Unsafe version of {@link #actionSetNameString}. */
@@ -300,12 +300,8 @@ public class StructGeneratorTest {
                 public static String nlocalizedActionSetNameString(long struct) { return memUTF8(struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME); }
                 /** Unsafe version of {@link #priority}. */
                 public static int npriority(long struct) { return memGetInt(struct + XrActionSetCreateInfo.PRIORITY); }
-                public static void npriority(long struct, int value) { return memPutInt(struct + XrActionSetCreateInfo.PRIORITY, value); }
+                public static void npriority(long struct, int value) { memPutInt(struct + XrActionSetCreateInfo.PRIORITY, value); }
             
-                /** Unsafe version of {@link #type(XrStructureType) type}. */
-                public static void ntype(long struct, int value) { memPutInt(struct + XrActionSetCreateInfo.TYPE, value); }
-                /** Unsafe version of {@link #next(long) next}. */
-                public static void nnext(long struct, long value) { memPutAddress(struct + XrActionSetCreateInfo.NEXT, value); }
             
                 // -----------------------------------
             

@@ -385,23 +385,6 @@ public class StructGenerator extends FileGenerator {
 
         writer.append("\n");
 
-        // Generate unsafe setters for type, next fields, and handle/atom types
-        for (StructField field : struct.getFields()) {
-            String javaType = field.getJavaType();
-            String fieldName = field.getName();
-
-            if (field.isEnumType()) {
-                writer.append("    /** Unsafe version of {@link #" + fieldName + "("+ javaType + ") " + fieldName + "}. */\n");
-                writer.append("    public static void n" + fieldName + "(long struct, int value) { memPutInt(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
-            } else if (fieldName.equals("next")) {
-                writer.append("    /** Unsafe version of {@link #" + fieldName + "(long) " + fieldName + "}. */\n");
-                writer.append("    public static void n" + fieldName + "(long struct, long value) { memPutAddress(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
-            } else if (field.isHandle() || field.isAtom() || field.isFlag() || field.isTypeDefLong()) {
-                writer.append("    /** Unsafe version of {@link #" + fieldName + "(long) " + fieldName + "}. */\n");
-                writer.append("    public static void n" + fieldName + "(long struct, long value) { memPutLong(struct + " + struct.getName() + "." + fieldName.toUpperCase() + ", value); }\n");
-            }
-        }
-
         writer.append("\n");
         writer.append("    // -----------------------------------\n\n");
 
@@ -572,10 +555,10 @@ public class StructGenerator extends FileGenerator {
 
             if (field.isEnumType()) {
                 writer.append("    public static int n" + fieldName + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
-                writer.append("    public static void n" + fieldName + "(long struct, int value ) { return " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
+                writer.append("    public static void n" + fieldName + "(long struct, int value ) { " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
             } else {
                 writer.append("    public static " + javaType + " n" + fieldName + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
-                writer.append("    public static void n" + fieldName + "(long struct, " + javaType  + " value) { return " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
+                writer.append("    public static void n" + fieldName + "(long struct, " + javaType  + " value) { " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
             }
         }
 
