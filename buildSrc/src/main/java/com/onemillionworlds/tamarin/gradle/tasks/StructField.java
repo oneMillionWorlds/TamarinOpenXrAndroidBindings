@@ -121,7 +121,7 @@ public class StructField {
         if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") || 
             isHandle || isAtom || isFlag || isTypeDefLong) return SIZE_8_BYTES;
         if (type.equals("XrStructureType")) return SIZE_4_BYTES;
-        if (isPointer) return SIZE_POINTER;
+        if (isPointer || type.startsWith("PFN")) return SIZE_POINTER;
 
         // Special struct sizes
         if (type.equals("XrVector3f")) return "12";
@@ -148,7 +148,7 @@ public class StructField {
             return "ByteBuffer";
         } else if (isEnumType) {
             return type;
-        } else if (isPointer) {
+        } else if (isPointer || type.startsWith("PFN")) {
             return "long";
         } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
             return "int";
@@ -183,7 +183,7 @@ public class StructField {
             }
         } else if (isEnumType) {
             return "memGetInt";
-        } else if (isPointer) {
+        } else if (isPointer || type.startsWith("PFN")) {
             return "memGetAddress";
         } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
             return "memGetInt";
@@ -209,7 +209,7 @@ public class StructField {
             }
         } else if (isEnumType) {
             return "memPutInt";
-        } else if (isPointer) {
+        } else if (isPointer || type.startsWith("PFN")) {
             return "memPutAddress";
         } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
             return "memPutInt";

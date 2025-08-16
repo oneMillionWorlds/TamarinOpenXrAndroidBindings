@@ -32,21 +32,21 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
              * This file is auto-generated. DO NOT EDIT.
              */
             package com.onemillionworlds.tamarin.openxrbindings;
-
+            
             import com.onemillionworlds.tamarin.openxrbindings.enums.*;
             import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
             import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
-
+            
             import java.nio.ByteBuffer;
-
+            
             import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
             import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
-
+            
             /**
              * Structure specifying instance create info.
-             * 
+             *\s
              * <h3>Layout</h3>
-             * 
+             *\s
              * <pre><code>
              * struct XrInstanceCreateInfo {
              *     XrStructureType type;
@@ -61,13 +61,13 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
              * @noinspection unused
              */
             public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
-
+            
                 /** The struct size in bytes. */
                 public static final int SIZEOF;
-
+            
                 /** The struct alignment in bytes. */
                 public static final int ALIGNOF;
-
+            
                 /** The struct member offsets. */
                 public static final int
                     TYPE,
@@ -78,7 +78,7 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                     ENABLEDAPILAYERNAMES,
                     ENABLEDEXTENSIONCOUNT,
                     ENABLEDEXTENSIONNAMES;
-
+            
                 static {
                     Layout layout = Layout.__struct(
                         Layout.__member(4),
@@ -90,10 +90,10 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                         Layout.__member(4),
                         Layout.__member(POINTER_SIZE)
                     );
-
+            
                     SIZEOF = layout.getSize();
                     ALIGNOF = layout.getAlignment();
-
+            
                     TYPE = layout.offsetof(0);
                     NEXT = layout.offsetof(1);
                     CREATEFLAGS = layout.offsetof(2);
@@ -103,16 +103,16 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                     ENABLEDEXTENSIONCOUNT = layout.offsetof(6);
                     ENABLEDEXTENSIONNAMES = layout.offsetof(7);
                 }
-
+            
                 protected XrInstanceCreateInfo(long address, ByteBuffer container) {
                     super(address, container);
                 }
-
+            
                 @Override
                 protected XrInstanceCreateInfo create(long address, ByteBuffer container) {
                     return new XrInstanceCreateInfo(address, container);
                 }
-
+            
                 /**
                  * Creates a {@code XrInstanceCreateInfo} instance at the current position of the specified {@link ByteBuffer} container. Changes to the buffer's content will be
                  * visible to the struct instance and vice versa.
@@ -122,10 +122,10 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 public XrInstanceCreateInfo(ByteBuffer container) {
                     super(memAddress(container), __checkContainer(container, SIZEOF));
                 }
-
+            
                 @Override
                 public int sizeof() { return SIZEOF; }
-
+            
                 /** Returns the value of the {@code type} field. */
                 public XrStructureType type() { return XrStructureType.fromValue(memGetInt(address() + TYPE)); }
                 /** Returns the value of the {@code next} field. */
@@ -142,50 +142,50 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 public int enabledExtensionCount() { return memGetInt(address() + ENABLEDEXTENSIONCOUNT); }
                 /** Returns the value of the {@code enabledExtensionNames} field. */
                 public long enabledExtensionNames() { return memGetAddress(address() + ENABLEDEXTENSIONNAMES); }
-
+            
                 /** Sets the specified value to the {@code type} field. */
-                public XrInstanceCreateInfo type(XrStructureType value) { 
+                public XrInstanceCreateInfo type(XrStructureType value) {\s
                     memPutInt(address() + TYPE, value.getValue());
                     return this;
                 }
                 /** Sets the specified value to the {@code next} field. */
-                public XrInstanceCreateInfo next(long value) { 
+                public XrInstanceCreateInfo next(long value) {\s
                     memPutAddress(address() + NEXT, value);
                     return this;
                 }
                 /** Sets the specified value to the {@code createFlags} field. */
-                public XrInstanceCreateInfo createFlags(long value) { 
+                public XrInstanceCreateInfo createFlags(long value) {\s
                     memPutLong(address() + CREATEFLAGS, value);
                     return this;
                 }
                 /** Sets the specified value to the {@code applicationInfo} field. */
-                public XrInstanceCreateInfo applicationInfo(XrApplicationInfo value) { 
+                public XrInstanceCreateInfo applicationInfo(XrApplicationInfo value) {\s
                     memCopy(address() + APPLICATIONINFO, value.address(), XrApplicationInfo.SIZEOF);
                     return this;
                 }
                 /** Sets the specified value to the {@code enabledApiLayerCount} field. */
-                public XrInstanceCreateInfo enabledApiLayerCount(int value) { 
+                public XrInstanceCreateInfo enabledApiLayerCount(int value) {\s
                     memPutInt(address() + ENABLEDAPILAYERCOUNT, value);
                     return this;
                 }
                 /** Sets the specified value to the {@code enabledApiLayerNames} field. */
-                public XrInstanceCreateInfo enabledApiLayerNames(long value) { 
+                public XrInstanceCreateInfo enabledApiLayerNames(long value) {\s
                     memPutAddress(address() + ENABLEDAPILAYERNAMES, value);
                     return this;
                 }
                 /** Sets the specified value to the {@code enabledExtensionCount} field. */
-                public XrInstanceCreateInfo enabledExtensionCount(int value) { 
+                public XrInstanceCreateInfo enabledExtensionCount(int value) {\s
                     memPutInt(address() + ENABLEDEXTENSIONCOUNT, value);
                     return this;
                 }
                 /** Sets the specified value to the {@code enabledExtensionNames} field. */
-                public XrInstanceCreateInfo enabledExtensionNames(long value) { 
+                public XrInstanceCreateInfo enabledExtensionNames(long value) {\s
                     memPutAddress(address() + ENABLEDEXTENSIONNAMES, value);
                     return this;
                 }
                 /** Sets the specified value to the {@code type} field. */
                 public XrInstanceCreateInfo type$Default() { return type(XrStructureType.XR_TYPE_INSTANCE_CREATE_INFO); }
-
+            
                 /** Initializes this struct with the specified values. */
                 public XrInstanceCreateInfo set(
                     XrStructureType type,
@@ -205,10 +205,10 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                     enabledApiLayerNames(enabledApiLayerNames);
                     enabledExtensionCount(enabledExtensionCount);
                     enabledExtensionNames(enabledExtensionNames);
-
+            
                     return this;
                 }
-
+            
                 /**
                  * Copies the specified struct data to this struct.
                  *
@@ -220,35 +220,35 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                     memCopy(src.address(), address(), SIZEOF);
                     return this;
                 }
-
+            
                 // -----------------------------------
-
+            
                 /** Returns a new {@code XrInstanceCreateInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
                 public static XrInstanceCreateInfo malloc() {
                     return new XrInstanceCreateInfo(nmemAllocChecked(SIZEOF), null);
                 }
-
+            
                 /** Returns a new {@code XrInstanceCreateInfo} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
                 public static XrInstanceCreateInfo calloc() {
                     return new XrInstanceCreateInfo(nmemCallocChecked(1, SIZEOF), null);
                 }
-
+            
                 /** Returns a new {@code XrInstanceCreateInfo} instance allocated with {@link BufferUtils}. */
                 public static XrInstanceCreateInfo create() {
                     ByteBuffer container = BufferUtils.createByteBuffer(SIZEOF);
                     return new XrInstanceCreateInfo(memAddress(container), container);
                 }
-
+            
                 /** Returns a new {@code XrInstanceCreateInfo} instance for the specified memory address. */
                 public static XrInstanceCreateInfo create(long address) {
                     return new XrInstanceCreateInfo(address, null);
                 }
-
+            
                 /** Like {@link #create(long) create}, but returns {@code null} if {@code address} is {@code NULL}. */
                 public static XrInstanceCreateInfo createSafe(long address) {
                     return address == 0 ? null : new XrInstanceCreateInfo(address, null);
                 }
-
+            
                 /**
                  * Returns a new {@link Buffer} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed.
                  *
@@ -257,7 +257,7 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 public static Buffer malloc(int capacity) {
                     return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
                 }
-
+            
                 /**
                  * Returns a new {@link Buffer} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed.
                  *
@@ -266,7 +266,7 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 public static Buffer calloc(int capacity) {
                     return new Buffer(nmemCallocChecked(capacity, SIZEOF), capacity);
                 }
-
+            
                 /**
                  * Returns a new {@link Buffer} instance allocated with {@link BufferUtils}.
                  *
@@ -276,7 +276,7 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                     ByteBuffer container = __create(capacity, SIZEOF);
                     return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
                 }
-
+            
                 /**
                  * Create a {@link Buffer} instance at the specified memory.
                  *
@@ -286,12 +286,12 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 public static Buffer create(long address, int capacity) {
                     return new Buffer(address, capacity);
                 }
-
+            
                 /** Like {@link #create(long, int) create}, but returns {@code null} if {@code address} is {@code NULL}. */
                 public static Buffer createSafe(long address, int capacity) {
                     return address == 0 ? null : new Buffer(address, capacity);
                 }
-
+            
                 /**
                  * Returns a new {@code XrInstanceCreateInfo} instance allocated on the specified {@link MemoryStack}.
                  *
@@ -300,7 +300,7 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 public static XrInstanceCreateInfo malloc(MemoryStack stack) {
                     return new XrInstanceCreateInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
                 }
-
+            
                 /**
                  * Returns a new {@code XrInstanceCreateInfo} instance allocated on the specified {@link MemoryStack} and initializes all its bits to zero.
                  *
@@ -309,7 +309,7 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 public static XrInstanceCreateInfo calloc(MemoryStack stack) {
                     return new XrInstanceCreateInfo(stack.ncalloc(ALIGNOF, 1, SIZEOF), null);
                 }
-
+            
                 /**
                  * Returns a new {@link Buffer} instance allocated on the specified {@link MemoryStack}.
                  *
@@ -319,7 +319,7 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 public static Buffer malloc(int capacity, MemoryStack stack) {
                     return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
                 }
-
+            
                 /**
                  * Returns a new {@link Buffer} instance allocated on the specified {@link MemoryStack} and initializes all its bits to zero.
                  *
@@ -329,9 +329,9 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 public static Buffer calloc(int capacity, MemoryStack stack) {
                     return new Buffer(stack.ncalloc(ALIGNOF, capacity, SIZEOF), capacity);
                 }
-
+            
                 // -----------------------------------
-
+            
                 /** Unsafe version of {@link #type}. */
                 public static int ntype(long struct) { return memGetInt(struct + XrInstanceCreateInfo.TYPE); }
                 public static void ntype(long struct, int value ) { memPutInt(struct + XrInstanceCreateInfo.TYPE, value); }
@@ -356,15 +356,15 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 /** Unsafe version of {@link #enabledExtensionNames}. */
                 public static long nenabledExtensionNames(long struct) { return memGetAddress(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONNAMES); }
                 public static void nenabledExtensionNames(long struct, long value) { memPutAddress(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONNAMES, value); }
-
-
+            
+            
                 // -----------------------------------
-
+            
                 /** An array of {@link XrInstanceCreateInfo} structs. */
                 public static class Buffer extends StructBuffer<XrInstanceCreateInfo, Buffer> {
-
+            
                     private static final XrInstanceCreateInfo ELEMENT_FACTORY = XrInstanceCreateInfo.create(-1L);
-
+            
                     /**
                      * Creates a new {@code XrInstanceCreateInfo.Buffer} instance backed by the specified container.
                      *
@@ -377,40 +377,40 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                     public Buffer(ByteBuffer container) {
                         super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);
                     }
-
+            
                     public Buffer(long address, int cap) {
                         super(address, null, -1, 0, cap, cap);
                     }
-
+            
                     @Override
                     public XrInstanceCreateInfo get(int index) {
                         return XrInstanceCreateInfo.create(address + index * SIZEOF);
                     }
-
+            
                     @Override
                     public Buffer slice() {
                         return slice(0, remaining());
                     }
-
+            
                     Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {
                         super(address, container, mark, pos, lim, cap);
                     }
-
+            
                     @Override
                     protected Buffer self() {
                         return this;
                     }
-
+            
                     @Override
                     protected Buffer create(long address, ByteBuffer container, int mark, int position, int limit, int capacity) {
                         return new Buffer(address, container, mark, position, limit, capacity);
                     }
-
+            
                     @Override
                     protected XrInstanceCreateInfo getElementFactory() {
                         return ELEMENT_FACTORY;
                     }
-
+            
                     /** Returns the value of the {@code type} field. */
                     public XrStructureType type() { return XrStructureType.fromValue(XrInstanceCreateInfo.ntype(address())); }
                     /** Returns the value of the {@code next} field. */
@@ -427,44 +427,44 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                     public int enabledExtensionCount() { return XrInstanceCreateInfo.nenabledExtensionCount(address()); }
                     /** Returns the value of the {@code enabledExtensionNames} field. */
                     public long enabledExtensionNames() { return XrInstanceCreateInfo.nenabledExtensionNames(address()); }
-
+            
                     /** Sets the specified value to the {@code type} field. */
-                    public Buffer type(XrStructureType value) { 
+                    public Buffer type(XrStructureType value) {\s
                         XrInstanceCreateInfo.ntype(address(), value.getValue());
                         return this;
                     }
                     /** Sets the specified value to the {@code next} field. */
-                    public Buffer next(long value) { 
+                    public Buffer next(long value) {\s
                         XrInstanceCreateInfo.nnext(address(), value);
                         return this;
                     }
                     /** Sets the specified value to the {@code createFlags} field. */
-                    public Buffer createFlags(long value) { 
+                    public Buffer createFlags(long value) {\s
                         XrInstanceCreateInfo.ncreateFlags(address(), value);
                         return this;
                     }
                     /** Sets the specified value to the {@code applicationInfo} field. */
-                    public Buffer applicationInfo(XrApplicationInfo value) { 
+                    public Buffer applicationInfo(XrApplicationInfo value) {\s
                         XrInstanceCreateInfo.napplicationInfo(address(), value);
                         return this;
                     }
                     /** Sets the specified value to the {@code enabledApiLayerCount} field. */
-                    public Buffer enabledApiLayerCount(int value) { 
+                    public Buffer enabledApiLayerCount(int value) {\s
                         XrInstanceCreateInfo.nenabledApiLayerCount(address(), value);
                         return this;
                     }
                     /** Sets the specified value to the {@code enabledApiLayerNames} field. */
-                    public Buffer enabledApiLayerNames(long value) { 
+                    public Buffer enabledApiLayerNames(long value) {\s
                         XrInstanceCreateInfo.nenabledApiLayerNames(address(), value);
                         return this;
                     }
                     /** Sets the specified value to the {@code enabledExtensionCount} field. */
-                    public Buffer enabledExtensionCount(int value) { 
+                    public Buffer enabledExtensionCount(int value) {\s
                         XrInstanceCreateInfo.nenabledExtensionCount(address(), value);
                         return this;
                     }
                     /** Sets the specified value to the {@code enabledExtensionNames} field. */
-                    public Buffer enabledExtensionNames(long value) { 
+                    public Buffer enabledExtensionNames(long value) {\s
                         XrInstanceCreateInfo.nenabledExtensionNames(address(), value);
                         return this;
                     }
@@ -497,16 +497,7 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
 
         String result = StructGenerator.generateStruct(structDefinition);
 
-        // Normalize whitespace for comparison
-        String normalizedExpected = normalizeWhitespace(expectedXrInstanceCreateInfo);
-        String normalizedResult = normalizeWhitespace(result);
-
-        assertEquals(normalizedExpected, normalizedResult);
+        assertEquals(expectedXrInstanceCreateInfo.trim(), result.trim());
     }
 
-    // Helper method to normalize whitespace for comparison
-    private String normalizeWhitespace(String input) {
-        // Remove all whitespace and normalize line endings
-        return input.replaceAll("\\s+", " ").trim();
-    }
 }
