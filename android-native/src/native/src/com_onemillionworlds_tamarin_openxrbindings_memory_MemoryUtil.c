@@ -194,6 +194,32 @@ JNIEXPORT void JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory_M
 
 /*
  * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
+ * Method:    memPutFloat
+ * Signature: (JF)V
+ */
+JNIEXPORT void JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil_memPutFloat
+  (JNIEnv *env, jclass cls, jlong address, jfloat value) {
+    void *ptr = (void*)(intptr_t)address;
+    if (ptr != NULL) {
+        *(jfloat*)ptr = value;
+    }
+}
+
+/*
+ * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
+ * Method:    memPutShort
+ * Signature: (JS)V
+ */
+JNIEXPORT void JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil_memPutShort
+  (JNIEnv *env, jclass cls, jlong address, jshort value) {
+    void *ptr = (void*)(intptr_t)address;
+    if (ptr != NULL) {
+        *(jshort*)ptr = value;
+    }
+}
+
+/*
+ * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
  * Method:    memZeroBytes
  * Signature: (JI)V
  */

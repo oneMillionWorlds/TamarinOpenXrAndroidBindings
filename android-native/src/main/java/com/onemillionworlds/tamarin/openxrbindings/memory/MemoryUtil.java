@@ -224,6 +224,22 @@ public class MemoryUtil {
     public static native void memPutInt(long address, int value);
 
     /**
+     * Puts a float value at the specified memory address.
+     * 
+     * @param address the memory address
+     * @param value the float value
+     */
+    public static native void memPutFloat(long address, float value);
+
+    /**
+     * Puts a short value at the specified memory address.
+     * 
+     * @param address the memory address
+     * @param value the short value
+     */
+    public static native void memPutShort(long address, short value);
+
+    /**
      * Starting at the memory address, sets the specified number of bytes to zero.
      * <p>
      * Used as part of a calloc call
