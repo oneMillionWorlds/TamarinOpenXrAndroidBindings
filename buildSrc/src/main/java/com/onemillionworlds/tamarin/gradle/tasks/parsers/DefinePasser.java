@@ -19,7 +19,7 @@ public class DefinePasser {
                 // Special case for XR_MAX_EVENT_DATA_SIZE
                 if (name.equals("XR_MAX_EVENT_DATA_SIZE")) {
                     // Use a fixed value for this constant
-                    return Optional.of(new Define(name, "XrEventDataBuffer.SIZE"));
+                    return Optional.of(new Define(name, "XrEventDataBuffer.SIZEOF"));
                 } else {
                     // Try to convert the value to an integer if possible
                     try {
