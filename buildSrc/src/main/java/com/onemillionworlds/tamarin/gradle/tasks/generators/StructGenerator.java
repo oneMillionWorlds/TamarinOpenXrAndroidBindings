@@ -41,7 +41,7 @@ public class StructGenerator extends FileGenerator {
         try (BufferedWriter writer = createWriter(outputFile)) {
             writer.write(generateStruct(struct));
         } catch (RuntimeException e) {
-            logger.error("Failed to generate struct " + struct.getName() + " to file " + outputFile.getAbsolutePath(), e);
+            throw new RuntimeException("Failed to generate struct " + struct.getName() + " to file " + outputFile.getAbsolutePath(), e);
         }
 
         logGeneration(struct.getName() + ".java");
@@ -539,7 +539,7 @@ public class StructGenerator extends FileGenerator {
         } else if (fieldType.equals("int16_t")) {
             writer.append("    public short " + fieldName + "() { return memGetShort(address() + " + fieldNameUpper + "); }\n");
         } else if(field.isStruct()){
-            writer.append("    public " + javaType + " " + fieldName + "() { return " +javaType + "create(address() + " + fieldNameUpper + "); }\n");
+            writer.append("    public " + javaType + " " + fieldName + "() { return " +javaType + ".create(address() + " + fieldNameUpper + "); }\n");
         } else {
             String accessMethod = field.getMemoryAccessMethod();
 
@@ -559,19 +559,24 @@ public class StructGenerator extends FileGenerator {
 
         writer.append("    /** Unsafe version of {@link #" + fieldName + "}. */\n");
 
-        String accessMethod = field.getMemoryAccessMethod();
-        String setMethod = field.getMemorySetMethod();
-
-        if (javaType.equals("ByteBuffer")) {
+        if(field.isStruct()) {
+            writer.append("    public static " + javaType + " n" + fieldName + "(long struct) { return " + javaType + ".create(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
+            writer.append("    public static void n" + fieldName + "(long struct, " + javaType + " value) { memCopy(value.address(), struct +" + struct.getName() + "." + fieldNameUpper + "," + javaType + ".SIZEOF); }\n");
+        } else if (javaType.equals("ByteBuffer")) {
             writer.append("    public static ByteBuffer n" + fieldName + "(long struct) { return memByteBuffer(struct + " + struct.getName() + "." + fieldNameUpper + ", " + field.getArraySizeConstant() + "); }\n");
             writer.append("    /** Unsafe version of {@link #" + fieldName + "String}. */\n");
             writer.append("    public static String n" + fieldName + "String(long struct) { return memUTF8(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
-        } else if (field.isEnumType()) {
-            writer.append("    public static int n" + fieldName + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
-            writer.append("    public static void n" + fieldName + "(long struct, int value ) { return " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
-        } else {
-            writer.append("    public static " + javaType + " n" + fieldName + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
-            writer.append("    public static void n" + fieldName + "(long struct, " + javaType  + " value) { return " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
+        }else {
+            String accessMethod = field.getMemoryAccessMethod();
+            String setMethod = field.getMemorySetMethod();
+
+            if (field.isEnumType()) {
+                writer.append("    public static int n" + fieldName + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
+                writer.append("    public static void n" + fieldName + "(long struct, int value ) { return " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
+            } else {
+                writer.append("    public static " + javaType + " n" + fieldName + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
+                writer.append("    public static void n" + fieldName + "(long struct, " + javaType  + " value) { return " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
+            }
         }
 
         return writer.toString();

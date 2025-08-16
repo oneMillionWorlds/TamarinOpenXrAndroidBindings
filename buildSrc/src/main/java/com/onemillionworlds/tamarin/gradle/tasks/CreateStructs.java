@@ -116,14 +116,14 @@ public class CreateStructs extends DefaultTask {
         // Generate XR10Constants.java
         new ConstantsGenerator(getLogger(), constants).generate(output);
 
-        // Generate struct classes
-        for (StructDefinition struct : structs) {
-            new StructGenerator(getLogger(), struct).generate(output);
-        }
-
         // Generate enum classes
         for (EnumDefinition enumDef : enums) {
             new EnumGenerator(getLogger(), enumDef).generate(output);
+        }
+
+        // Generate struct classes
+        for (StructDefinition struct : structs) {
+            new StructGenerator(getLogger(), struct).generate(output);
         }
 
         // Generate X10.java with method pairs
