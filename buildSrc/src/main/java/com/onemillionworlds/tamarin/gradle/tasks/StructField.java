@@ -197,9 +197,33 @@ public class StructField {
         } else if (type.equals("int16_t")) {
             return "memGetShort";
         }
+        throw new RuntimeException("Unexpected type: " + this);
+    }
 
-        // For other types, assume it's a struct
-        return "create";
+    public String getMemorySetMethod() {
+        if (arraySizeConstant != null) {
+            if (type.equals("char")) {
+                return "memByteBuffer";
+            } else {
+                return "memByteBuffer";
+            }
+        } else if (isEnumType) {
+            return "memSetInt";
+        } else if (isPointer) {
+            return "memSetAddress";
+        } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
+            return "memSetInt";
+        } else if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") ||
+                isHandle || isAtom || isFlag || isTypeDefLong) {
+            return "memSetLong";
+        } else if (type.equals("float")) {
+            return "memSetFloat";
+        } else if (type.equals("double")) {
+            return "memSetDouble";
+        } else if (type.equals("int16_t")) {
+            return "memSetShort";
+        }
+        throw new RuntimeException("Unexpected type: " + this);
     }
 
     /**
@@ -257,4 +281,5 @@ public class StructField {
                 (isDoublePointer ? ", isDoublePointer" : "") +
                 '}';
     }
+
 }
