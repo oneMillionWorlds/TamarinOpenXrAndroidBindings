@@ -14,7 +14,6 @@ import java.io.IOException;
 @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class StructGenerator extends FileGenerator {
     private final StructDefinition struct;
-
     public StructGenerator(Logger logger, StructDefinition struct) {
         super(logger);
         this.struct = struct;
@@ -209,7 +208,7 @@ public class StructGenerator extends FileGenerator {
         // Add type$Default method if the struct has a type field
         boolean hasTypeField = struct.getFields().stream()
                 .anyMatch(field -> field.getName().equals("type"));
-        if (hasTypeField) {
+        if (hasTypeField && struct.canBeItsOwnDefault()) {
             String typeConstant = getTypeConstantForStruct(struct.getName());
             writer.append("    /** Sets the specified value to the {@code type} field. */\n");
             writer.append("    public " + struct.getName() + " type$Default() { return type(XrStructureType." + typeConstant + "); }\n");
@@ -485,7 +484,7 @@ public class StructGenerator extends FileGenerator {
         }
 
         // Add type$Default method for Buffer if the struct has a type field
-        if (hasTypeField) {
+        if (hasTypeField && struct.canBeItsOwnDefault()) {
             String typeConstant = getTypeConstantForStruct(struct.getName());
             writer.append("        /** Sets the specified value to the {@code type} field. */\n");
             writer.append("        public Buffer type$Default() { return type(XrStructureType." + typeConstant + "); }\n");

@@ -10,6 +10,7 @@ import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
 
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.XR_STRUCTURE_TYPE_ENUM_VALUES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StructParserTest {
@@ -34,13 +35,13 @@ class StructParserTest {
 
         BufferedReader reader = new BufferedReader(new StringReader(structString));
 
-        StructDefinition expectedStruct = new StructDefinition("XrVector2f");
+        StructDefinition expectedStruct = new StructDefinition("XrVector2f", false);
         expectedStruct.addField(new StructField("float", "x", null, false, false, false, false,false,false,false,false,false,false));
         expectedStruct.addField(new StructField("float", "y", null, false, false, false, false,false,false,false,false,false,false));
 
         StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine(), 
                 KNOWN_ENUM_TYPES, KNOWN_ATOMS, KNOWN_TYPEDEF_INTS, KNOWN_TYPEDEF_LONGS, 
-                KNOWN_HANDLES, KNOWN_FLAGS, KNOWN_STRUCTS);
+                KNOWN_HANDLES, KNOWN_FLAGS, KNOWN_STRUCTS, XR_STRUCTURE_TYPE_ENUM_VALUES);
 
         assertEquals(expectedStruct, actualStruct);
     }
@@ -56,13 +57,36 @@ class StructParserTest {
 
         BufferedReader reader = new BufferedReader(new StringReader(structString));
 
-        StructDefinition expectedStruct = new StructDefinition("XrSwapchainImageBaseHeader");
+        StructDefinition expectedStruct = new StructDefinition("XrSwapchainImageBaseHeader", false);
         expectedStruct.addField(new StructField("XrStructureType", "type", null, false, false, true, false,false,false,false,false,false,false ));
         expectedStruct.addField(new StructField("void", "next", null, true, false, false, false,false,false,false,false,false,false ));
 
         StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine(),
                 KNOWN_ENUM_TYPES, KNOWN_ATOMS, KNOWN_TYPEDEF_INTS, KNOWN_TYPEDEF_LONGS,
-                KNOWN_HANDLES, KNOWN_FLAGS, KNOWN_STRUCTS);
+                KNOWN_HANDLES, KNOWN_FLAGS, KNOWN_STRUCTS, XR_STRUCTURE_TYPE_ENUM_VALUES);
+
+        assertEquals(expectedStruct, actualStruct);
+    }
+
+    @Test
+    void passStruct_canBeItsOwnDefault() throws IOException {
+        String structString = """
+                typedef struct XrEventDataBuffer {
+                    XrStructureType             type;
+                    const void* XR_MAY_ALIAS    next;
+                    uint8_t                     varying[4000];
+                } XrEventDataBuffer;
+                """;
+        BufferedReader reader = new BufferedReader(new StringReader(structString));
+
+        StructDefinition expectedStruct = new StructDefinition("XrEventDataBuffer", true);
+        expectedStruct.addField(new StructField("XrStructureType", "type", null, false, false, true, false,false,false,false,false,false,false ));
+        expectedStruct.addField(new StructField("void", "next", null, true, true, false, false,false,false,false,false,false,false ));
+        expectedStruct.addField(new StructField("uint8_t", "varying", "4000", false, false, false, false,false,false,false,false,false,false ));
+
+        StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine(),
+                KNOWN_ENUM_TYPES, KNOWN_ATOMS, KNOWN_TYPEDEF_INTS, KNOWN_TYPEDEF_LONGS,
+                KNOWN_HANDLES, KNOWN_FLAGS, KNOWN_STRUCTS, XR_STRUCTURE_TYPE_ENUM_VALUES);
 
         assertEquals(expectedStruct, actualStruct);
     }

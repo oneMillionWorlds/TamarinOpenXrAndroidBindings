@@ -14,15 +14,19 @@ public class StructParser {
 
     public static Pattern structStartPattern = Pattern.compile("\\s*typedef\\s+struct\\s+(?:XR_MAY_ALIAS\\s+)?(\\w+)\\s*\\{");
     static Pattern structEndPattern = Pattern.compile("\\s*\\}\\s+(\\w+);");
-    static Pattern fieldPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s*\\*(?:\\s*XR_MAY_ALIAS)?)?(?:\\s+const)?)\\s+(\\w+)(?:\\[(XR_[A-Z_]+)\\])?;");
+    static Pattern fieldPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s*\\*(?:\\s*XR_MAY_ALIAS)?)?(?:\\s+const)?)\\s+(\\w+)(?:\\s*\\[\\s*(XR_[A-Z_]+|\\d+)\\s*\\])?;");
 
     public static StructDefinition parseStruct(BufferedReader readerOngoing, String triggeringLine, List<String> knownEnumTypes,
                                               List<String> knownAtoms, List<String> knownTypeDefInts, List<String> knownTypeDefLongs, 
-                                              List<String> knownHandles, List<String> knownFlags, List<String> knownStructs) throws IOException {
+                                              List<String> knownHandles, List<String> knownFlags, List<String> knownStructs,
+                                              List<String> xrStructureTypeValues) throws IOException {
         Matcher structStartMatcher = structStartPattern.matcher(triggeringLine);
         if(structStartMatcher.find()){
             String currentStructName = structStartMatcher.group(1);
-            StructDefinition structDefinition = new StructDefinition(currentStructName);
+            StructDefinition structDefinition = new StructDefinition(
+                    currentStructName,
+                    xrStructureTypeValues.contains(createXrStructureTypeEnumValueForStruct(currentStructName))
+            );
             while (true) {
                 String nextLine = readerOngoing.readLine().replace("XR_MAY_ALIAS", "");
                 if (structEndPattern.matcher(nextLine).find()) {
@@ -57,12 +61,28 @@ public class StructParser {
                                                       isEnumType, isAtomType, isTypeDefInt, isTypeDefLong, 
                                                       isHandle, isFlag, isStruct, isDoublePointer);
                     structDefinition.addField(field);
+                }else{
+                    throw new RuntimeException("Failed to pass line " + nextLine);
                 }
             }
 
         }else{
             throw new RuntimeException("Unexpected not a struct: " + triggeringLine);
         }
+    }
+    
+    private static String createXrStructureTypeEnumValueForStruct(String structName){
+        structName = structName.replace("Xr", "");
+
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < structName.length(); i++) {
+            char c = structName.charAt(i);
+            if (i > 0 && Character.isUpperCase(c)) {
+                result.append('_');
+            }
+            result.append(Character.toUpperCase(c));
+        }
+        return "XR_TYPE_" + result;
     }
     
 }

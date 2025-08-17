@@ -200,7 +200,14 @@ public class CreateStructs extends DefaultTask {
                 if(StructParser.structStartPattern.matcher(line).find()) {
                     List<String> knownEnums = enums.stream().map(EnumDefinition::getName).toList();
                     List<String> knownStructs = structs.stream().map(StructDefinition::getName).toList();
-                    structs.add(StructParser.parseStruct(reader, line, knownEnums, atoms, intTypedefs, longTypedefs, handles, flags, knownStructs));
+
+                    List<String> xrStructureTypeValues = enums.stream()
+                            .filter(e -> e.getName().equals("xrStructureType"))
+                            .flatMap(e -> e.getValues().stream())
+                            .map(EnumDefinition.EnumValue::getName)
+                            .toList();
+
+                    structs.add(StructParser.parseStruct(reader, line, knownEnums, atoms, intTypedefs, longTypedefs, handles, flags, knownStructs, xrStructureTypeValues));
                 }
             }
         }

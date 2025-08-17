@@ -7,14 +7,15 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_ATOMS;
-import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_ENUM_TYPES;
-import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_FLAGS;
-import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_HANDLES;
-import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_STRUCTS;
-import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_TYPEDEF_INTS;
-import static com.onemillionworlds.tamarin.gradle.tasks.generators.StructGeneratorCommonData.KNOWN_TYPEDEF_LONGS;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.KNOWN_ATOMS;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.KNOWN_ENUM_TYPES;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.KNOWN_FLAGS;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.KNOWN_HANDLES;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.KNOWN_STRUCTS;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.KNOWN_TYPEDEF_INTS;
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.KNOWN_TYPEDEF_LONGS;
 
+import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.XR_STRUCTURE_TYPE_ENUM_VALUES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -491,7 +492,7 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
         BufferedReader reader = new BufferedReader(new StringReader(xrInstanceCreateInfo_cDefinition));
         StructDefinition structDefinition = StructParser.parseStruct(reader, reader.readLine(),
                 KNOWN_ENUM_TYPES, KNOWN_ATOMS, KNOWN_TYPEDEF_INTS, KNOWN_TYPEDEF_LONGS,
-                KNOWN_HANDLES, KNOWN_FLAGS, KNOWN_STRUCTS);
+                KNOWN_HANDLES, KNOWN_FLAGS, KNOWN_STRUCTS, XR_STRUCTURE_TYPE_ENUM_VALUES);
 
         String result = StructGenerator.generateStruct(structDefinition);
 
