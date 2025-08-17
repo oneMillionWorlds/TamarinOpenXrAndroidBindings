@@ -182,6 +182,8 @@ public class StructGeneratorTest_XrVisibilityMaskKHR {
                     memPutAddress(address() + INDICES, value);
                     return this;
                 }
+                /** Sets the specified value to the {@code type} field. */
+                public XrVisibilityMaskKHR type$Default() { return type(XrStructureType.XR_TYPE_VISIBILITY_MASK_KHR); }
             
                 /** Initializes this struct with the specified values. */
                 public XrVisibilityMaskKHR set(
@@ -474,6 +476,8 @@ public class StructGeneratorTest_XrVisibilityMaskKHR {
                         XrVisibilityMaskKHR.nindices(address(), value);
                         return this;
                     }
+                    /** Sets the specified value to the {@code type} field. */
+                    public Buffer type$Default() { return type(XrStructureType.XR_TYPE_VISIBILITY_MASK_KHR); }
                 }
             }
             """;

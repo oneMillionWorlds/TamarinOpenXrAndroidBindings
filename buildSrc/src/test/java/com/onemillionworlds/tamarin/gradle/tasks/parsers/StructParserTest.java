@@ -99,6 +99,7 @@ class StructParserTest {
         assertEquals("XR_TYPE_INPUT_SOURCE_LOCALIZED_NAME_GET_INFO", StructParser.createXrStructureTypeEnumValueForStruct("XrInputSourceLocalizedNameGetInfo"));
         assertEquals("XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR", StructParser.createXrStructureTypeEnumValueForStruct("XrCompositionLayerCylinderKHR"));
         assertEquals("XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR", StructParser.createXrStructureTypeEnumValueForStruct("XrGraphicsBindingOpenGLWin32KHR"));
+        assertEquals("XR_TYPE_VISIBILITY_MASK_KHR", StructParser.createXrStructureTypeEnumValueForStruct("XrVisibilityMaskKHR"));
     }
 
 }
