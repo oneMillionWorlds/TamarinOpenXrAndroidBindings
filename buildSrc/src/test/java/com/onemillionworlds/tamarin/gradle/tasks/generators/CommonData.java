@@ -11,7 +11,7 @@ public class CommonData {
     public static final List<String> KNOWN_TYPEDEF_LONGS = Collections.emptyList();
     public static final List<String> KNOWN_HANDLES = Collections.emptyList();
     public static final List<String> KNOWN_FLAGS = List.of("XrDebugUtilsMessageSeverityFlagsEXT", "XrDebugUtilsMessageTypeFlagsEXT", "XrInstanceCreateFlags");
-    public static final List<String> KNOWN_STRUCTS = List.of("XrActiveActionSet", "XrApplicationInfo");
+    public static final List<String> KNOWN_STRUCTS = List.of("XrActiveActionSet", "XrApplicationInfo", "XrVector2f");
 
     /**
      * This is NOT all the structs, this is all the non-abstract structs.

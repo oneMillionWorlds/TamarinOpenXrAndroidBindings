@@ -519,10 +519,8 @@ public class StructGenerator extends FileGenerator {
             writer.append("    public short " + fieldName + "() { return memGetShort(address() + " + fieldNameUpper + "); }\n");
         } else if(field.isStruct()){
             if(field.isPointer()){
-                String countMethodName = "count" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
                 writer.append("    public " + javaType + " " + fieldName + "() {\n");
-                writer.append("        long address = memGetAddress( address() + " + struct.getName() + "." + fieldNameUpper + ");\n" );
-                writer.append("        return " + fieldType + ".createSafe(address,"+ countMethodName +"());\n");
+                writer.append("        return n" + fieldName + "(address());\n");
                 writer.append("    }\n");
             }else {
                 writer.append("    public " + javaType + " " + fieldName + "() { return " + javaType + ".create(address() + " + fieldNameUpper + "); }\n");
@@ -549,7 +547,12 @@ public class StructGenerator extends FileGenerator {
 
         if(field.isStruct()) {
             if(field.isPointer()){
-                String countMethodName = "ncount" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                String countMethodName;
+                if(field.isConst()) {
+                    countMethodName = "ncount" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                } else{
+                    countMethodName = "n" + pluralToSingular(fieldName) + "CapacityInput";
+                }
 
                 writer.append("    public static " + javaType + " n" + fieldName + "(long struct) {\n");
                 writer.append("        int count = " + countMethodName + "(struct);\n");
@@ -614,13 +617,7 @@ public class StructGenerator extends FileGenerator {
             writer.append("        n"+fieldName+"(address(), value);\n");
         }else if(field.isStruct()){
             if(field.isPointer()){
-                String countMethodName = "count" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-
-                writer.append("        long address = value == null ? NULL : value.address();\n");
-                writer.append("        memPutAddress(address() + " + fieldNameUpper + ", address);\n");
-                writer.append("        if(value!=null){\n");
-                writer.append("            "+countMethodName+ "(value.remaining());\n");
-                writer.append("        }\n");
+                writer.append("        n"+fieldName+"(address(), value);\n");
             }else{
                 writer.append("        memCopy(address() + " + fieldNameUpper + ", value.address(), "+ fieldType +".SIZEOF);\n");
             }
@@ -667,5 +664,15 @@ public class StructGenerator extends FileGenerator {
         return typeConstantBuilder.toString();
     }
 
-    // These methods have been replaced by StructField.getMemorySize()
+    private static String pluralToSingular(String plural) {
+        if(plural.equals("vertices")){
+            return "vertex";
+        } else if (plural.equals("indices")) {
+            return "index";
+        }else if(plural.endsWith("s")) {
+            return plural.substring(0, plural.length() - 1);
+        } else {
+            throw new RuntimeException("Unable to depluralize " + plural);
+        }
+    }
 }

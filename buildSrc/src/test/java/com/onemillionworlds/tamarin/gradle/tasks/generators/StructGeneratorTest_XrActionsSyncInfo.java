@@ -116,8 +116,7 @@ public class StructGeneratorTest_XrActionsSyncInfo {
                 public int countActiveActionSets() { return memGetInt(address() + COUNTACTIVEACTIONSETS); }
                 /** Returns the value of the {@code activeActionSets} field. */
                 public XrActiveActionSet.Buffer activeActionSets() {
-                    long address = memGetAddress( address() + XrActionsSyncInfo.ACTIVEACTIONSETS);
-                    return XrActiveActionSet.createSafe(address,countActiveActionSets());
+                    return nactiveActionSets(address());
                 }
             
                 /** Sets the specified value to the {@code type} field. */
@@ -137,11 +136,7 @@ public class StructGeneratorTest_XrActionsSyncInfo {
                 }
                 /** Sets the specified value to the {@code activeActionSets} field. */
                 public XrActionsSyncInfo activeActionSets(XrActiveActionSet.Buffer value) {\s
-                    long address = value == null ? NULL : value.address();
-                    memPutAddress(address() + ACTIVEACTIONSETS, address);
-                    if(value!=null){
-                        countActiveActionSets(value.remaining());
-                    }
+                    nactiveActionSets(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code type} field. */
