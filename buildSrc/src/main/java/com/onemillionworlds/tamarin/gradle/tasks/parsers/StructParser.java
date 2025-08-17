@@ -70,19 +70,52 @@ public class StructParser {
             throw new RuntimeException("Unexpected not a struct: " + triggeringLine);
         }
     }
-    
-    private static String createXrStructureTypeEnumValueForStruct(String structName){
+
+    static String createXrStructureTypeEnumValueForStruct(String structName){
         structName = structName.replace("Xr", "");
 
         StringBuilder result = new StringBuilder();
+        boolean inAcronym = false;
+
+        // Process the string character by character
         for (int i = 0; i < structName.length(); i++) {
             char c = structName.charAt(i);
-            if (i > 0 && Character.isUpperCase(c)) {
-                result.append('_');
+
+            // Special case for OpenGL - check if we're at the start of "OpenGL"
+            if (i <= structName.length() - 6 && 
+                structName.substring(i, i + 6).equals("OpenGL")) {
+                // If we're not at the beginning, add an underscore
+                if (i > 0) {
+                    result.append('_');
+                }
+                // Add "OPENGL" and skip the next 5 characters (we've already processed 'O')
+                result.append("OPENGL");
+                i += 5; // Skip "penGL"
+                continue;
             }
+
+            // Check if we're starting a new word
+            if (i > 0 && Character.isUpperCase(c)) {
+                // If the previous character was lowercase or this is the start of a new acronym
+                if (!inAcronym || !Character.isUpperCase(structName.charAt(i-1))) {
+                    result.append('_');
+                    inAcronym = Character.isUpperCase(c);
+                }
+                // If we're in the middle of an acronym, don't add an underscore
+                else {
+                    // Check if this is the end of an acronym (next char is lowercase)
+                    if (i < structName.length() - 1 && Character.isLowerCase(structName.charAt(i+1))) {
+                        inAcronym = false;
+                    }
+                }
+            } else {
+                inAcronym = Character.isUpperCase(c);
+            }
+
             result.append(Character.toUpperCase(c));
         }
+
         return "XR_TYPE_" + result;
     }
-    
+
 }

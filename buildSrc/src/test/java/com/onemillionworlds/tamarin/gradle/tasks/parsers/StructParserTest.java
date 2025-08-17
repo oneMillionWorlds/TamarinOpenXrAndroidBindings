@@ -92,4 +92,13 @@ class StructParserTest {
     }
 
 
+    @Test
+    void createXrStructureTypeEnumValueForStruct(){
+        assertEquals("XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR", StructParser.createXrStructureTypeEnumValueForStruct("XrSwapchainImageOpenGLKHR"));
+        assertEquals("XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT", StructParser.createXrStructureTypeEnumValueForStruct("XrDebugUtilsMessengerCreateInfoEXT"));
+        assertEquals("XR_TYPE_INPUT_SOURCE_LOCALIZED_NAME_GET_INFO", StructParser.createXrStructureTypeEnumValueForStruct("XrInputSourceLocalizedNameGetInfo"));
+        assertEquals("XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR", StructParser.createXrStructureTypeEnumValueForStruct("XrCompositionLayerCylinderKHR"));
+        assertEquals("XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR", StructParser.createXrStructureTypeEnumValueForStruct("XrGraphicsBindingOpenGLWin32KHR"));
+    }
+
 }
