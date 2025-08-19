@@ -547,25 +547,34 @@ public class StructGenerator extends FileGenerator {
 
         if(field.isStruct()) {
             if(field.isPointer()){
-                String countMethodName;
-                if(field.isConst()) {
-                    countMethodName = "ncount" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-                } else{
-                    countMethodName = "n" + pluralToSingular(fieldName) + "CapacityInput";
+                if(field.isSingletonStructPointer()){
+                    writer.append("    public static " + fieldType + " n" + fieldName + "(long struct) {\n");
+                    writer.append("        return " + fieldType + ".createSafe(memGetAddress(struct + " + struct.getName() + "." + fieldNameUpper + "));\n");
+                    writer.append("    }\n");
+
+                    writer.append("    public static void n" + fieldName + "(long struct, " + javaType + " value){\n");
+                    writer.append("        long address = value == null ? NULL : value.address();\n");
+                    writer.append("        memPutAddress(struct + " + fieldNameUpper + ", address);\n");
+                    writer.append("    }\n");
+                }else {
+                    String countMethodName = struct.findCountParameterForPointerField(field.getName()).map(f -> "n" + f).orElse(null);
+                    if (countMethodName == null) {
+                         throw new RuntimeException("Couldn't find a count method for " + fieldName + " in " + struct.getName());
+                    } else {
+                        writer.append("    public static " + javaType + " n" + fieldName + "(long struct) {\n");
+                        writer.append("        int count = " + countMethodName + "(struct);\n");
+                        writer.append("        return " + fieldType + ".createSafe(memGetAddress(struct + " + struct.getName() + "." + fieldNameUpper + "),count);\n");
+                        writer.append("    }\n");
+
+                        writer.append("    public static void n" + fieldName + "(long struct, " + javaType + " value){\n");
+                        writer.append("        long address = value == null ? NULL : value.address();\n");
+                        writer.append("        memPutAddress(struct + " + fieldNameUpper + ", address);\n");
+                        writer.append("        if(value!=null){\n");
+                        writer.append("            " + countMethodName + "(struct, value.remaining());\n");
+                        writer.append("        }\n");
+                        writer.append("    }\n");
+                    }
                 }
-
-                writer.append("    public static " + javaType + " n" + fieldName + "(long struct) {\n");
-                writer.append("        int count = " + countMethodName + "(struct);\n");
-                writer.append("        return " + fieldType + ".createSafe(memGetAddress(struct + " + struct.getName() + "." + fieldNameUpper + "),count);\n" );
-                writer.append("    }\n");
-
-                writer.append("    public static void n" + fieldName + "(long struct, " + javaType + " value){\n");
-                writer.append("        long address = value == null ? NULL : value.address();\n");
-                writer.append("        memPutAddress(struct + " + fieldNameUpper + ", address);\n");
-                writer.append("        if(value!=null){\n");
-                writer.append("            "+countMethodName+ "(struct, value.remaining());\n");
-                writer.append("        }\n");
-                writer.append("    }\n");
             }else {
                 writer.append("    public static " + javaType + " n" + fieldName + "(long struct) { return " + javaType + ".create(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 writer.append("    public static void n" + fieldName + "(long struct, " + javaType + " value) { memCopy(value.address(), struct +" + struct.getName() + "." + fieldNameUpper + "," + javaType + ".SIZEOF); }\n");
@@ -664,15 +673,4 @@ public class StructGenerator extends FileGenerator {
         return typeConstantBuilder.toString();
     }
 
-    private static String pluralToSingular(String plural) {
-        if(plural.equals("vertices")){
-            return "vertex";
-        } else if (plural.equals("indices")) {
-            return "index";
-        }else if(plural.endsWith("s")) {
-            return plural.substring(0, plural.length() - 1);
-        } else {
-            throw new RuntimeException("Unable to depluralize " + plural);
-        }
-    }
 }

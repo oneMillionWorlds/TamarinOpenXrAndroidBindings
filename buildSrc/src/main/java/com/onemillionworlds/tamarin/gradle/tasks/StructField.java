@@ -20,6 +20,12 @@ public class StructField {
     private final boolean isStruct;
     private final boolean isDoublePointer;
 
+    /**
+     * This means this field is a pointer to a struct (which is usually an array) but in this case it is actually
+     * just a single object
+     */
+    private final boolean isSingletonStructPointer;
+
     // Constants for memory sizes
     private static final String SIZE_1_BYTE = "1";
     private static final String SIZE_2_BYTES = "2";
@@ -27,9 +33,9 @@ public class StructField {
     private static final String SIZE_8_BYTES = "8";
     private static final String SIZE_POINTER = "POINTER_SIZE";
 
-    public StructField(String type, String name, String arraySizeConstant, boolean isPointer, boolean isConst, 
-                      boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong, 
-                      boolean isHandle, boolean isFlag, boolean isStruct, boolean isDoublePointer) {
+    public StructField(String type, String name, String arraySizeConstant, boolean isPointer, boolean isConst,
+                       boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong,
+                       boolean isHandle, boolean isFlag, boolean isStruct, boolean isDoublePointer, boolean isSingletonStructPointer) {
         this.type = type;
         this.name = name;
         this.arraySizeConstant = arraySizeConstant;
@@ -43,6 +49,7 @@ public class StructField {
         this.isFlag = isFlag;
         this.isStruct = isStruct;
         this.isDoublePointer = isDoublePointer;
+        this.isSingletonStructPointer = isSingletonStructPointer;
     }
 
     public String getType() {
@@ -97,6 +104,10 @@ public class StructField {
         return isDoublePointer;
     }
 
+    public boolean isSingletonStructPointer() {
+        return isSingletonStructPointer;
+    }
+
     /**
      * Structs by value are weird. On the java side we still treat them as pointers but then deferernce them on
      * the native side to be passed by value. This is because we can't cope with passing structs by reference on the
@@ -147,6 +158,8 @@ public class StructField {
         if (arraySizeConstant != null) {
             return "ByteBuffer";
         } else if (isEnumType) {
+            return type;
+        }else if(isSingletonStructPointer){
             return type;
         } else if(isStruct && isPointer){
             return type + ".Buffer";

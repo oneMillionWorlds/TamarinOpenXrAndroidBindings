@@ -5,7 +5,6 @@ import com.onemillionworlds.tamarin.gradle.tasks.StructField;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,10 +55,13 @@ public class StructParser {
                     boolean isHandle = knownHandles.contains(type);
                     boolean isFlag = knownFlags.contains(type);
                     boolean isStruct = knownStructs.contains(type);
-
+                    boolean isSingletonStructPointer = isStruct
+                            && isPointer
+                            && type.endsWith("BaseHeader")
+                            && structDefinition.findCountParameterForPointerField(fieldName).isEmpty();
                     StructField field = new StructField(type, fieldName, arraySizeConstant, isPointer, isConst, 
                                                       isEnumType, isAtomType, isTypeDefInt, isTypeDefLong, 
-                                                      isHandle, isFlag, isStruct, isDoublePointer);
+                                                      isHandle, isFlag, isStruct, isDoublePointer, isSingletonStructPointer);
                     structDefinition.addField(field);
                 }else{
                     throw new RuntimeException("Failed to pass line " + nextLine);

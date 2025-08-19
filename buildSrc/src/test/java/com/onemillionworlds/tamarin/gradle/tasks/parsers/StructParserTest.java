@@ -36,8 +36,8 @@ class StructParserTest {
         BufferedReader reader = new BufferedReader(new StringReader(structString));
 
         StructDefinition expectedStruct = new StructDefinition("XrVector2f", false);
-        expectedStruct.addField(new StructField("float", "x", null, false, false, false, false,false,false,false,false,false,false));
-        expectedStruct.addField(new StructField("float", "y", null, false, false, false, false,false,false,false,false,false,false));
+        expectedStruct.addField(new StructField("float", "x", null, false, false, false, false,false,false,false,false,false,false, false));
+        expectedStruct.addField(new StructField("float", "y", null, false, false, false, false,false,false,false,false,false,false, false));
 
         StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine(), 
                 KNOWN_ENUM_TYPES, KNOWN_ATOMS, KNOWN_TYPEDEF_INTS, KNOWN_TYPEDEF_LONGS, 
@@ -58,8 +58,8 @@ class StructParserTest {
         BufferedReader reader = new BufferedReader(new StringReader(structString));
 
         StructDefinition expectedStruct = new StructDefinition("XrSwapchainImageBaseHeader", false);
-        expectedStruct.addField(new StructField("XrStructureType", "type", null, false, false, true, false,false,false,false,false,false,false ));
-        expectedStruct.addField(new StructField("void", "next", null, true, false, false, false,false,false,false,false,false,false ));
+        expectedStruct.addField(new StructField("XrStructureType", "type", null, false, false, true, false,false,false,false,false,false,false, false));
+        expectedStruct.addField(new StructField("void", "next", null, true, false, false, false,false,false,false,false,false,false, false));
 
         StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine(),
                 KNOWN_ENUM_TYPES, KNOWN_ATOMS, KNOWN_TYPEDEF_INTS, KNOWN_TYPEDEF_LONGS,
@@ -80,9 +80,9 @@ class StructParserTest {
         BufferedReader reader = new BufferedReader(new StringReader(structString));
 
         StructDefinition expectedStruct = new StructDefinition("XrEventDataBuffer", true);
-        expectedStruct.addField(new StructField("XrStructureType", "type", null, false, false, true, false,false,false,false,false,false,false ));
-        expectedStruct.addField(new StructField("void", "next", null, true, true, false, false,false,false,false,false,false,false ));
-        expectedStruct.addField(new StructField("uint8_t", "varying", "4000", false, false, false, false,false,false,false,false,false,false ));
+        expectedStruct.addField(new StructField("XrStructureType", "type", null, false, false, true, false,false,false,false,false,false,false, false));
+        expectedStruct.addField(new StructField("void", "next", null, true, true, false, false,false,false,false,false,false,false, false));
+        expectedStruct.addField(new StructField("uint8_t", "varying", "4000", false, false, false, false,false,false,false,false,false,false, false));
 
         StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine(),
                 KNOWN_ENUM_TYPES, KNOWN_ATOMS, KNOWN_TYPEDEF_INTS, KNOWN_TYPEDEF_LONGS,

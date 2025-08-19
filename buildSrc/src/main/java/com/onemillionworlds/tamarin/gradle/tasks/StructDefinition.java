@@ -3,6 +3,7 @@ package com.onemillionworlds.tamarin.gradle.tasks;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Class representing a struct definition.
@@ -49,6 +50,56 @@ public class StructDefinition {
         return Objects.hash(name, fields, canBeItsOwnDefault);
     }
 
+    public boolean hasField(String fieldName){
+        for(StructField field : fields){
+            if(field.getName().equals(fieldName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Often pointer fields come with a seperate parameter that lists how many items of that type
+     * the field contains. This finds that count method
+     */
+    public Optional<String> findCountParameterForPointerField(String fieldName){
+
+        List<String> options = new ArrayList<>(List.of(
+                fieldName + "Count",
+                "count" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1)
+        ));
+
+        pluralToSingular(fieldName).ifPresent(singular -> {
+            options.add(singular + "CapacityInput");
+            options.add(singular + "Count");
+        });
+
+        // special cases
+        if(fieldName.equals("jointLocations") || fieldName.equals("jointVelocities")){
+            options.add("jointCount");
+        }
+        if(fieldName.equals("viewConfigurationStates")){
+            options.add("viewConfigurationCount");
+        }
+        if(fieldName.equals("viewConfigurationLayersInfo")){
+            options.add("viewConfigurationLayerCount");
+            options.add("viewConfigurationCount");
+        }
+        if (fieldName.startsWith("node")){
+            options.add("nodeCapacityInput");
+        }
+
+        String countMethodName = null;
+
+        for (String option : options) {
+            if (hasField(option)){
+                return Optional.of(option);
+            }
+        }
+        return Optional.empty();
+    }
+
     @Override
     public String toString() {
         return "StructDefinition{" +
@@ -56,5 +107,19 @@ public class StructDefinition {
                 ", fields=\n" + fields.stream().map(f -> "  " + f + "\n").reduce(String::concat).orElse("") +
                 ", canBeItsOwnDefault=" + canBeItsOwnDefault +
                 '}';
+    }
+
+    private static Optional<String> pluralToSingular(String plural) {
+        if(plural.equals("vertices")){
+            return Optional.of("vertex");
+        } else if (plural.equals("indices")) {
+            return Optional.of("index");
+        }else if(plural.endsWith("s")) {
+            return Optional.of(plural.substring(0, plural.length() - 1));
+        } else if (plural.contains("Layers")) {
+            return Optional.of(plural.replace("Layers", "Layer"));
+        }else {
+            return Optional.empty();
+        }
     }
 }

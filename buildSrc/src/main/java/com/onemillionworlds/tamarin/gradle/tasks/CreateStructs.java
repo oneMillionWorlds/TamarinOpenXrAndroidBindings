@@ -183,11 +183,6 @@ public class CreateStructs extends DefaultTask {
                 // Parse int typedefs
                 IntTypeDefPasser.parseIntTypedef(line).ifPresent(intTypedefs::add);
 
-
-                if(line.contains("typedef int64_t XrTime;")){
-                    System.out.println("RJT found XrTime");
-                    System.out.println(LongTypeDefPasser.parseLongTypedef(line));
-                }
                 // Parse long typedefs
                 LongTypeDefPasser.parseLongTypedef(line).ifPresent(longTypedefs::add);
 
@@ -202,7 +197,7 @@ public class CreateStructs extends DefaultTask {
                     List<String> knownStructs = structs.stream().map(StructDefinition::getName).toList();
 
                     List<String> xrStructureTypeValues = enums.stream()
-                            .filter(e -> e.getName().equals("xrStructureType"))
+                            .filter(e -> e.getName().equals("XrStructureType"))
                             .flatMap(e -> e.getValues().stream())
                             .map(EnumDefinition.EnumValue::getName)
                             .toList();
