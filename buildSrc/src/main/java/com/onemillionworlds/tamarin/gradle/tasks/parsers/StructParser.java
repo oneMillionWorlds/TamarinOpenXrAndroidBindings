@@ -57,7 +57,7 @@ public class StructParser {
                     boolean isStruct = knownStructs.contains(type);
                     boolean isSingletonStructPointer = isStruct
                             && isPointer
-                            && type.endsWith("BaseHeader")
+                            && (type.contains("BaseHeader") || type.equals("XrViveTrackerPathsHTCX"))
                             && structDefinition.findCountParameterForPointerField(fieldName).isEmpty();
                     StructField field = new StructField(type, fieldName, arraySizeConstant, isPointer, isConst, 
                                                       isEnumType, isAtomType, isTypeDefInt, isTypeDefLong, 

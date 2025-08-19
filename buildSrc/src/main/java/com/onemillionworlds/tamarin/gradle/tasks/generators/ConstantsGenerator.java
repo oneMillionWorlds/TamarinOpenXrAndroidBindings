@@ -34,19 +34,12 @@ public class ConstantsGenerator extends FileGenerator {
             // Write structure types
             writer.write("    // Structure types\n");
             for (Map.Entry<String, String> entry : constants.entrySet()) {
-                if (entry.getKey().startsWith("XR_TYPE_")) {
+                if(entry.getValue().contains("\"")){
+                    writer.write("    public static final String " + entry.getKey() + " = " + entry.getValue() + ";\n");
+                }else{
                     writer.write("    public static final int " + entry.getKey() + " = " + entry.getValue() + ";\n");
                 }
             }
-
-            writer.write("    \n");
-            writer.write("    // Constants\n");
-            for (Map.Entry<String, String> entry : constants.entrySet()) {
-                if (entry.getKey().startsWith("XR_MAX_") || entry.getKey().endsWith("_SIZE_EXT")) {
-                    writer.write("    public static final int " + entry.getKey() + " = " + entry.getValue() + ";\n");
-                }
-            }
-
             writer.write("    \n");
             writer.write("    // Pointer size\n");
             writer.write("    public static final int POINTER_SIZE = 8; // 64-bit\n");

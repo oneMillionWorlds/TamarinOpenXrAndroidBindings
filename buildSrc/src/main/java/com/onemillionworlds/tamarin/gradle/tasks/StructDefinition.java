@@ -89,6 +89,14 @@ public class StructDefinition {
         if (fieldName.startsWith("node")){
             options.add("nodeCapacityInput");
         }
+        if(fieldName.startsWith("joint")){
+            options.add("jointCapacityInput");
+        }
+        if(fieldName.startsWith("vertex")){
+            options.add("vertexCapacityInput");
+            options.add("vertexCount");
+        }
+
 
         String countMethodName = null;
 
@@ -114,6 +122,12 @@ public class StructDefinition {
             return Optional.of("vertex");
         } else if (plural.equals("indices")) {
             return Optional.of("index");
+        }else if (plural.equals("boxes")){
+            return Optional.of("box");
+        }else if (plural.equals("spheres")){
+            return Optional.of("sphere");
+        }else if(plural.endsWith("Meshes")){
+            return Optional.of(plural.replace("Meshes", "Mesh"));
         }else if(plural.endsWith("s")) {
             return Optional.of(plural.substring(0, plural.length() - 1));
         } else if (plural.contains("Layers")) {
