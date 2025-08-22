@@ -2,6 +2,7 @@ package com.onemillionworlds.tamarin.gradle.tasks.generators;
 
 import com.onemillionworlds.tamarin.gradle.tasks.StructDefinition;
 import com.onemillionworlds.tamarin.gradle.tasks.StructField;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.StructParser;
 import org.gradle.api.logging.Logger;
 
 import java.io.BufferedWriter;
@@ -209,7 +210,7 @@ public class StructGenerator extends FileGenerator {
         boolean hasTypeField = struct.getFields().stream()
                 .anyMatch(field -> field.getName().equals("type"));
         if (hasTypeField && struct.canBeItsOwnDefault()) {
-            String typeConstant = getTypeConstantForStruct(struct.getName());
+            String typeConstant = StructParser.createXrStructureTypeEnumValueForStruct(struct.getName());
             writer.append("    /** Sets the specified value to the {@code type} field. */\n");
             writer.append("    public " + struct.getName() + " type$Default() { return type(XrStructureType." + typeConstant + "); }\n");
         }
@@ -482,7 +483,7 @@ public class StructGenerator extends FileGenerator {
 
         // Add type$Default method for Buffer if the struct has a type field
         if (hasTypeField && struct.canBeItsOwnDefault()) {
-            String typeConstant = getTypeConstantForStruct(struct.getName());
+            String typeConstant = StructParser.createXrStructureTypeEnumValueForStruct(struct.getName());
             writer.append("        /** Sets the specified value to the {@code type} field. */\n");
             writer.append("        public Buffer type$Default() { return type(XrStructureType." + typeConstant + "); }\n");
         }
@@ -659,27 +660,5 @@ public class StructGenerator extends FileGenerator {
         return writer.toString();
     }
 
-    /**
-     * Converts a struct name to its corresponding type constant.
-     * For example, "XrExtensionProperties" -> "XR_TYPE_EXTENSION_PROPERTIES"
-     * Handles acronyms correctly, e.g., "XrBindingModificationsKHR" -> "XR_TYPE_BINDING_MODIFICATIONS_KHR"
-     */
-    private static String getTypeConstantForStruct(String structName) {
-        // Convert camel case to underscore format for the type constant
-        String name = structName.substring(2); // Remove "Xr" prefix
-        StringBuilder typeConstantBuilder = new StringBuilder("XR_TYPE_");
-        for (int i = 0; i < name.length(); i++) {
-            char c = name.charAt(i);
-            // Only add underscore when transitioning from lowercase to uppercase
-            // This ensures acronyms like "KHR" stay together without underscores
-            if (i > 0 && Character.isUpperCase(c) && i < name.length() - 1 && 
-                (Character.isLowerCase(name.charAt(i - 1)) || 
-                 (Character.isUpperCase(name.charAt(i - 1)) && Character.isLowerCase(name.charAt(i + 1))))) {
-                typeConstantBuilder.append('_');
-            }
-            typeConstantBuilder.append(Character.toUpperCase(c));
-        }
-        return typeConstantBuilder.toString();
-    }
 
 }

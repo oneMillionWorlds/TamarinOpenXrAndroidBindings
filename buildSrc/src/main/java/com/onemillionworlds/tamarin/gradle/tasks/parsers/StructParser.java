@@ -73,7 +73,7 @@ public class StructParser {
         }
     }
 
-    static String createXrStructureTypeEnumValueForStruct(String structName){
+    public static String createXrStructureTypeEnumValueForStruct(String structName){
         structName = structName.replace("Xr", "");
 
         StringBuilder result = new StringBuilder();

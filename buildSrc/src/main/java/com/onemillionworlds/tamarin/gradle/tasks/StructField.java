@@ -155,7 +155,7 @@ public class StructField {
      * @return The Java type as a string
      */
     public String getJavaType() {
-        if (arraySizeConstant != null) {
+        if (arraySizeConstant != null && !isStructByValue()) {
             return "ByteBuffer";
         } else if (isEnumType) {
             return type;
