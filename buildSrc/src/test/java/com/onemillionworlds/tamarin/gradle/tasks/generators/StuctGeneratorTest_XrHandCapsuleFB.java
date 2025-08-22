@@ -105,31 +105,37 @@ public class StuctGeneratorTest_XrHandCapsuleFB {
                 public int sizeof() { return SIZEOF; }
             
                 /** Returns the value of the {@code points} field. */
-                public ByteBuffer points() { return memByteBuffer(address() + POINTS, XR_HAND_TRACKING_CAPSULE_POINT_COUNT_FB * 12); }
+                public XrVector3f.Buffer points() {
+                    return npoints(address());
+                }
                 /** Returns the value of the {@code radius} field. */
-                public float radius() { return memGetFloat(address() + RADIUS); }
+                public float radius() {
+                    return nradius(address());
+                }
                 /** Returns the value of the {@code joint} field. */
-                public XrHandJointEXT joint() { return XrHandJointEXT.fromValue(memGetInt(address() + JOINT)); }
+                public XrHandJointEXT joint() {
+                    return XrHandJointEXT.fromValue(XrHandCapsuleFB.njoint(address()));
+                }
             
                 /** Sets the specified value to the {@code points} field. */
-                public XrHandCapsuleFB points(XrVector3f value) {\s
-                    memCopy(address() + POINTS, value.address(), XrVector3f.SIZEOF);
+                public XrHandCapsuleFB points(XrVector3f.Buffer value) {\s
+                    XrHandCapsuleFB.npoints(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code radius} field. */
                 public XrHandCapsuleFB radius(float value) {\s
-                    memPutFloat(address() + RADIUS, value);
+                    XrHandCapsuleFB.nradius(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code joint} field. */
                 public XrHandCapsuleFB joint(XrHandJointEXT value) {\s
-                    memPutInt(address() + JOINT, value.getValue());
+                    XrHandCapsuleFB.njoint(address(), value.getValue());
                     return this;
                 }
             
                 /** Initializes this struct with the specified values. */
                 public XrHandCapsuleFB set(
-                    XrVector3f points,
+                    XrVector3f.Buffer points,
                     float radius,
                     XrHandJointEXT joint
                 ) {
@@ -263,13 +269,13 @@ public class StuctGeneratorTest_XrHandCapsuleFB {
             
                 // -----------------------------------
             
-                /** Unsafe version of {@link #points}. */
-                public static XrVector3f npoints(long struct) { return XrVector3f.create(struct + XrHandCapsuleFB.POINTS); }
-                public static void npoints(long struct, XrVector3f value) { memCopy(value.address(), struct +XrHandCapsuleFB.POINTS,XrVector3f.SIZEOF); }
-                /** Unsafe version of {@link #radius}. */
+                /** Unsafe version of points}. */
+                public static XrVector3f.Buffer npoints(long struct) { return XrVector3f.Buffer.create(struct + XrHandCapsuleFB.POINTS); }
+                public static void npoints(long struct, XrVector3f.Buffer value) { memCopy(value.address(), struct +XrHandCapsuleFB.POINTS,XrVector3f.Buffer.SIZEOF); }
+                /** Unsafe version of radius}. */
                 public static float nradius(long struct) { return memGetFloat(struct + XrHandCapsuleFB.RADIUS); }
                 public static void nradius(long struct, float value) { memPutFloat(struct + XrHandCapsuleFB.RADIUS, value); }
-                /** Unsafe version of {@link #joint}. */
+                /** Unsafe version of joint}. */
                 public static int njoint(long struct) { return memGetInt(struct + XrHandCapsuleFB.JOINT); }
                 public static void njoint(long struct, int value ) { memPutInt(struct + XrHandCapsuleFB.JOINT, value); }
             
@@ -328,14 +334,14 @@ public class StuctGeneratorTest_XrHandCapsuleFB {
                     }
             
                     /** Returns the value of the {@code points} field. */
-                    public ByteBuffer points() { return XrHandCapsuleFB.npoints(address()); }
+                    public XrVector3f.Buffer points() { return XrHandCapsuleFB.npoints(address()); }
                     /** Returns the value of the {@code radius} field. */
                     public float radius() { return XrHandCapsuleFB.nradius(address()); }
                     /** Returns the value of the {@code joint} field. */
                     public XrHandJointEXT joint() { return XrHandJointEXT.fromValue(XrHandCapsuleFB.njoint(address())); }
             
                     /** Sets the specified value to the {@code points} field. */
-                    public Buffer points(XrVector3f value) {\s
+                    public Buffer points(XrVector3f.Buffer value) {\s
                         XrHandCapsuleFB.npoints(address(), value);
                         return this;
                     }

@@ -20,16 +20,6 @@ public class StructGenerator extends FileGenerator {
         this.struct = struct;
     }
 
-    /**
-     * Gets the import statement for an enum type.
-     * 
-     * @param type The enum type
-     * @return The import statement for the enum type
-     */
-    private String getEnumImport(String type) {
-        return "import com.onemillionworlds.tamarin.openxrbindings.enums." + type + ";\n";
-    }
-
     @Override
     public void generate(File outputDir) throws IOException {
         File outputFile = new File(outputDir, struct.getName() + ".java");
@@ -442,19 +432,9 @@ public class StructGenerator extends FileGenerator {
             String fieldType = field.getType();
             String fieldName = field.getName();
             String fieldNameSanitised = sanitiseFieldName(fieldName);
-            String arraySizeConstant = field.getArraySizeConstant();
 
             writer.append("        /** Returns the value of the {@code " + fieldName + "} field. */\n");
-
-            if (arraySizeConstant != null) {
-                if (fieldType.equals("char")) {
-                    writer.append("        public ByteBuffer " + fieldNameSanitised + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
-                    writer.append("        /** Returns the null-terminated string stored in the {@code " + fieldName + "} field. */\n");
-                    writer.append("        public String " + fieldNameSanitised + "String() { return " + struct.getName() + ".n" + fieldName + "String(address()); }\n");
-                } else {
-                    writer.append("        public ByteBuffer " + fieldNameSanitised + "() { return " + struct.getName() + ".n" + fieldName + "(address()); }\n");
-                }
-            } else if (field.isEnumType()) {
+            if (field.isEnumType()) {
                 writer.append("        public " + field.getJavaType() + " " + fieldNameSanitised + "() { return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(address())); }\n");
             } else {
                 String javaType = field.getJavaType();
@@ -500,40 +480,17 @@ public class StructGenerator extends FileGenerator {
         String javaType = field.getJavaType();
         String fieldName = field.getName();
         String fieldNameSanitised = sanitiseFieldName(fieldName);
-        String fieldNameUpper = fieldName.toUpperCase();
-        String arraySizeConstant = field.getArraySizeConstant();
 
         writer.append("    /** Returns the value of the {@code " + fieldName + "} field. */\n");
 
-        if (arraySizeConstant != null) {
-            if (fieldType.equals("char")) {
-                writer.append("    public ByteBuffer " + fieldNameSanitised + "() { return memByteBuffer(address() + " + fieldNameUpper + ", " + arraySizeConstant + "); }\n");
-                writer.append("    /** Returns the null-terminated string stored in the {@code " + fieldName + "} field. */\n");
-                writer.append("    public String " + fieldNameSanitised + "String() { return memUTF8(address() + " + fieldNameUpper + "); }\n");
-            } else {
-                writer.append("    public ByteBuffer " + fieldNameSanitised + "() { return memByteBuffer(address() + " + fieldNameUpper + ", " + arraySizeConstant + " * " + field.getMemorySize() + "); }\n");
-            }
-        } else if (field.isEnumType()) {
-            writer.append("    public " + field.getJavaType() + " " + fieldNameSanitised + "() { return " + fieldType + ".fromValue(memGetInt(address() + " + fieldNameUpper + ")); }\n");
-        } else if (fieldType.equals("int16_t")) {
-            writer.append("    public short " + fieldNameSanitised + "() { return memGetShort(address() + " + fieldNameUpper + "); }\n");
-        } else if(field.isStruct()){
-            if(field.isPointer()){
-                writer.append("    public " + javaType + " " + fieldNameSanitised + "() {\n");
-                writer.append("        return n" + fieldNameSanitised + "(address());\n");
-                writer.append("    }\n");
-            }else {
-                writer.append("    public " + javaType + " " + fieldNameSanitised + "() { return " + javaType + ".create(address() + " + fieldNameUpper + "); }\n");
-            }
-        } else {
-            String accessMethod = field.getMemoryAccessMethod();
+        writer.append("    public " + javaType + " " + fieldNameSanitised + "() {\n");
 
-            if (field.isStructByValue()) {
-                writer.append("    public " + javaType + " " + fieldNameSanitised + "() { return " + javaType + ".create(address() + " + fieldNameUpper + "); }\n");
-            } else {
-                writer.append("    public " + javaType + " " + fieldNameSanitised + "() { return " + accessMethod + "(address() + " + fieldNameUpper + "); }\n");
-            }
+        if(field.isEnumType()){
+            writer.append("        return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(address()));\n");
+        } else {
+            writer.append("        return n" + fieldNameSanitised + "(address());\n");
         }
+        writer.append("    }\n");
     }
 
     private static String generateUnsafeGetterAndSetter(StructDefinition struct, StructField field) {
@@ -545,7 +502,7 @@ public class StructGenerator extends FileGenerator {
         String javaType = field.getJavaType();
         String fieldNameUpper = fieldName.toUpperCase();
 
-        writer.append("    /** Unsafe version of {@link #" + fieldName + "}. */\n");
+        writer.append("    /** Unsafe version of " + fieldName + "}. */\n");
 
         if(field.isStruct()) {
             if(field.isPointer()){
@@ -583,7 +540,7 @@ public class StructGenerator extends FileGenerator {
             }
         } else if (javaType.equals("ByteBuffer")) {
             writer.append("    public static ByteBuffer n" + fieldNameSanitised + "(long struct) { return memByteBuffer(struct + " + struct.getName() + "." + fieldNameUpper + ", " + field.getArraySizeConstant() + "); }\n");
-            writer.append("    /** Unsafe version of {@link #" + fieldNameSanitised + "String}. */\n");
+            writer.append("    /** Unsafe version of " + fieldNameSanitised + ". */\n");
             writer.append("    public static String n" + fieldNameSanitised + "String(long struct) { return memUTF8(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
 
             if(field.getArraySizeConstant() != null) {
@@ -627,33 +584,17 @@ public class StructGenerator extends FileGenerator {
         String fieldName = field.getName();
         String fieldNameUpper = fieldName.toUpperCase();
         String fieldType = field.getJavaType();
-
+        String fieldNameSanitised = sanitiseFieldName(fieldName);
 
         writer.append("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
-        writer.append("    public " + struct.getName() + " " + fieldName + "(" + fieldType + " value) { \n");
-        if(fieldType.equals("ByteBuffer")){
-            // buffers are weird, they are a mem copy instead
-            writer.append("        n"+fieldName+"(address(), value);\n");
-        }else if(field.isStruct()){
-            if(field.isPointer()){
-                writer.append("        n"+fieldName+"(address(), value);\n");
-            }else{
-                writer.append("        memCopy(address() + " + fieldNameUpper + ", value.address(), "+ fieldType +".SIZEOF);\n");
-            }
-        }else {
+        writer.append("    public " + struct.getName() + " " + fieldNameSanitised + "(" + fieldType + " value) { \n");
 
-            String valueMutator;
-
-            if (field.isEnumType()) {
-                valueMutator = "value.getValue()";
-            } else {
-                valueMutator = "value";
-            }
-
-            String putMemMethod = field.getMemorySetMethod();
-
-            writer.append("        " + putMemMethod + "(address() + " + fieldNameUpper + ", " + valueMutator + ");\n");
+        if(field.isEnumType()){
+            writer.append("        " + struct.getName() + ".n"+fieldName+"(address(), value.getValue());\n");
+        } else{
+            writer.append("        " + struct.getName() + ".n"+fieldName+"(address(), value);\n");
         }
+
         writer.append("        return this;\n");
         writer.append("    }\n");
 

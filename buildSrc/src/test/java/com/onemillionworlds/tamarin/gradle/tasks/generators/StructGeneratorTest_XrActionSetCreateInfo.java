@@ -112,43 +112,49 @@ public class StructGeneratorTest_XrActionSetCreateInfo {
                 public int sizeof() { return SIZEOF; }
             
                 /** Returns the value of the {@code type} field. */
-                public XrStructureType type() { return XrStructureType.fromValue(memGetInt(address() + TYPE)); }
+                public XrStructureType type() {
+                    return XrStructureType.fromValue(XrActionSetCreateInfo.ntype(address()));
+                }
                 /** Returns the value of the {@code next} field. */
-                public long next() { return memGetAddress(address() + NEXT); }
+                public long next() {
+                    return nnext(address());
+                }
                 /** Returns the value of the {@code actionSetName} field. */
-                public ByteBuffer actionSetName() { return memByteBuffer(address() + ACTIONSETNAME, XR_MAX_ACTION_SET_NAME_SIZE); }
-                /** Returns the null-terminated string stored in the {@code actionSetName} field. */
-                public String actionSetNameString() { return memUTF8(address() + ACTIONSETNAME); }
+                public ByteBuffer actionSetName() {
+                    return nactionSetName(address());
+                }
                 /** Returns the value of the {@code localizedActionSetName} field. */
-                public ByteBuffer localizedActionSetName() { return memByteBuffer(address() + LOCALIZEDACTIONSETNAME, XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE); }
-                /** Returns the null-terminated string stored in the {@code localizedActionSetName} field. */
-                public String localizedActionSetNameString() { return memUTF8(address() + LOCALIZEDACTIONSETNAME); }
+                public ByteBuffer localizedActionSetName() {
+                    return nlocalizedActionSetName(address());
+                }
                 /** Returns the value of the {@code priority} field. */
-                public int priority() { return memGetInt(address() + PRIORITY); }
+                public int priority() {
+                    return npriority(address());
+                }
             
                 /** Sets the specified value to the {@code type} field. */
                 public XrActionSetCreateInfo type(XrStructureType value) {\s
-                    memPutInt(address() + TYPE, value.getValue());
+                    XrActionSetCreateInfo.ntype(address(), value.getValue());
                     return this;
                 }
                 /** Sets the specified value to the {@code next} field. */
                 public XrActionSetCreateInfo next(long value) {\s
-                    memPutAddress(address() + NEXT, value);
+                    XrActionSetCreateInfo.nnext(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code actionSetName} field. */
                 public XrActionSetCreateInfo actionSetName(ByteBuffer value) {\s
-                    nactionSetName(address(), value);
+                    XrActionSetCreateInfo.nactionSetName(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code localizedActionSetName} field. */
                 public XrActionSetCreateInfo localizedActionSetName(ByteBuffer value) {\s
-                    nlocalizedActionSetName(address(), value);
+                    XrActionSetCreateInfo.nlocalizedActionSetName(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code priority} field. */
                 public XrActionSetCreateInfo priority(int value) {\s
-                    memPutInt(address() + PRIORITY, value);
+                    XrActionSetCreateInfo.npriority(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code type} field. */
@@ -294,31 +300,31 @@ public class StructGeneratorTest_XrActionSetCreateInfo {
             
                 // -----------------------------------
             
-                /** Unsafe version of {@link #type}. */
+                /** Unsafe version of type}. */
                 public static int ntype(long struct) { return memGetInt(struct + XrActionSetCreateInfo.TYPE); }
                 public static void ntype(long struct, int value ) { memPutInt(struct + XrActionSetCreateInfo.TYPE, value); }
-                /** Unsafe version of {@link #next}. */
+                /** Unsafe version of next}. */
                 public static long nnext(long struct) { return memGetAddress(struct + XrActionSetCreateInfo.NEXT); }
                 public static void nnext(long struct, long value) { memPutAddress(struct + XrActionSetCreateInfo.NEXT, value); }
-                /** Unsafe version of {@link #actionSetName}. */
+                /** Unsafe version of actionSetName}. */
                 public static ByteBuffer nactionSetName(long struct) { return memByteBuffer(struct + XrActionSetCreateInfo.ACTIONSETNAME, XR_MAX_ACTION_SET_NAME_SIZE); }
-                /** Unsafe version of {@link #actionSetNameString}. */
+                /** Unsafe version of actionSetName. */
                 public static String nactionSetNameString(long struct) { return memUTF8(struct + XrActionSetCreateInfo.ACTIONSETNAME); }
                 /** max length XR_MAX_ACTION_SET_NAME_SIZE */
                 public static void nactionSetName(long struct, ByteBuffer value) {
                     byteBufferLengthCheck(value,XR_MAX_ACTION_SET_NAME_SIZE);
                     memCopy(memAddress(value), struct + XrActionSetCreateInfo.ACTIONSETNAME, value.remaining());
                 }
-                /** Unsafe version of {@link #localizedActionSetName}. */
+                /** Unsafe version of localizedActionSetName}. */
                 public static ByteBuffer nlocalizedActionSetName(long struct) { return memByteBuffer(struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME, XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE); }
-                /** Unsafe version of {@link #localizedActionSetNameString}. */
+                /** Unsafe version of localizedActionSetName. */
                 public static String nlocalizedActionSetNameString(long struct) { return memUTF8(struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME); }
                 /** max length XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE */
                 public static void nlocalizedActionSetName(long struct, ByteBuffer value) {
                     byteBufferLengthCheck(value,XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE);
                     memCopy(memAddress(value), struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME, value.remaining());
                 }
-                /** Unsafe version of {@link #priority}. */
+                /** Unsafe version of priority}. */
                 public static int npriority(long struct) { return memGetInt(struct + XrActionSetCreateInfo.PRIORITY); }
                 public static void npriority(long struct, int value) { memPutInt(struct + XrActionSetCreateInfo.PRIORITY, value); }
             
@@ -382,12 +388,8 @@ public class StructGeneratorTest_XrActionSetCreateInfo {
                     public long next() { return XrActionSetCreateInfo.nnext(address()); }
                     /** Returns the value of the {@code actionSetName} field. */
                     public ByteBuffer actionSetName() { return XrActionSetCreateInfo.nactionSetName(address()); }
-                    /** Returns the null-terminated string stored in the {@code actionSetName} field. */
-                    public String actionSetNameString() { return XrActionSetCreateInfo.nactionSetNameString(address()); }
                     /** Returns the value of the {@code localizedActionSetName} field. */
                     public ByteBuffer localizedActionSetName() { return XrActionSetCreateInfo.nlocalizedActionSetName(address()); }
-                    /** Returns the null-terminated string stored in the {@code localizedActionSetName} field. */
-                    public String localizedActionSetNameString() { return XrActionSetCreateInfo.nlocalizedActionSetNameString(address()); }
                     /** Returns the value of the {@code priority} field. */
                     public int priority() { return XrActionSetCreateInfo.npriority(address()); }
             

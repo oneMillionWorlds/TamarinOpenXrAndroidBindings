@@ -119,46 +119,58 @@ public class StructGeneratorTest_XrDebugUtilsMessengerCreateInfoExt {
                 public int sizeof() { return SIZEOF; }
             
                 /** Returns the value of the {@code type} field. */
-                public XrStructureType type() { return XrStructureType.fromValue(memGetInt(address() + TYPE)); }
+                public XrStructureType type() {
+                    return XrStructureType.fromValue(XrDebugUtilsMessengerCreateInfoEXT.ntype(address()));
+                }
                 /** Returns the value of the {@code next} field. */
-                public long next() { return memGetAddress(address() + NEXT); }
+                public long next() {
+                    return nnext(address());
+                }
                 /** Returns the value of the {@code messageSeverities} field. */
-                public long messageSeverities() { return memGetLong(address() + MESSAGESEVERITIES); }
+                public long messageSeverities() {
+                    return nmessageSeverities(address());
+                }
                 /** Returns the value of the {@code messageTypes} field. */
-                public long messageTypes() { return memGetLong(address() + MESSAGETYPES); }
+                public long messageTypes() {
+                    return nmessageTypes(address());
+                }
                 /** Returns the value of the {@code userCallback} field. */
-                public long userCallback() { return memGetAddress(address() + USERCALLBACK); }
+                public long userCallback() {
+                    return nuserCallback(address());
+                }
                 /** Returns the value of the {@code userData} field. */
-                public long userData() { return memGetAddress(address() + USERDATA); }
+                public long userData() {
+                    return nuserData(address());
+                }
             
                 /** Sets the specified value to the {@code type} field. */
                 public XrDebugUtilsMessengerCreateInfoEXT type(XrStructureType value) {\s
-                    memPutInt(address() + TYPE, value.getValue());
+                    XrDebugUtilsMessengerCreateInfoEXT.ntype(address(), value.getValue());
                     return this;
                 }
                 /** Sets the specified value to the {@code next} field. */
                 public XrDebugUtilsMessengerCreateInfoEXT next(long value) {\s
-                    memPutAddress(address() + NEXT, value);
+                    XrDebugUtilsMessengerCreateInfoEXT.nnext(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code messageSeverities} field. */
                 public XrDebugUtilsMessengerCreateInfoEXT messageSeverities(long value) {\s
-                    memPutLong(address() + MESSAGESEVERITIES, value);
+                    XrDebugUtilsMessengerCreateInfoEXT.nmessageSeverities(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code messageTypes} field. */
                 public XrDebugUtilsMessengerCreateInfoEXT messageTypes(long value) {\s
-                    memPutLong(address() + MESSAGETYPES, value);
+                    XrDebugUtilsMessengerCreateInfoEXT.nmessageTypes(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code userCallback} field. */
                 public XrDebugUtilsMessengerCreateInfoEXT userCallback(long value) {\s
-                    memPutAddress(address() + USERCALLBACK, value);
+                    XrDebugUtilsMessengerCreateInfoEXT.nuserCallback(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code userData} field. */
                 public XrDebugUtilsMessengerCreateInfoEXT userData(long value) {\s
-                    memPutAddress(address() + USERDATA, value);
+                    XrDebugUtilsMessengerCreateInfoEXT.nuserData(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code type} field. */
@@ -306,22 +318,22 @@ public class StructGeneratorTest_XrDebugUtilsMessengerCreateInfoExt {
             
                 // -----------------------------------
             
-                /** Unsafe version of {@link #type}. */
+                /** Unsafe version of type}. */
                 public static int ntype(long struct) { return memGetInt(struct + XrDebugUtilsMessengerCreateInfoEXT.TYPE); }
                 public static void ntype(long struct, int value ) { memPutInt(struct + XrDebugUtilsMessengerCreateInfoEXT.TYPE, value); }
-                /** Unsafe version of {@link #next}. */
+                /** Unsafe version of next}. */
                 public static long nnext(long struct) { return memGetAddress(struct + XrDebugUtilsMessengerCreateInfoEXT.NEXT); }
                 public static void nnext(long struct, long value) { memPutAddress(struct + XrDebugUtilsMessengerCreateInfoEXT.NEXT, value); }
-                /** Unsafe version of {@link #messageSeverities}. */
+                /** Unsafe version of messageSeverities}. */
                 public static long nmessageSeverities(long struct) { return memGetLong(struct + XrDebugUtilsMessengerCreateInfoEXT.MESSAGESEVERITIES); }
                 public static void nmessageSeverities(long struct, long value) { memPutLong(struct + XrDebugUtilsMessengerCreateInfoEXT.MESSAGESEVERITIES, value); }
-                /** Unsafe version of {@link #messageTypes}. */
+                /** Unsafe version of messageTypes}. */
                 public static long nmessageTypes(long struct) { return memGetLong(struct + XrDebugUtilsMessengerCreateInfoEXT.MESSAGETYPES); }
                 public static void nmessageTypes(long struct, long value) { memPutLong(struct + XrDebugUtilsMessengerCreateInfoEXT.MESSAGETYPES, value); }
-                /** Unsafe version of {@link #userCallback}. */
+                /** Unsafe version of userCallback}. */
                 public static long nuserCallback(long struct) { return memGetAddress(struct + XrDebugUtilsMessengerCreateInfoEXT.USERCALLBACK); }
                 public static void nuserCallback(long struct, long value) { memPutAddress(struct + XrDebugUtilsMessengerCreateInfoEXT.USERCALLBACK, value); }
-                /** Unsafe version of {@link #userData}. */
+                /** Unsafe version of userData}. */
                 public static long nuserData(long struct) { return memGetAddress(struct + XrDebugUtilsMessengerCreateInfoEXT.USERDATA); }
                 public static void nuserData(long struct, long value) { memPutAddress(struct + XrDebugUtilsMessengerCreateInfoEXT.USERDATA, value); }
             

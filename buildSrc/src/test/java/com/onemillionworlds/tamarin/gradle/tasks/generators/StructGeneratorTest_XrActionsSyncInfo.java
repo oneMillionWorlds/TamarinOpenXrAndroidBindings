@@ -109,11 +109,17 @@ public class StructGeneratorTest_XrActionsSyncInfo {
                 public int sizeof() { return SIZEOF; }
             
                 /** Returns the value of the {@code type} field. */
-                public XrStructureType type() { return XrStructureType.fromValue(memGetInt(address() + TYPE)); }
+                public XrStructureType type() {
+                    return XrStructureType.fromValue(XrActionsSyncInfo.ntype(address()));
+                }
                 /** Returns the value of the {@code next} field. */
-                public long next() { return memGetAddress(address() + NEXT); }
+                public long next() {
+                    return nnext(address());
+                }
                 /** Returns the value of the {@code countActiveActionSets} field. */
-                public int countActiveActionSets() { return memGetInt(address() + COUNTACTIVEACTIONSETS); }
+                public int countActiveActionSets() {
+                    return ncountActiveActionSets(address());
+                }
                 /** Returns the value of the {@code activeActionSets} field. */
                 public XrActiveActionSet.Buffer activeActionSets() {
                     return nactiveActionSets(address());
@@ -121,22 +127,22 @@ public class StructGeneratorTest_XrActionsSyncInfo {
             
                 /** Sets the specified value to the {@code type} field. */
                 public XrActionsSyncInfo type(XrStructureType value) {\s
-                    memPutInt(address() + TYPE, value.getValue());
+                    XrActionsSyncInfo.ntype(address(), value.getValue());
                     return this;
                 }
                 /** Sets the specified value to the {@code next} field. */
                 public XrActionsSyncInfo next(long value) {\s
-                    memPutAddress(address() + NEXT, value);
+                    XrActionsSyncInfo.nnext(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code countActiveActionSets} field. */
                 public XrActionsSyncInfo countActiveActionSets(int value) {\s
-                    memPutInt(address() + COUNTACTIVEACTIONSETS, value);
+                    XrActionsSyncInfo.ncountActiveActionSets(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code activeActionSets} field. */
                 public XrActionsSyncInfo activeActionSets(XrActiveActionSet.Buffer value) {\s
-                    nactiveActionSets(address(), value);
+                    XrActionsSyncInfo.nactiveActionSets(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code type} field. */
@@ -280,16 +286,16 @@ public class StructGeneratorTest_XrActionsSyncInfo {
             
                 // -----------------------------------
             
-                /** Unsafe version of {@link #type}. */
+                /** Unsafe version of type}. */
                 public static int ntype(long struct) { return memGetInt(struct + XrActionsSyncInfo.TYPE); }
                 public static void ntype(long struct, int value ) { memPutInt(struct + XrActionsSyncInfo.TYPE, value); }
-                /** Unsafe version of {@link #next}. */
+                /** Unsafe version of next}. */
                 public static long nnext(long struct) { return memGetAddress(struct + XrActionsSyncInfo.NEXT); }
                 public static void nnext(long struct, long value) { memPutAddress(struct + XrActionsSyncInfo.NEXT, value); }
-                /** Unsafe version of {@link #countActiveActionSets}. */
+                /** Unsafe version of countActiveActionSets}. */
                 public static int ncountActiveActionSets(long struct) { return memGetInt(struct + XrActionsSyncInfo.COUNTACTIVEACTIONSETS); }
                 public static void ncountActiveActionSets(long struct, int value) { memPutInt(struct + XrActionsSyncInfo.COUNTACTIVEACTIONSETS, value); }
-                /** Unsafe version of {@link #activeActionSets}. */
+                /** Unsafe version of activeActionSets}. */
                 public static XrActiveActionSet.Buffer nactiveActionSets(long struct) {
                     int count = ncountActiveActionSets(struct);
                     return XrActiveActionSet.createSafe(memGetAddress(struct + XrActionsSyncInfo.ACTIVEACTIONSETS),count);

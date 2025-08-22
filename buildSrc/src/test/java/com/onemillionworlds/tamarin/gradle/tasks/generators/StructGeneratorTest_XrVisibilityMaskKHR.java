@@ -124,62 +124,76 @@ public class StructGeneratorTest_XrVisibilityMaskKHR {
                 public int sizeof() { return SIZEOF; }
             
                 /** Returns the value of the {@code type} field. */
-                public XrStructureType type() { return XrStructureType.fromValue(memGetInt(address() + TYPE)); }
+                public XrStructureType type() {
+                    return XrStructureType.fromValue(XrVisibilityMaskKHR.ntype(address()));
+                }
                 /** Returns the value of the {@code next} field. */
-                public long next() { return memGetAddress(address() + NEXT); }
+                public long next() {
+                    return nnext(address());
+                }
                 /** Returns the value of the {@code vertexCapacityInput} field. */
-                public int vertexCapacityInput() { return memGetInt(address() + VERTEXCAPACITYINPUT); }
+                public int vertexCapacityInput() {
+                    return nvertexCapacityInput(address());
+                }
                 /** Returns the value of the {@code vertexCountOutput} field. */
-                public int vertexCountOutput() { return memGetInt(address() + VERTEXCOUNTOUTPUT); }
+                public int vertexCountOutput() {
+                    return nvertexCountOutput(address());
+                }
                 /** Returns the value of the {@code vertices} field. */
                 public XrVector2f.Buffer vertices() {
                     return nvertices(address());
                 }
                 /** Returns the value of the {@code indexCapacityInput} field. */
-                public int indexCapacityInput() { return memGetInt(address() + INDEXCAPACITYINPUT); }
+                public int indexCapacityInput() {
+                    return nindexCapacityInput(address());
+                }
                 /** Returns the value of the {@code indexCountOutput} field. */
-                public int indexCountOutput() { return memGetInt(address() + INDEXCOUNTOUTPUT); }
+                public int indexCountOutput() {
+                    return nindexCountOutput(address());
+                }
                 /** Returns the value of the {@code indices} field. */
-                public long indices() { return memGetAddress(address() + INDICES); }
+                public long indices() {
+                    return nindices(address());
+                }
             
                 /** Sets the specified value to the {@code type} field. */
                 public XrVisibilityMaskKHR type(XrStructureType value) {\s
-                    memPutInt(address() + TYPE, value.getValue());
+                    XrVisibilityMaskKHR.ntype(address(), value.getValue());
                     return this;
                 }
                 /** Sets the specified value to the {@code next} field. */
                 public XrVisibilityMaskKHR next(long value) {\s
-                    memPutAddress(address() + NEXT, value);
+                    XrVisibilityMaskKHR.nnext(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code vertexCapacityInput} field. */
                 public XrVisibilityMaskKHR vertexCapacityInput(int value) {\s
-                    memPutInt(address() + VERTEXCAPACITYINPUT, value);
+                    XrVisibilityMaskKHR.nvertexCapacityInput(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code vertexCountOutput} field. */
                 public XrVisibilityMaskKHR vertexCountOutput(int value) {\s
-                    memPutInt(address() + VERTEXCOUNTOUTPUT, value);
+                    XrVisibilityMaskKHR.nvertexCountOutput(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code vertices} field. */
                 public XrVisibilityMaskKHR vertices(XrVector2f.Buffer value) {\s
-                    nvertices(address(), value);
+                    XrVisibilityMaskKHR.nvertices(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code indexCapacityInput} field. */
                 public XrVisibilityMaskKHR indexCapacityInput(int value) {\s
-                    memPutInt(address() + INDEXCAPACITYINPUT, value);
+                    XrVisibilityMaskKHR.nindexCapacityInput(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code indexCountOutput} field. */
                 public XrVisibilityMaskKHR indexCountOutput(int value) {\s
-                    memPutInt(address() + INDEXCOUNTOUTPUT, value);
+                    XrVisibilityMaskKHR.nindexCountOutput(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code indices} field. */
                 public XrVisibilityMaskKHR indices(long value) {\s
-                    memPutAddress(address() + INDICES, value);
+                    XrVisibilityMaskKHR.nindices(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code type} field. */
@@ -331,19 +345,19 @@ public class StructGeneratorTest_XrVisibilityMaskKHR {
             
                 // -----------------------------------
             
-                /** Unsafe version of {@link #type}. */
+                /** Unsafe version of type}. */
                 public static int ntype(long struct) { return memGetInt(struct + XrVisibilityMaskKHR.TYPE); }
                 public static void ntype(long struct, int value ) { memPutInt(struct + XrVisibilityMaskKHR.TYPE, value); }
-                /** Unsafe version of {@link #next}. */
+                /** Unsafe version of next}. */
                 public static long nnext(long struct) { return memGetAddress(struct + XrVisibilityMaskKHR.NEXT); }
                 public static void nnext(long struct, long value) { memPutAddress(struct + XrVisibilityMaskKHR.NEXT, value); }
-                /** Unsafe version of {@link #vertexCapacityInput}. */
+                /** Unsafe version of vertexCapacityInput}. */
                 public static int nvertexCapacityInput(long struct) { return memGetInt(struct + XrVisibilityMaskKHR.VERTEXCAPACITYINPUT); }
                 public static void nvertexCapacityInput(long struct, int value) { memPutInt(struct + XrVisibilityMaskKHR.VERTEXCAPACITYINPUT, value); }
-                /** Unsafe version of {@link #vertexCountOutput}. */
+                /** Unsafe version of vertexCountOutput}. */
                 public static int nvertexCountOutput(long struct) { return memGetInt(struct + XrVisibilityMaskKHR.VERTEXCOUNTOUTPUT); }
                 public static void nvertexCountOutput(long struct, int value) { memPutInt(struct + XrVisibilityMaskKHR.VERTEXCOUNTOUTPUT, value); }
-                /** Unsafe version of {@link #vertices}. */
+                /** Unsafe version of vertices}. */
                 public static XrVector2f.Buffer nvertices(long struct) {
                     int count = nvertexCapacityInput(struct);
                     return XrVector2f.createSafe(memGetAddress(struct + XrVisibilityMaskKHR.VERTICES),count);
@@ -355,13 +369,13 @@ public class StructGeneratorTest_XrVisibilityMaskKHR {
                         nvertexCapacityInput(struct, value.remaining());
                     }
                 }
-                /** Unsafe version of {@link #indexCapacityInput}. */
+                /** Unsafe version of indexCapacityInput}. */
                 public static int nindexCapacityInput(long struct) { return memGetInt(struct + XrVisibilityMaskKHR.INDEXCAPACITYINPUT); }
                 public static void nindexCapacityInput(long struct, int value) { memPutInt(struct + XrVisibilityMaskKHR.INDEXCAPACITYINPUT, value); }
-                /** Unsafe version of {@link #indexCountOutput}. */
+                /** Unsafe version of indexCountOutput}. */
                 public static int nindexCountOutput(long struct) { return memGetInt(struct + XrVisibilityMaskKHR.INDEXCOUNTOUTPUT); }
                 public static void nindexCountOutput(long struct, int value) { memPutInt(struct + XrVisibilityMaskKHR.INDEXCOUNTOUTPUT, value); }
-                /** Unsafe version of {@link #indices}. */
+                /** Unsafe version of indices}. */
                 public static long nindices(long struct) { return memGetAddress(struct + XrVisibilityMaskKHR.INDICES); }
                 public static void nindices(long struct, long value) { memPutAddress(struct + XrVisibilityMaskKHR.INDICES, value); }
             
@@ -480,6 +494,7 @@ public class StructGeneratorTest_XrVisibilityMaskKHR {
                     public Buffer type$Default() { return type(XrStructureType.XR_TYPE_VISIBILITY_MASK_KHR); }
                 }
             }
+            
             """;
 
     private static final String xrVisibilityMaskKHR_cDefinition = """

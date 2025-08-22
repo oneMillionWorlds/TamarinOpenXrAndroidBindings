@@ -126,60 +126,76 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
                 public int sizeof() { return SIZEOF; }
             
                 /** Returns the value of the {@code type} field. */
-                public XrStructureType type() { return XrStructureType.fromValue(memGetInt(address() + TYPE)); }
+                public XrStructureType type() {
+                    return XrStructureType.fromValue(XrInstanceCreateInfo.ntype(address()));
+                }
                 /** Returns the value of the {@code next} field. */
-                public long next() { return memGetAddress(address() + NEXT); }
+                public long next() {
+                    return nnext(address());
+                }
                 /** Returns the value of the {@code createFlags} field. */
-                public long createFlags() { return memGetLong(address() + CREATEFLAGS); }
+                public long createFlags() {
+                    return ncreateFlags(address());
+                }
                 /** Returns the value of the {@code applicationInfo} field. */
-                public XrApplicationInfo applicationInfo() { return XrApplicationInfo.create(address() + APPLICATIONINFO); }
+                public XrApplicationInfo applicationInfo() {
+                    return napplicationInfo(address());
+                }
                 /** Returns the value of the {@code enabledApiLayerCount} field. */
-                public int enabledApiLayerCount() { return memGetInt(address() + ENABLEDAPILAYERCOUNT); }
+                public int enabledApiLayerCount() {
+                    return nenabledApiLayerCount(address());
+                }
                 /** Returns the value of the {@code enabledApiLayerNames} field. */
-                public long enabledApiLayerNames() { return memGetAddress(address() + ENABLEDAPILAYERNAMES); }
+                public long enabledApiLayerNames() {
+                    return nenabledApiLayerNames(address());
+                }
                 /** Returns the value of the {@code enabledExtensionCount} field. */
-                public int enabledExtensionCount() { return memGetInt(address() + ENABLEDEXTENSIONCOUNT); }
+                public int enabledExtensionCount() {
+                    return nenabledExtensionCount(address());
+                }
                 /** Returns the value of the {@code enabledExtensionNames} field. */
-                public long enabledExtensionNames() { return memGetAddress(address() + ENABLEDEXTENSIONNAMES); }
+                public long enabledExtensionNames() {
+                    return nenabledExtensionNames(address());
+                }
             
                 /** Sets the specified value to the {@code type} field. */
                 public XrInstanceCreateInfo type(XrStructureType value) {\s
-                    memPutInt(address() + TYPE, value.getValue());
+                    XrInstanceCreateInfo.ntype(address(), value.getValue());
                     return this;
                 }
                 /** Sets the specified value to the {@code next} field. */
                 public XrInstanceCreateInfo next(long value) {\s
-                    memPutAddress(address() + NEXT, value);
+                    XrInstanceCreateInfo.nnext(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code createFlags} field. */
                 public XrInstanceCreateInfo createFlags(long value) {\s
-                    memPutLong(address() + CREATEFLAGS, value);
+                    XrInstanceCreateInfo.ncreateFlags(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code applicationInfo} field. */
                 public XrInstanceCreateInfo applicationInfo(XrApplicationInfo value) {\s
-                    memCopy(address() + APPLICATIONINFO, value.address(), XrApplicationInfo.SIZEOF);
+                    XrInstanceCreateInfo.napplicationInfo(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code enabledApiLayerCount} field. */
                 public XrInstanceCreateInfo enabledApiLayerCount(int value) {\s
-                    memPutInt(address() + ENABLEDAPILAYERCOUNT, value);
+                    XrInstanceCreateInfo.nenabledApiLayerCount(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code enabledApiLayerNames} field. */
                 public XrInstanceCreateInfo enabledApiLayerNames(long value) {\s
-                    memPutAddress(address() + ENABLEDAPILAYERNAMES, value);
+                    XrInstanceCreateInfo.nenabledApiLayerNames(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code enabledExtensionCount} field. */
                 public XrInstanceCreateInfo enabledExtensionCount(int value) {\s
-                    memPutInt(address() + ENABLEDEXTENSIONCOUNT, value);
+                    XrInstanceCreateInfo.nenabledExtensionCount(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code enabledExtensionNames} field. */
                 public XrInstanceCreateInfo enabledExtensionNames(long value) {\s
-                    memPutAddress(address() + ENABLEDEXTENSIONNAMES, value);
+                    XrInstanceCreateInfo.nenabledExtensionNames(address(), value);
                     return this;
                 }
                 /** Sets the specified value to the {@code type} field. */
@@ -331,28 +347,28 @@ public class StructGeneratorTest_XrInstanceCreateInfo {
             
                 // -----------------------------------
             
-                /** Unsafe version of {@link #type}. */
+                /** Unsafe version of type}. */
                 public static int ntype(long struct) { return memGetInt(struct + XrInstanceCreateInfo.TYPE); }
                 public static void ntype(long struct, int value ) { memPutInt(struct + XrInstanceCreateInfo.TYPE, value); }
-                /** Unsafe version of {@link #next}. */
+                /** Unsafe version of next}. */
                 public static long nnext(long struct) { return memGetAddress(struct + XrInstanceCreateInfo.NEXT); }
                 public static void nnext(long struct, long value) { memPutAddress(struct + XrInstanceCreateInfo.NEXT, value); }
-                /** Unsafe version of {@link #createFlags}. */
+                /** Unsafe version of createFlags}. */
                 public static long ncreateFlags(long struct) { return memGetLong(struct + XrInstanceCreateInfo.CREATEFLAGS); }
                 public static void ncreateFlags(long struct, long value) { memPutLong(struct + XrInstanceCreateInfo.CREATEFLAGS, value); }
-                /** Unsafe version of {@link #applicationInfo}. */
+                /** Unsafe version of applicationInfo}. */
                 public static XrApplicationInfo napplicationInfo(long struct) { return XrApplicationInfo.create(struct + XrInstanceCreateInfo.APPLICATIONINFO); }
                 public static void napplicationInfo(long struct, XrApplicationInfo value) { memCopy(value.address(), struct +XrInstanceCreateInfo.APPLICATIONINFO,XrApplicationInfo.SIZEOF); }
-                /** Unsafe version of {@link #enabledApiLayerCount}. */
+                /** Unsafe version of enabledApiLayerCount}. */
                 public static int nenabledApiLayerCount(long struct) { return memGetInt(struct + XrInstanceCreateInfo.ENABLEDAPILAYERCOUNT); }
                 public static void nenabledApiLayerCount(long struct, int value) { memPutInt(struct + XrInstanceCreateInfo.ENABLEDAPILAYERCOUNT, value); }
-                /** Unsafe version of {@link #enabledApiLayerNames}. */
+                /** Unsafe version of enabledApiLayerNames}. */
                 public static long nenabledApiLayerNames(long struct) { return memGetAddress(struct + XrInstanceCreateInfo.ENABLEDAPILAYERNAMES); }
                 public static void nenabledApiLayerNames(long struct, long value) { memPutAddress(struct + XrInstanceCreateInfo.ENABLEDAPILAYERNAMES, value); }
-                /** Unsafe version of {@link #enabledExtensionCount}. */
+                /** Unsafe version of enabledExtensionCount}. */
                 public static int nenabledExtensionCount(long struct) { return memGetInt(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONCOUNT); }
                 public static void nenabledExtensionCount(long struct, int value) { memPutInt(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONCOUNT, value); }
-                /** Unsafe version of {@link #enabledExtensionNames}. */
+                /** Unsafe version of enabledExtensionNames}. */
                 public static long nenabledExtensionNames(long struct) { return memGetAddress(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONNAMES); }
                 public static void nenabledExtensionNames(long struct, long value) { memPutAddress(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONNAMES, value); }
             

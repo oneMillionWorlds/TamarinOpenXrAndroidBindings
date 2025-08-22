@@ -102,18 +102,22 @@ public class StructGeneratorTest_XrSwapchainImageBaseHeader {
                 public int sizeof() { return SIZEOF; }
             
                 /** Returns the value of the {@code type} field. */
-                public XrStructureType type() { return XrStructureType.fromValue(memGetInt(address() + TYPE)); }
+                public XrStructureType type() {
+                    return XrStructureType.fromValue(XrSwapchainImageBaseHeader.ntype(address()));
+                }
                 /** Returns the value of the {@code next} field. */
-                public long next() { return memGetAddress(address() + NEXT); }
+                public long next() {
+                    return nnext(address());
+                }
             
                 /** Sets the specified value to the {@code type} field. */
                 public XrSwapchainImageBaseHeader type(XrStructureType value) {\s
-                    memPutInt(address() + TYPE, value.getValue());
+                    XrSwapchainImageBaseHeader.ntype(address(), value.getValue());
                     return this;
                 }
                 /** Sets the specified value to the {@code next} field. */
                 public XrSwapchainImageBaseHeader next(long value) {\s
-                    memPutAddress(address() + NEXT, value);
+                    XrSwapchainImageBaseHeader.nnext(address(), value);
                     return this;
                 }
             
@@ -251,10 +255,10 @@ public class StructGeneratorTest_XrSwapchainImageBaseHeader {
             
                 // -----------------------------------
             
-                /** Unsafe version of {@link #type}. */
+                /** Unsafe version of type}. */
                 public static int ntype(long struct) { return memGetInt(struct + XrSwapchainImageBaseHeader.TYPE); }
                 public static void ntype(long struct, int value ) { memPutInt(struct + XrSwapchainImageBaseHeader.TYPE, value); }
-                /** Unsafe version of {@link #next}. */
+                /** Unsafe version of next}. */
                 public static long nnext(long struct) { return memGetAddress(struct + XrSwapchainImageBaseHeader.NEXT); }
                 public static void nnext(long struct, long value) { memPutAddress(struct + XrSwapchainImageBaseHeader.NEXT, value); }
             
@@ -329,6 +333,7 @@ public class StructGeneratorTest_XrSwapchainImageBaseHeader {
                     }
                 }
             }
+            
             """;
 
     private static final String xrSwapchainImageBaseHeader_cDefiniton = """
