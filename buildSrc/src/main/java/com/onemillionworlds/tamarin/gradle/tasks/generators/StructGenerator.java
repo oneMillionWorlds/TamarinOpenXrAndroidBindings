@@ -208,35 +208,11 @@ public class StructGenerator extends FileGenerator {
         writer.append("\n");
 
         // Generate set method
-        writer.append("    /** Initializes this struct with the specified values. */\n");
-        writer.append("    public " + struct.getName() + " set(\n");
-
-        StringBuilder setParamsBuilder = new StringBuilder();
-        StringBuilder setBodyBuilder = new StringBuilder();
-
-
-        for (int i=0;i<struct.getFields().size();i++ ) {
-            StructField field = struct.getFields().get(i);
-            String fieldJavaType = field.getJavaType();
-            String fieldName = field.getName();
-
-            setParamsBuilder.append("        " + fieldJavaType).append(" ").append(fieldName);
-
-            if (i < struct.getFields().size() - 1) {
-                setParamsBuilder.append(",\n");
-            } else {
-                setParamsBuilder.append("\n");
-            }
-
-            setBodyBuilder.append("        ").append(fieldName).append("(").append(fieldName).append(");\n");
+        boolean anyFieldIsAStructArray = struct.getFields().stream()
+                .anyMatch(field -> field.isStruct() && field.getArraySizeConstant() !=null && !field.isPointer());
+        if(!anyFieldIsAStructArray) {
+            writer.append(createSetMethod(struct));
         }
-
-        writer.append(setParamsBuilder.toString());
-        writer.append("    ) {\n");
-        writer.append(setBodyBuilder.toString());
-        writer.append("\n");
-        writer.append("        return this;\n");
-        writer.append("    }\n\n");
 
         // Generate copy method
         writer.append("    /**\n");
@@ -432,14 +408,22 @@ public class StructGenerator extends FileGenerator {
             String fieldType = field.getType();
             String fieldName = field.getName();
             String fieldNameSanitised = sanitiseFieldName(fieldName);
+            String javaType = field.getJavaType();
 
             writer.append("        /** Returns the value of the {@code " + fieldName + "} field. */\n");
             if (field.isEnumType()) {
                 writer.append("        public " + field.getJavaType() + " " + fieldNameSanitised + "() { return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(address())); }\n");
             } else {
-                String javaType = field.getJavaType();
+
                 writer.append("        public " + javaType + " " + fieldNameSanitised + "() { return " + struct.getName() + ".n" + fieldNameSanitised + "(address()); }\n");
             }
+
+            if(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer()) {
+                // bonus getter by index if an array of structs
+                writer.append("        /** Returns the value of the index-th item in the {@code " + fieldName + "} field. Note to mutate the value get by index then mutate in place*/\n");
+                writer.append("        public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(address(), index); }\n");
+            }
+
         }
 
         writer.append("\n");
@@ -448,6 +432,12 @@ public class StructGenerator extends FileGenerator {
         for (StructField field : struct.getFields()) {
             String fieldType = field.getJavaType();
             String fieldName = field.getName();
+
+            if(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer()) {
+                // no setter for arrays of structs
+                continue;
+            }
+
             String fieldNameSanitised = sanitiseFieldName(fieldName);
 
             writer.append("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
@@ -474,6 +464,42 @@ public class StructGenerator extends FileGenerator {
         return writer.toString();
     }
 
+    private static String createSetMethod(StructDefinition struct) {
+        StringBuilder writer = new StringBuilder();
+
+        writer.append("    /** Initializes this struct with the specified values. */\n");
+        writer.append("    public " + struct.getName() + " set(\n");
+
+        StringBuilder setParamsBuilder = new StringBuilder();
+        StringBuilder setBodyBuilder = new StringBuilder();
+
+
+        for (int i = 0; i< struct.getFields().size(); i++ ) {
+            StructField field = struct.getFields().get(i);
+            String fieldJavaType = field.getJavaType();
+            String fieldName = field.getName();
+
+            setParamsBuilder.append("        " + fieldJavaType).append(" ").append(fieldName);
+
+            if (i < struct.getFields().size() - 1) {
+                setParamsBuilder.append(",\n");
+            } else {
+                setParamsBuilder.append("\n");
+            }
+
+            setBodyBuilder.append("        ").append(fieldName).append("(").append(fieldName).append(");\n");
+        }
+
+        writer.append(setParamsBuilder);
+        writer.append("    ) {\n");
+        writer.append(setBodyBuilder);
+        writer.append("\n");
+        writer.append("        return this;\n");
+        writer.append("    }\n\n");
+
+        return writer.toString();
+    }
+
     private static void generateFieldGetter(StructDefinition struct, StructField field, StringBuilder writer) {
         String fieldType = field.getType();
 
@@ -491,6 +517,12 @@ public class StructGenerator extends FileGenerator {
             writer.append("        return n" + fieldNameSanitised + "(address());\n");
         }
         writer.append("    }\n");
+
+        if(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer()) {
+            // bonus getter by index if an array of structs
+            writer.append("    /** Returns the value of the index-th item in the {@code " + fieldName + "} field. Note to mutate the value get by index then mutate in place*/\n");
+            writer.append("    public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(address(), index); }\n");
+        }
     }
 
     private static String generateUnsafeGetterAndSetter(StructDefinition struct, StructField field) {
@@ -535,8 +567,20 @@ public class StructGenerator extends FileGenerator {
                     }
                 }
             }else {
-                writer.append("    public static " + javaType + " n" + fieldNameSanitised + "(long struct) { return " + javaType + ".create(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
-                writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value) { memCopy(value.address(), struct +" + struct.getName() + "." + fieldNameUpper + "," + javaType + ".SIZEOF); }\n");
+                if(field.getArraySizeConstant() != null) {
+                    // Arrays of structs don't get setters. Setters are done by getting then mutating
+
+                    writer.append("    public static " + javaType + " n" + fieldNameSanitised + "(long struct) { return " + fieldType + ".create(struct + " + struct.getName() + "." + fieldNameUpper + ", " + field.getArraySizeConstant() + "); }\n");
+
+                    // add a by index access
+                    writer.append("    public static " + fieldType + " n" + fieldNameSanitised + "(long struct, int index) {\n");
+                    writer.append("        if(index > " + field.getArraySizeConstant() + ") throw new IllegalArgumentException(\"index out of bounds: \" + index);\n");
+                    writer.append("        return " + fieldType + ".create(struct + " + struct.getName() + "." + fieldNameUpper + " + (index * " + fieldType + ".SIZEOF));\n");
+                    writer.append("    }\n");
+                }else {
+                    writer.append("    public static " + javaType + " n" + fieldNameSanitised + "(long struct) { return " + fieldType + ".create(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
+                    writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value) { memCopy(value.address(), struct +" + struct.getName() + "." + fieldNameUpper + "," + javaType + ".SIZEOF); }\n");
+                }
             }
         } else if (javaType.equals("ByteBuffer")) {
             writer.append("    public static ByteBuffer n" + fieldNameSanitised + "(long struct) { return memByteBuffer(struct + " + struct.getName() + "." + fieldNameUpper + ", " + field.getArraySizeConstant() + "); }\n");
@@ -585,6 +629,11 @@ public class StructGenerator extends FileGenerator {
         String fieldNameUpper = fieldName.toUpperCase();
         String fieldType = field.getJavaType();
         String fieldNameSanitised = sanitiseFieldName(fieldName);
+
+        if(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer()) {
+            // no setter for arrays of structs
+            return "";
+        }
 
         writer.append("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
         writer.append("    public " + struct.getName() + " " + fieldNameSanitised + "(" + fieldType + " value) { \n");
