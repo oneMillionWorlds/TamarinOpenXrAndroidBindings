@@ -121,7 +121,7 @@ public class StructGenerator extends FileGenerator {
                     offsetsBuilder.append(";\n");
                 }
             }
-            writer.append(offsetsBuilder.toString());
+            writer.append(offsetsBuilder);
             writer.append("\n");
         }
 
@@ -479,6 +479,8 @@ public class StructGenerator extends FileGenerator {
             String fieldJavaType = field.getJavaType();
             String fieldName = field.getName();
 
+            String fieldNameSanitised = sanitiseFieldName(fieldName);
+
             setParamsBuilder.append("        " + fieldJavaType).append(" ").append(fieldName);
 
             if (i < struct.getFields().size() - 1) {
@@ -487,7 +489,7 @@ public class StructGenerator extends FileGenerator {
                 setParamsBuilder.append("\n");
             }
 
-            setBodyBuilder.append("        ").append(fieldName).append("(").append(fieldName).append(");\n");
+            setBodyBuilder.append("        ").append(fieldNameSanitised).append("(").append(fieldName).append(");\n");
         }
 
         writer.append(setParamsBuilder);
@@ -639,9 +641,9 @@ public class StructGenerator extends FileGenerator {
         writer.append("    public " + struct.getName() + " " + fieldNameSanitised + "(" + fieldType + " value) { \n");
 
         if(field.isEnumType()){
-            writer.append("        " + struct.getName() + ".n"+fieldName+"(address(), value.getValue());\n");
+            writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value.getValue());\n");
         } else{
-            writer.append("        " + struct.getName() + ".n"+fieldName+"(address(), value);\n");
+            writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value);\n");
         }
 
         writer.append("        return this;\n");
