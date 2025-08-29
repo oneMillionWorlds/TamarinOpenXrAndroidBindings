@@ -163,7 +163,7 @@ public class StructField {
             return type;
         }else if(isSingletonStructPointer){
             return type;
-        } else if(isStruct && isPointer){
+        } else if((isStruct || isHandle) && isPointer){
             return type + ".Buffer";
         } else if (isPointer || type.startsWith("PFN")) {
             return "long";

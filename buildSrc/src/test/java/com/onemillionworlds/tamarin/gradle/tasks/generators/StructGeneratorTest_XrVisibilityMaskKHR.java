@@ -30,6 +30,7 @@ public class StructGeneratorTest_XrVisibilityMaskKHR {
             package com.onemillionworlds.tamarin.openxrbindings;
             
             import com.onemillionworlds.tamarin.openxrbindings.enums.*;
+            import com.onemillionworlds.tamarin.openxrbindings.handles.*;
             import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
             import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
             

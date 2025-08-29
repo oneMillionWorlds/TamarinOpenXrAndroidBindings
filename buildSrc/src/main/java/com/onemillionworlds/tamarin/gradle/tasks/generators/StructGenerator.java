@@ -414,7 +414,7 @@ public class StructGenerator extends FileGenerator {
             writer.append("        /** Returns the value of the {@code " + fieldName + "} field. */\n");
             if (field.isEnumType()) {
                 writer.append("        public " + field.getJavaType() + " " + fieldNameSanitised + "() { return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(address())); }\n");
-            } else if (field.isHandle()) {
+            } else if (field.isHandle() && !field.isPointer()) {
                 writer.append("        public " + javaType + " " + fieldNameSanitised + "() { return new " + javaType + "(" + struct.getName() + ".n" + fieldName + "(address())); }\n");
             } else {
                 writer.append("        public " + javaType + " " + fieldNameSanitised + "() { return " + struct.getName() + ".n" + fieldNameSanitised + "(address()); }\n");
@@ -446,7 +446,7 @@ public class StructGenerator extends FileGenerator {
             writer.append("        public Buffer " + fieldNameSanitised + "(" + fieldType + " value) { \n");
             if(field.isEnumType()){
                 writer.append("            " + struct.getName() + ".n" + fieldNameSanitised + "(address(), value.getValue());\n");
-            } else if(field.isHandle()){
+            } else if(field.isHandle() && !field.isPointer()){
                 writer.append("            " + struct.getName() + ".n" + fieldNameSanitised + "(address(), value.getRawHandle());\n");
             } else{
                 writer.append("            " + struct.getName() + ".n" + fieldNameSanitised + "(address(), value);\n");
@@ -519,7 +519,7 @@ public class StructGenerator extends FileGenerator {
 
         if(field.isEnumType()){
             writer.append("        return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(address()));\n");
-        } else if(field.isHandle()) {
+        } else if(field.isHandle() && !field.isPointer()) {
             writer.append("        return new " + javaType + "(" + struct.getName() + ".n" + fieldName + "(address()));\n");
         } else {
             writer.append("        return n" + fieldNameSanitised + "(address());\n");
@@ -614,8 +614,28 @@ public class StructGenerator extends FileGenerator {
                 writer.append("    public static int n" + fieldNameSanitised + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 writer.append("    public static void n" + fieldNameSanitised + "(long struct, int value ) { " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
             } else if (field.isHandle()) {
-                writer.append("    public static long n" + fieldNameSanitised + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
-                writer.append("    public static void n" + fieldNameSanitised + "(long struct, long value ) { " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
+                if(field.isPointer()){
+
+                    String countMethodName = struct.findCountParameterForPointerField(field.getName()).map(f -> "n" + f).orElse(null);
+                    if (countMethodName == null) {
+                        throw new RuntimeException("Couldn't find a count method for " + fieldName + " in " + struct.getName());
+                    }
+
+                    writer.append("    public static " + javaType + " n" + fieldNameSanitised + "(long struct) { \n");
+                    writer.append("        long address = " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ");\n");
+                    writer.append("        int count = " + countMethodName + "(struct);\n");
+                    writer.append("        ByteBuffer buffer = memByteBuffer(address, count * Long.BYTES);\n");
+                    writer.append("        return " + fieldType + ".create(buffer, address); \n");
+                    writer.append("    }\n");
+
+                    writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value ) {\n");
+                    writer.append("        " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value.address());\n");
+                    writer.append("        " + countMethodName + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value.capacity());\n");
+                    writer.append("    }\n");
+                }else {
+                    writer.append("    public static long n" + fieldNameSanitised + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
+                    writer.append("    public static void n" + fieldNameSanitised + "(long struct, long value ) { " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
+                }
             }  else {
                 writer.append("    public static " + javaType + " n" + fieldNameSanitised + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType  + " value) { " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
@@ -651,7 +671,7 @@ public class StructGenerator extends FileGenerator {
 
         if(field.isEnumType()){
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value.getValue());\n");
-        } else if(field.isHandle()){
+        } else if(field.isHandle() && !field.isPointer()){
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value.getRawHandle());\n");
         } else{
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value);\n");

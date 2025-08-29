@@ -9,6 +9,7 @@ import java.io.IOException;
 /**
  * Generator for handle classes.
  */
+@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class HandleGenerator extends FileGenerator {
     private final String handleName;
 
@@ -51,7 +52,10 @@ public class HandleGenerator extends FileGenerator {
         writer.append(" */\n");
         writer.append("package com.onemillionworlds.tamarin.openxrbindings.handles;\n\n");
 
-        writer.append("import com.onemillionworlds.tamarin.openxrbindings.Handle;\n\n");
+        writer.append("import com.onemillionworlds.tamarin.openxrbindings.Handle;\n");
+        writer.append("import com.onemillionworlds.tamarin.openxrbindings.BufferUtils;\n");
+        writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.*;\n\n");
+        writer.append("import java.nio.ByteBuffer;\n");
 
         writer.append("/**\n");
         // Add spaces between words in the handle name for better readability
@@ -69,6 +73,52 @@ public class HandleGenerator extends FileGenerator {
         writer.append("     */\n");
         writer.append("    public " + handleName + "(long rawHandle) {\n");
         writer.append("        super(rawHandle);\n");
+        writer.append("    }\n");
+
+        writer.append("\n");
+
+        // buffer for this handle type (basically just a long buffer view)
+
+        writer.append("    public static class Buffer extends HandleBufferView<" + handleName + "> {\n");
+        writer.append("        public Buffer(LongBufferView viewToAdopt){\n");
+        writer.append("            super(viewToAdopt, " + handleName + "::new);\n");
+        writer.append("        }\n");
+        writer.append("    }\n");
+
+        writer.append("\n");
+
+        // create (with new memory)
+        writer.append("    /**\n");
+        writer.append("     * Creates a new buffer for " + handleName + " instances. NOTE must be manually freed\n");
+        writer.append("     *\n");
+        writer.append("     * @param capacity The number of handles of this type that can be held.\n");
+        writer.append("     */\n");
+        writer.append("    public static Buffer create(int capacity) {\n");
+        writer.append("        LongBufferView buffer = BufferUtils.createLongBufferView(capacity);\n");
+        writer.append("        return new Buffer(buffer);\n");
+        writer.append("    }\n");
+
+        // create (on the stack)
+        writer.append("    /**\n");
+        writer.append("     * Creates a new buffer for " + handleName + " instances on the stack. NOTE must NOT be manually freed\n");
+        writer.append("     *\n");
+        writer.append("     * @param stack The stack to allocate this buffer on.\n");
+        writer.append("     * @param capacity The number of handles of this type that can be held.\n");
+        writer.append("     */\n");
+        writer.append("    public static Buffer create(MemoryStack stack, int capacity) {\n");
+        writer.append("        LongBufferView buffer = stack.callocLong(capacity);\n");
+        writer.append("        return new Buffer(buffer);\n");
+        writer.append("    }\n");
+
+        writer.append("    /**\n");
+        writer.append("     * Adopts an existing byte buffer a new buffer and an address as a handle buffer. NOTE if it must or must not be manually freed should follow the underlying buffer\n");
+        writer.append("     *\n");
+        writer.append("     * @param buffer The buffer to adopt.\n");
+        writer.append("     * @param address The memory address of the buffer\n");
+        writer.append("     */\n");
+        writer.append("    public static Buffer create(ByteBuffer buffer, long address) {\n");
+        writer.append("        LongBufferView bufferView = new LongBufferView(buffer, buffer.asLongBuffer(), address);\n");
+        writer.append("        return new Buffer(bufferView);\n");
         writer.append("    }\n");
 
         writer.append("}\n");

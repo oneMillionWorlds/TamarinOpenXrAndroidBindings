@@ -159,7 +159,7 @@ public class FunctionDefinition {
                     return "BufferAndAddress";
                 }
                 if(isHandle){
-                    return "LongBufferView";
+                    return type + ".Buffer";
                 }
                 if(type.equals("uint32_t") || type.equals("int32_t") || isTypeDefInt || isEnumType){
                     return "IntBufferView";

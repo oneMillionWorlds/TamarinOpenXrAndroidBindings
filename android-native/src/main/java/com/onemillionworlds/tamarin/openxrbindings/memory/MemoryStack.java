@@ -163,9 +163,9 @@ public class MemoryStack implements AutoCloseable {
      * @param size the number of ints
      * @return the IntBuffer
      */
-    public JavaBufferView<LongBuffer> callocLong(int size) {
+    public LongBufferView callocLong(int size) {
         BufferAndAddress buffer = calloc(8, size * 8);
-        return new JavaBufferView<>(buffer.buffer, buffer.buffer.asLongBuffer(), buffer.address);
+        return new LongBufferView(buffer.buffer, buffer.buffer.asLongBuffer(), buffer.address);
     }
 
     /**
