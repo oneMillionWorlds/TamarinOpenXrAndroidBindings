@@ -21,7 +21,7 @@ class CWrapperFunctionGeneratorTest {
                  * Signature: (IJJ)I
                  */
                 JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_nxrEnumerateApiLayerProperties
-                  (JNIEnv *env, jobject obj, jint propertyCapacityInput, jlong propertyCountOutput, jlong properties) {
+                  (JNIEnv *env, jint propertyCapacityInput, jlong propertyCountOutput, jlong properties) {
 
                     // Convert JNI parameters to OpenXR parameters
                     uint32_t propertyCapacityInputValue = (uint32_t)propertyCapacityInput;
@@ -55,7 +55,7 @@ class CWrapperFunctionGeneratorTest {
                  * Signature: (JJJ)I
                  */
                 JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_nxrGetInstanceProcAddr
-                  (JNIEnv *env, jobject obj, jlong instance, jlong name, jlong function) {
+                  (JNIEnv *env, jlong instance, jlong name, jlong function) {
 
                     // Convert JNI parameters to OpenXR parameters
                     XrInstance instanceHandle = (XrInstance)(intptr_t)instance;
@@ -89,7 +89,7 @@ class CWrapperFunctionGeneratorTest {
                  * Signature: (JIJ)I
                  */
                 JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_nxrResultToString
-                  (JNIEnv *env, jobject obj, jlong instance, jint value, jlong buffer) {
+                  (JNIEnv *env, jlong instance, jint value, jlong buffer) {
 
                     // Convert JNI parameters to OpenXR parameters
                     XrInstance instanceHandle = (XrInstance)(intptr_t)instance;
@@ -123,7 +123,7 @@ class CWrapperFunctionGeneratorTest {
                  * Signature: (JJJ)I
                  */
                 JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_nxrGetSystem
-                  (JNIEnv *env, jobject obj, jlong instance, jlong getInfo, jlong systemId) {
+                  (JNIEnv *env, jlong instance, jlong getInfo, jlong systemId) {
 
                     // Convert JNI parameters to OpenXR parameters
                     XrInstance instanceHandle = (XrInstance)(intptr_t)instance;
@@ -157,7 +157,7 @@ class CWrapperFunctionGeneratorTest {
                  * Signature: (JJJJ)I
                  */
                 JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_nxrLocateSpace
-                  (JNIEnv *env, jobject obj, jlong space, jlong baseSpace, jlong time, jlong location) {
+                  (JNIEnv *env, jlong space, jlong baseSpace, jlong time, jlong location) {
 
                     // Convert JNI parameters to OpenXR parameters
                     XrSpace spaceHandle = (XrSpace)(intptr_t)space;
@@ -192,7 +192,7 @@ class CWrapperFunctionGeneratorTest {
                  * Signature: (JJJJ)I
                  */
                 JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_nxrSetInputDeviceStateVector2fEXT
-                  (JNIEnv *env, jobject obj, jlong session, jlong topLevelPath, jlong inputSourcePath, jlong state) {
+                  (JNIEnv *env, jlong session, jlong topLevelPath, jlong inputSourcePath, jlong state) {
 
                     // Convert JNI parameters to OpenXR parameters
                     XrSession sessionHandle = (XrSession)(intptr_t)session;
