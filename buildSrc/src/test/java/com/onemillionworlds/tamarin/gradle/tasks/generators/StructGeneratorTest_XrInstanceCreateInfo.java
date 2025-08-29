@@ -19,7 +19,7 @@ import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.XR
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * XrInstanceCreateInfo is interesting because it is a struct that itself contains structs
+ * XrInstanceCreateInfo is interesting because it is a struct that itself contains structs.
  */
 public class StructGeneratorTest_XrInstanceCreateInfo {
 

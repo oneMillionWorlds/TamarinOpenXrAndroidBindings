@@ -51,7 +51,7 @@ public class CWrapperFunctionGenerator {
             
             // Generate function declaration
             functionString.append("JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_n" + functionName + "\n");
-            functionString.append("  (JNIEnv *env, jobject obj");
+            functionString.append("  (JNIEnv *env");
             
             // Generate parameter list
             for (int i = 0; i < function.getParameters().size(); i++) {

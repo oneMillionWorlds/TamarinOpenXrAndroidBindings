@@ -31,12 +31,12 @@ public class WrapperFunctionGenerator {
             functionString.append("     * @return " + "The XrResult status code" + "\n");
             functionString.append("     */\n");
 
-            functionString.append("    public " + returnType + " " + functionName + "(");
+            functionString.append("    public static " + returnType + " " + functionName + "(");
 
             // Generate parameter list
             for (int i = 0; i < function.getParameters().size(); i++) {
                 FunctionDefinition.FunctionParameter param = function.getParameters().get(i);
-                String javaType = param.getHighLevelJavaType();
+                String javaType = param.getHighLevelJavaType(function.findCountParameterForPointerField(param.getName()).isPresent());
 
                 functionString.append(javaType + " " + param.getName());
 
@@ -53,7 +53,7 @@ public class WrapperFunctionGenerator {
             functionString.append("    }\n\n");
 
             // Generate native method declaration
-            functionString.append("    public native int n" + functionName + "(");
+            functionString.append("    public static native int n" + functionName + "(");
 
             // Generate parameter list for native method
             for (int i = 0; i < function.getParameters().size(); i++) {

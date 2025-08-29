@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Class representing a struct definition.
@@ -64,6 +65,23 @@ public class StructDefinition {
      * the field contains. This finds that count method
      */
     public Optional<String> findCountParameterForPointerField(String fieldName){
+        return findCountParameterForPointerField(fieldName, this::hasField);
+    }
+
+    @Override
+    public String toString() {
+        return "StructDefinition{" +
+                "name='" + name + "'\n" +
+                ", fields=\n" + fields.stream().map(f -> "  " + f + "\n").reduce(String::concat).orElse("") +
+                ", canBeItsOwnDefault=" + canBeItsOwnDefault +
+                '}';
+    }
+
+    /**
+     * Often pointer fields come with a seperate parameter that lists how many items of that type
+     * the field contains. This finds that count method
+     */
+    public static Optional<String> findCountParameterForPointerField(String fieldName, Predicate<String> hasField){
 
         List<String> options = new ArrayList<>(List.of(
                 fieldName + "Count",
@@ -98,23 +116,12 @@ public class StructDefinition {
         }
 
 
-        String countMethodName = null;
-
         for (String option : options) {
-            if (hasField(option)){
+            if (hasField.test(option)){
                 return Optional.of(option);
             }
         }
         return Optional.empty();
-    }
-
-    @Override
-    public String toString() {
-        return "StructDefinition{" +
-                "name='" + name + "'\n" +
-                ", fields=\n" + fields.stream().map(f -> "  " + f + "\n").reduce(String::concat).orElse("") +
-                ", canBeItsOwnDefault=" + canBeItsOwnDefault +
-                '}';
     }
 
     private static Optional<String> pluralToSingular(String plural) {
@@ -126,6 +133,8 @@ public class StructDefinition {
             return Optional.of("box");
         }else if (plural.equals("spheres")){
             return Optional.of("sphere");
+        }else if (plural.endsWith("properties")){
+            return Optional.of(plural.replace("properties", "property"));
         }else if(plural.endsWith("Meshes")){
             return Optional.of(plural.replace("Meshes", "Mesh"));
         }else if(plural.endsWith("s")) {

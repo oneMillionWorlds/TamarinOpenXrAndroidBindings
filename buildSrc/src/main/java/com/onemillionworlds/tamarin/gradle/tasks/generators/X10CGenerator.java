@@ -113,7 +113,7 @@ public class X10CGenerator extends FileGenerator {
                 writer.write(" * Signature: (JJ)I\n");
                 writer.write(" */\n");
                 writer.write("JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_nxrCreateInstance\n");
-                writer.write("  (JNIEnv *env, jobject obj, jlong createInfo, jlong instance) {\n\n");
+                writer.write("  (JNIEnv *env, jlong createInfo, jlong instance) {\n\n");
                 writer.write("    // Convert JNI parameters to OpenXR parameters\n");
                 writer.write("    XrInstanceCreateInfo *createInfoPtr = (XrInstanceCreateInfo *)(intptr_t)createInfo;\n");
                 writer.write("    XrInstance *instancePtr = (XrInstance *)(intptr_t)instance;\n\n");

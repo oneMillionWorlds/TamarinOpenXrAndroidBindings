@@ -158,6 +158,38 @@ public class MemoryStack implements AutoCloseable {
     }
 
     /**
+     * Returns a ByteBuffer that represents the specified string on the stack.
+     */
+    public BufferAndAddress utf8(String string){
+        return utf8(string, true);
+    }
+
+    /**
+     * Returns a ByteBuffer that represents the specified string on the stack.
+     */
+    public BufferAndAddress utf8(String string, boolean nullTerminated) {
+        // Calculate byte length for UTF-8 encoded string
+        byte[] bytes = string.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        int size = bytes.length + (nullTerminated ? 1 : 0);
+
+        // Allocate buffer
+        BufferAndAddress buffer = malloc(1, size);
+
+        // Copy string bytes
+        buffer.buffer.put(bytes);
+
+        // Add null terminator if requested
+        if (nullTerminated) {
+            buffer.buffer.put((byte) 0);
+        }
+
+        // Reset position to start
+        buffer.buffer.flip();
+
+        return buffer;
+    }
+
+    /**
      * Returns a LongBuffer that represents the specified memory on the stack.
      *
      * @param size the number of ints

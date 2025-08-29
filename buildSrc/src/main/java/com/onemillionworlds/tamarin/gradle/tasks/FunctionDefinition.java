@@ -58,6 +58,18 @@ public class FunctionDefinition {
         return parameters.stream().anyMatch(FunctionParameter::isDoublePointer);
     }
 
+    public boolean hasParameter(String parameterName) {
+        return parameters.stream().anyMatch(p -> p.getName().equals(parameterName));
+    }
+
+    /**
+     * Often pointer fields come with a seperate parameter that lists how many items of that type
+     * the field contains. This finds that count method
+     */
+    public Optional<String> findCountParameterForPointerField(String parameterName){
+        return StructDefinition.findCountParameterForPointerField(parameterName, this::hasParameter);
+    }
+
     /**
      * Class representing a function parameter.
      */
@@ -150,7 +162,7 @@ public class FunctionDefinition {
             return isStruct && !isPointer;
         }
 
-        public String getHighLevelJavaType() {
+        public String getHighLevelJavaType(boolean hasAnAssociatedCountParameter) {
             if (isPointer || isStructByValue()) {
                 if(type.equals("PFN_xrVoidFunction")){
                     return "PointerBufferView";
@@ -173,7 +185,10 @@ public class FunctionDefinition {
                 if(type.equals("float")){
                     return "FloatBufferView";
                 }
-                return getType() + ".Buffer";
+                if(hasAnAssociatedCountParameter) {
+                    return getType() + ".Buffer";
+                }
+                return getType();
             }else{
                 if(type.equals("uint32_t") || isTypeDefInt){
                     return "int";
@@ -269,6 +284,5 @@ public class FunctionDefinition {
             this.extraDocumentation = extraDocumentation;
             return this;
         }
-
     }
 }
