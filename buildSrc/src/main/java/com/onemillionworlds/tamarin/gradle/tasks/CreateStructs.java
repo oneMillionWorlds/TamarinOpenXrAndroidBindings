@@ -2,6 +2,7 @@ package com.onemillionworlds.tamarin.gradle.tasks;
 
 import com.onemillionworlds.tamarin.gradle.tasks.generators.ConstantsGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.EnumGenerator;
+import com.onemillionworlds.tamarin.gradle.tasks.generators.HandleGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.StructGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.X10Generator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.X10CGenerator;
@@ -124,6 +125,13 @@ public class CreateStructs extends DefaultTask {
         // Generate struct classes
         for (StructDefinition struct : structs) {
             new StructGenerator(getLogger(), struct).generate(output);
+        }
+
+        // Generate handle classes
+        for (String handle : handles) {
+            if(!handle.equals("object")) {
+                new HandleGenerator(getLogger(), handle).generate(output);
+            }
         }
 
         // Generate X10.java with method pairs
