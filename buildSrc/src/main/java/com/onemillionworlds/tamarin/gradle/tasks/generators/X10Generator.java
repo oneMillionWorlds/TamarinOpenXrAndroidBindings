@@ -34,6 +34,7 @@ public class X10Generator extends FileGenerator {
 
             writer.write("import com.onemillionworlds.tamarin.openxrbindings.memory.*;\n");
             writer.write("import com.onemillionworlds.tamarin.openxrbindings.enums.*;\n");
+            writer.write("import com.onemillionworlds.tamarin.openxrbindings.handles.*;\n");
 
             writer.write("import java.nio.IntBuffer;\n");
             writer.write("import java.nio.LongBuffer;\n\n");

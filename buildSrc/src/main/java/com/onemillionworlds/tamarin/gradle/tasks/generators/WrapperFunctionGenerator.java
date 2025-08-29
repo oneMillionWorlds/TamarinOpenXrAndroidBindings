@@ -103,12 +103,16 @@ public class WrapperFunctionGenerator {
             boolean isPointer = param.isPointer();
             boolean isStructByValue = param.isStructByValue();
             boolean isEnum = param.isEnumType();
+            boolean isHandle = param.isHandle();
             if(isPointer || isStructByValue){
                 writer.append(paramName + "Address");
             }else{
                 writer.append(paramName);
                 if(isEnum){
                     writer.append(".getValue()");
+                }
+                if(isHandle){
+                    writer.append(".getRawHandle()");
                 }
             }
             if (i < function.getParameters().size() - 1) {

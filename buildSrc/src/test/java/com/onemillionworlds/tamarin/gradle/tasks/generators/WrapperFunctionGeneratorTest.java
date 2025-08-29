@@ -29,7 +29,7 @@ class WrapperFunctionGeneratorTest {
                         long propertiesAddress = properties == null ? MemoryUtil.NULL : properties.address();
                         return XrResult.fromValue(nxrEnumerateApiLayerProperties(propertyCapacityInput, propertyCountOutputAddress, propertiesAddress));
                     }
-
+                    
                     public native int nxrEnumerateApiLayerProperties(int propertyCapacityInput, long propertyCountOutput, long properties);
                 """;
 
@@ -55,12 +55,12 @@ class WrapperFunctionGeneratorTest {
                      * @param function (PFN_xrVoidFunction)
                      * @return The XrResult status code
                      */
-                    public XrResult xrGetInstanceProcAddr(long instance, BufferAndAddress name, PointerBufferView function) {
+                    public XrResult xrGetInstanceProcAddr(XrInstance instance, BufferAndAddress name, PointerBufferView function) {
                         long nameAddress = name == null ? MemoryUtil.NULL : name.address();
                         long functionAddress = function == null ? MemoryUtil.NULL : function.address();
-                        return XrResult.fromValue(nxrGetInstanceProcAddr(instance, nameAddress, functionAddress));
+                        return XrResult.fromValue(nxrGetInstanceProcAddr(instance.getRawHandle(), nameAddress, functionAddress));
                     }
-
+                
                     public native int nxrGetInstanceProcAddr(long instance, long name, long function);
                 """;
 
@@ -86,11 +86,11 @@ class WrapperFunctionGeneratorTest {
                      * @param buffer (char) Required size XR_MAX_RESULT_STRING_SIZE
                      * @return The XrResult status code
                      */
-                    public XrResult xrResultToString(long instance, XrResult value, BufferAndAddress buffer) {
+                    public XrResult xrResultToString(XrInstance instance, XrResult value, BufferAndAddress buffer) {
                         long bufferAddress = buffer == null ? MemoryUtil.NULL : buffer.address();
-                        return XrResult.fromValue(nxrResultToString(instance, value.getValue(), bufferAddress));
+                        return XrResult.fromValue(nxrResultToString(instance.getRawHandle(), value.getValue(), bufferAddress));
                     }
-
+                
                     public native int nxrResultToString(long instance, int value, long buffer);
                 """;
 
@@ -115,12 +115,12 @@ class WrapperFunctionGeneratorTest {
                      * @param systemId (XrSystemId)
                      * @return The XrResult status code
                      */
-                    public XrResult xrGetSystem(long instance, XrSystemGetInfo.Buffer getInfo, LongBufferView systemId) {
+                    public XrResult xrGetSystem(XrInstance instance, XrSystemGetInfo.Buffer getInfo, LongBufferView systemId) {
                         long getInfoAddress = getInfo == null ? MemoryUtil.NULL : getInfo.address();
                         long systemIdAddress = systemId == null ? MemoryUtil.NULL : systemId.address();
-                        return XrResult.fromValue(nxrGetSystem(instance, getInfoAddress, systemIdAddress));
+                        return XrResult.fromValue(nxrGetSystem(instance.getRawHandle(), getInfoAddress, systemIdAddress));
                     }
-
+            
                     public native int nxrGetSystem(long instance, long getInfo, long systemId);
                 """;
 
@@ -147,11 +147,11 @@ class WrapperFunctionGeneratorTest {
                      * @param location (XrSpaceLocation)
                      * @return The XrResult status code
                      */
-                    public XrResult xrLocateSpace(long space, long baseSpace, long time, XrSpaceLocation.Buffer location) {
+                    public XrResult xrLocateSpace(XrSpace space, XrSpace baseSpace, long time, XrSpaceLocation.Buffer location) {
                         long locationAddress = location == null ? MemoryUtil.NULL : location.address();
-                        return XrResult.fromValue(nxrLocateSpace(space, baseSpace, time, locationAddress));
+                        return XrResult.fromValue(nxrLocateSpace(space.getRawHandle(), baseSpace.getRawHandle(), time, locationAddress));
                     }
-
+                
                     public native int nxrLocateSpace(long space, long baseSpace, long time, long location);
                 """;
 
@@ -163,8 +163,8 @@ class WrapperFunctionGeneratorTest {
     void generateWrapperFunction_xrSetInputDeviceStateVector2fEXT() {
         FunctionDefinition functionDefinition = new FunctionDefinition("xrSetInputDeviceStateVector2fEXT", "XrResult");
         functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "topLevelPath", false, false, false, false, false, false, true, false, false, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "inputSourcePath", false, false, false, false, false, false, true, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "topLevelPath", false, false, false, true, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrPath", "inputSourcePath", false, false, false, true, false, false, false, false, false, false));
         functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrVector2f", "state", false, false, false, false, false, false, false, false, true, false));
 
         String expectedValue = """
@@ -177,11 +177,11 @@ class WrapperFunctionGeneratorTest {
                      * @param state (XrVector2f)
                      * @return The XrResult status code
                      */
-                    public XrResult xrSetInputDeviceStateVector2fEXT(long session, long topLevelPath, long inputSourcePath, XrVector2f.Buffer state) {
+                    public XrResult xrSetInputDeviceStateVector2fEXT(XrSession session, long topLevelPath, long inputSourcePath, XrVector2f.Buffer state) {
                         long stateAddress = state == null ? MemoryUtil.NULL : state.address();
-                        return XrResult.fromValue(nxrSetInputDeviceStateVector2fEXT(session, topLevelPath, inputSourcePath, stateAddress));
+                        return XrResult.fromValue(nxrSetInputDeviceStateVector2fEXT(session.getRawHandle(), topLevelPath, inputSourcePath, stateAddress));
                     }
-
+                
                     public native int nxrSetInputDeviceStateVector2fEXT(long session, long topLevelPath, long inputSourcePath, long state);
                 """;
 
@@ -211,10 +211,10 @@ class WrapperFunctionGeneratorTest {
                      * @param environmentBlendModes (XrEnvironmentBlendMode)
                      * @return The XrResult status code
                      */
-                    public XrResult xrEnumerateEnvironmentBlendModes(long instance, long systemId, XrViewConfigurationType viewConfigurationType, int environmentBlendModeCapacityInput, IntBufferView environmentBlendModeCountOutput, IntBufferView environmentBlendModes) {
+                    public XrResult xrEnumerateEnvironmentBlendModes(XrInstance instance, long systemId, XrViewConfigurationType viewConfigurationType, int environmentBlendModeCapacityInput, IntBufferView environmentBlendModeCountOutput, IntBufferView environmentBlendModes) {
                         long environmentBlendModeCountOutputAddress = environmentBlendModeCountOutput == null ? MemoryUtil.NULL : environmentBlendModeCountOutput.address();
                         long environmentBlendModesAddress = environmentBlendModes == null ? MemoryUtil.NULL : environmentBlendModes.address();
-                        return XrResult.fromValue(nxrEnumerateEnvironmentBlendModes(instance, systemId, viewConfigurationType.getValue(), environmentBlendModeCapacityInput, environmentBlendModeCountOutputAddress, environmentBlendModesAddress));
+                        return XrResult.fromValue(nxrEnumerateEnvironmentBlendModes(instance.getRawHandle(), systemId, viewConfigurationType.getValue(), environmentBlendModeCapacityInput, environmentBlendModeCountOutputAddress, environmentBlendModesAddress));
                     }
                 
                     public native int nxrEnumerateEnvironmentBlendModes(long instance, long systemId, int viewConfigurationType, int environmentBlendModeCapacityInput, long environmentBlendModeCountOutput, long environmentBlendModes);
@@ -242,10 +242,10 @@ class WrapperFunctionGeneratorTest {
                      * @param formats (int64_t)
                      * @return The XrResult status code
                      */
-                    public XrResult xrEnumerateSwapchainFormats(long session, int formatCapacityInput, IntBufferView formatCountOutput, LongBufferView formats) {
+                    public XrResult xrEnumerateSwapchainFormats(XrSession session, int formatCapacityInput, IntBufferView formatCountOutput, LongBufferView formats) {
                         long formatCountOutputAddress = formatCountOutput == null ? MemoryUtil.NULL : formatCountOutput.address();
                         long formatsAddress = formats == null ? MemoryUtil.NULL : formats.address();
-                        return XrResult.fromValue(nxrEnumerateSwapchainFormats(session, formatCapacityInput, formatCountOutputAddress, formatsAddress));
+                        return XrResult.fromValue(nxrEnumerateSwapchainFormats(session.getRawHandle(), formatCapacityInput, formatCountOutputAddress, formatsAddress));
                     }
                 
                     public native int nxrEnumerateSwapchainFormats(long session, int formatCapacityInput, long formatCountOutput, long formats);
@@ -275,13 +275,13 @@ class WrapperFunctionGeneratorTest {
                      * @param tempSlope (float)
                      * @return The XrResult status code
                      */
-                    public XrResult xrThermalGetTemperatureTrendEXT(long session, XrPerfSettingsDomainEXT domain, IntBufferView notificationLevel, FloatBufferView tempHeadroom, FloatBufferView tempSlope) {
+                    public XrResult xrThermalGetTemperatureTrendEXT(XrSession session, XrPerfSettingsDomainEXT domain, IntBufferView notificationLevel, FloatBufferView tempHeadroom, FloatBufferView tempSlope) {
                         long notificationLevelAddress = notificationLevel == null ? MemoryUtil.NULL : notificationLevel.address();
                         long tempHeadroomAddress = tempHeadroom == null ? MemoryUtil.NULL : tempHeadroom.address();
                         long tempSlopeAddress = tempSlope == null ? MemoryUtil.NULL : tempSlope.address();
-                        return XrResult.fromValue(nxrThermalGetTemperatureTrendEXT(session, domain.getValue(), notificationLevelAddress, tempHeadroomAddress, tempSlopeAddress));
+                        return XrResult.fromValue(nxrThermalGetTemperatureTrendEXT(session.getRawHandle(), domain.getValue(), notificationLevelAddress, tempHeadroomAddress, tempSlopeAddress));
                     }
-                
+            
                     public native int nxrThermalGetTemperatureTrendEXT(long session, int domain, long notificationLevel, long tempHeadroom, long tempSlope);
                 """;
 
@@ -309,12 +309,12 @@ class WrapperFunctionGeneratorTest {
                      * @param buffer (uint8_t)
                      * @return The XrResult status code
                      */
-                    public XrResult xrLoadControllerModelMSFT(long session, long modelKey, int bufferCapacityInput, IntBufferView bufferCountOutput, BufferAndAddress buffer) {
+                    public XrResult xrLoadControllerModelMSFT(XrSession session, long modelKey, int bufferCapacityInput, IntBufferView bufferCountOutput, BufferAndAddress buffer) {
                         long bufferCountOutputAddress = bufferCountOutput == null ? MemoryUtil.NULL : bufferCountOutput.address();
                         long bufferAddress = buffer == null ? MemoryUtil.NULL : buffer.address();
-                        return XrResult.fromValue(nxrLoadControllerModelMSFT(session, modelKey, bufferCapacityInput, bufferCountOutputAddress, bufferAddress));
+                        return XrResult.fromValue(nxrLoadControllerModelMSFT(session.getRawHandle(), modelKey, bufferCapacityInput, bufferCountOutputAddress, bufferAddress));
                     }
-                
+            
                     public native int nxrLoadControllerModelMSFT(long session, long modelKey, int bufferCapacityInput, long bufferCountOutput, long buffer);
                 """;
 
