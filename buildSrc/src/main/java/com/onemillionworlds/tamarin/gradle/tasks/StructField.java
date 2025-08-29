@@ -170,8 +170,10 @@ public class StructField {
         } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
             return "int";
         } else if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") || 
-                  isHandle || isAtom || isFlag || isTypeDefLong) {
+                  isAtom || isFlag || isTypeDefLong) {
             return "long";
+        } else if (isHandle) {
+            return type;
         } else if (type.equals("float")) {
             return "float";
         } else if (type.equals("double")) {

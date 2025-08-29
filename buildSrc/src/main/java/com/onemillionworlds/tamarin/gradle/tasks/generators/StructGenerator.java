@@ -34,9 +34,9 @@ public class StructGenerator extends FileGenerator {
     }
 
     public static String generateStruct(StructDefinition struct){
-        
+
         StringBuilder writer = new StringBuilder();
-        
+
         writer.append("/*\n");
         writer.append(" * OpenXR Java bindings for Android\n");
         writer.append(" * This file is auto-generated. DO NOT EDIT.\n");
@@ -44,6 +44,7 @@ public class StructGenerator extends FileGenerator {
         writer.append("package com.onemillionworlds.tamarin.openxrbindings;\n\n");
 
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.enums.*;\n");
+        writer.append("import com.onemillionworlds.tamarin.openxrbindings.handles.*;\n");
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;\n");
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;\n");
 
@@ -413,8 +414,9 @@ public class StructGenerator extends FileGenerator {
             writer.append("        /** Returns the value of the {@code " + fieldName + "} field. */\n");
             if (field.isEnumType()) {
                 writer.append("        public " + field.getJavaType() + " " + fieldNameSanitised + "() { return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(address())); }\n");
+            } else if (field.isHandle()) {
+                writer.append("        public " + javaType + " " + fieldNameSanitised + "() { return new " + javaType + "(" + struct.getName() + ".n" + fieldName + "(address())); }\n");
             } else {
-
                 writer.append("        public " + javaType + " " + fieldNameSanitised + "() { return " + struct.getName() + ".n" + fieldNameSanitised + "(address()); }\n");
             }
 
@@ -444,7 +446,9 @@ public class StructGenerator extends FileGenerator {
             writer.append("        public Buffer " + fieldNameSanitised + "(" + fieldType + " value) { \n");
             if(field.isEnumType()){
                 writer.append("            " + struct.getName() + ".n" + fieldNameSanitised + "(address(), value.getValue());\n");
-            }else{
+            } else if(field.isHandle()){
+                writer.append("            " + struct.getName() + ".n" + fieldNameSanitised + "(address(), value.getRawHandle());\n");
+            } else{
                 writer.append("            " + struct.getName() + ".n" + fieldNameSanitised + "(address(), value);\n");
             }
             writer.append("            return this;\n");
@@ -515,6 +519,8 @@ public class StructGenerator extends FileGenerator {
 
         if(field.isEnumType()){
             writer.append("        return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(address()));\n");
+        } else if(field.isHandle()) {
+            writer.append("        return new " + javaType + "(" + struct.getName() + ".n" + fieldName + "(address()));\n");
         } else {
             writer.append("        return n" + fieldNameSanitised + "(address());\n");
         }
@@ -607,7 +613,10 @@ public class StructGenerator extends FileGenerator {
             if (field.isEnumType()) {
                 writer.append("    public static int n" + fieldNameSanitised + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 writer.append("    public static void n" + fieldNameSanitised + "(long struct, int value ) { " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
-            } else {
+            } else if (field.isHandle()) {
+                writer.append("    public static long n" + fieldNameSanitised + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
+                writer.append("    public static void n" + fieldNameSanitised + "(long struct, long value ) { " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
+            }  else {
                 writer.append("    public static " + javaType + " n" + fieldNameSanitised + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType  + " value) { " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
             }
@@ -642,6 +651,8 @@ public class StructGenerator extends FileGenerator {
 
         if(field.isEnumType()){
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value.getValue());\n");
+        } else if(field.isHandle()){
+            writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value.getRawHandle());\n");
         } else{
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value);\n");
         }

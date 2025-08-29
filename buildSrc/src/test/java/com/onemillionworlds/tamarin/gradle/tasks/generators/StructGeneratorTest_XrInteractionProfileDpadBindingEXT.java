@@ -31,6 +31,7 @@ public class StructGeneratorTest_XrInteractionProfileDpadBindingEXT {
             package com.onemillionworlds.tamarin.openxrbindings;
             
             import com.onemillionworlds.tamarin.openxrbindings.enums.*;
+            import com.onemillionworlds.tamarin.openxrbindings.handles.*;
             import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
             import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
             
@@ -149,8 +150,8 @@ public class StructGeneratorTest_XrInteractionProfileDpadBindingEXT {
                     return nbinding(address());
                 }
                 /** Returns the value of the {@code actionSet} field. */
-                public long actionSet() {
-                    return nactionSet(address());
+                public XrActionSet actionSet() {
+                    return new XrActionSet(XrInteractionProfileDpadBindingEXT.nactionSet(address()));
                 }
                 /** Returns the value of the {@code forceThreshold} field. */
                 public float forceThreshold() {
@@ -197,8 +198,8 @@ public class StructGeneratorTest_XrInteractionProfileDpadBindingEXT {
                     return this;
                 }
                 /** Sets the specified value to the {@code actionSet} field. */
-                public XrInteractionProfileDpadBindingEXT actionSet(long value) {\s
-                    XrInteractionProfileDpadBindingEXT.nactionSet(address(), value);
+                public XrInteractionProfileDpadBindingEXT actionSet(XrActionSet value) {\s
+                    XrInteractionProfileDpadBindingEXT.nactionSet(address(), value.getRawHandle());
                     return this;
                 }
                 /** Sets the specified value to the {@code forceThreshold} field. */
@@ -244,7 +245,7 @@ public class StructGeneratorTest_XrInteractionProfileDpadBindingEXT {
                     XrStructureType type,
                     long next,
                     long binding,
-                    long actionSet,
+                    XrActionSet actionSet,
                     float forceThreshold,
                     float forceThresholdReleased,
                     float centerRegion,
@@ -402,7 +403,7 @@ public class StructGeneratorTest_XrInteractionProfileDpadBindingEXT {
                 public static void nbinding(long struct, long value) { memPutLong(struct + XrInteractionProfileDpadBindingEXT.BINDING, value); }
                 /** Unsafe version of actionSet}. */
                 public static long nactionSet(long struct) { return memGetLong(struct + XrInteractionProfileDpadBindingEXT.ACTIONSET); }
-                public static void nactionSet(long struct, long value) { memPutLong(struct + XrInteractionProfileDpadBindingEXT.ACTIONSET, value); }
+                public static void nactionSet(long struct, long value ) { memPutLong(struct + XrInteractionProfileDpadBindingEXT.ACTIONSET, value); }
                 /** Unsafe version of forceThreshold}. */
                 public static float nforceThreshold(long struct) { return memGetFloat(struct + XrInteractionProfileDpadBindingEXT.FORCETHRESHOLD); }
                 public static void nforceThreshold(long struct, float value) { memPutFloat(struct + XrInteractionProfileDpadBindingEXT.FORCETHRESHOLD, value); }
@@ -496,7 +497,7 @@ public class StructGeneratorTest_XrInteractionProfileDpadBindingEXT {
                     /** Returns the value of the {@code binding} field. */
                     public long binding() { return XrInteractionProfileDpadBindingEXT.nbinding(address()); }
                     /** Returns the value of the {@code actionSet} field. */
-                    public long actionSet() { return XrInteractionProfileDpadBindingEXT.nactionSet(address()); }
+                    public XrActionSet actionSet() { return new XrActionSet(XrInteractionProfileDpadBindingEXT.nactionSet(address())); }
                     /** Returns the value of the {@code forceThreshold} field. */
                     public float forceThreshold() { return XrInteractionProfileDpadBindingEXT.nforceThreshold(address()); }
                     /** Returns the value of the {@code forceThresholdReleased} field. */
@@ -528,8 +529,8 @@ public class StructGeneratorTest_XrInteractionProfileDpadBindingEXT {
                         return this;
                     }
                     /** Sets the specified value to the {@code actionSet} field. */
-                    public Buffer actionSet(long value) {\s
-                        XrInteractionProfileDpadBindingEXT.nactionSet(address(), value);
+                    public Buffer actionSet(XrActionSet value) {\s
+                        XrInteractionProfileDpadBindingEXT.nactionSet(address(), value.getRawHandle());
                         return this;
                     }
                     /** Sets the specified value to the {@code forceThreshold} field. */
