@@ -284,3 +284,34 @@ JNIEXPORT jstring JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memor
     }
     return (*env)->NewStringUTF(env, ptr);
 }
+
+/*
+ * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
+ * Method:    memUTF8
+ * Signature: (JI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil_memUTF8__JI
+  (JNIEnv *env, jclass cls, jlong address, jint length) {
+    char *ptr = (char*)(intptr_t)address;
+    if (ptr == NULL || length <= 0) {
+        return NULL;
+    }
+
+    // Create a temporary buffer to hold the string data with null termination
+    char *buffer = (char*)malloc(length + 1);
+    if (buffer == NULL) {
+        return NULL;
+    }
+
+    // Copy the string data to the buffer
+    memcpy(buffer, ptr, length);
+    buffer[length] = '\0'; // Ensure null termination
+
+    // Create a Java string from the buffer
+    jstring result = (*env)->NewStringUTF(env, buffer);
+
+    // Free the temporary buffer
+    free(buffer);
+
+    return result;
+}

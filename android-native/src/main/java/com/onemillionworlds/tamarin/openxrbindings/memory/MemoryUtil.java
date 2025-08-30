@@ -275,11 +275,20 @@ public class MemoryUtil {
     public static native void memCopy(long src, long dst, long size);
 
     /**
-     * Gets a UTF-8 string from the specified memory address.
+     * Gets a UTF-8 string from the specified memory address (MUST BE NULL TERMINATED).
      * 
      * @param address the memory address
      * @return the string
      */
     public static native String memUTF8(long address);
+
+    /**
+     * Gets a UTF-8 string from the specified memory address with the specified length.
+     * 
+     * @param address the memory address
+     * @param length the length of the string in bytes
+     * @return the string
+     */
+    public static native String memUTF8(long address, int length);
 
 }
