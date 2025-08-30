@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Generator for X10.java file containing Java method pairs for OpenXR functions.
+ * Generator for XR10.java file containing Java method pairs for OpenXR functions.
  */
 public class X10Generator extends FileGenerator {
     private final List<FunctionDefinition> functions;
@@ -23,7 +23,7 @@ public class X10Generator extends FileGenerator {
 
     @Override
     public void generate(File outputDir) throws IOException {
-        File outputFile = new File(outputDir, "X10.java");
+        File outputFile = new File(outputDir, "XR10.java");
 
         try (BufferedWriter writer = createWriter(outputFile)) {
             writer.write("/*\n");
@@ -43,7 +43,7 @@ public class X10Generator extends FileGenerator {
             writer.write(" * Main class for OpenXR bindings\n");
             writer.write(" * @noinspection unused");
             writer.write(" */\n");
-            writer.write("public class X10 {\n\n");
+            writer.write("public class XR10 {\n\n");
 
             writer.write("    static {\n");
             writer.write("        System.loadLibrary(\"openxrjni\");\n");
