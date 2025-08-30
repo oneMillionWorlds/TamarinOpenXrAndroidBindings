@@ -39,7 +39,7 @@ public class X10CGenerator extends FileGenerator {
 
     @Override
     public void generate(File outputDir) throws IOException {
-        File outputFile = new File(outputDir, "com_onemillionworlds_tamarin_openxrbindings_X10.c");
+        File outputFile = new File(outputDir, "com_onemillionworlds_tamarin_openxrbindings_XR10.c");
 
         // Separate functions into core and extension functions
         List<FunctionDefinition> coreFunctions = new ArrayList<>();
@@ -75,7 +75,7 @@ public class X10CGenerator extends FileGenerator {
             writer.write("#include \"../../../../native/include/openxr/openxr_platform.h\"\n\n");
 
             // Define logging macros
-            writer.write("#define TAG \"X10\"\n");
+            writer.write("#define TAG \"XR10\"\n");
             writer.write("#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)\n");
             writer.write("#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)\n\n");
 
@@ -108,11 +108,11 @@ public class X10CGenerator extends FileGenerator {
 
                 // Add a special wrapper for xrCreateInstance that initializes extension functions
                 writer.write("/*\n");
-                writer.write(" * Class:     com_onemillionworlds_tamarin_openxrbindings_X10\n");
+                writer.write(" * Class:     com_onemillionworlds_tamarin_openxrbindings_XR10\n");
                 writer.write(" * Method:    nxrCreateInstance\n");
                 writer.write(" * Signature: (JJ)I\n");
                 writer.write(" */\n");
-                writer.write("JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_nxrCreateInstance\n");
+                writer.write("JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_XR10_nxrCreateInstance\n");
                 writer.write("  (JNIEnv *env, jclass cls, jlong createInfo, jlong instance) {\n\n");
                 writer.write("    // Convert JNI parameters to OpenXR parameters\n");
                 writer.write("    XrInstanceCreateInfo *createInfoPtr = (XrInstanceCreateInfo *)(intptr_t)createInfo;\n");
@@ -143,7 +143,7 @@ public class X10CGenerator extends FileGenerator {
             }
         }
 
-        logGeneration("com_onemillionworlds_tamarin_openxrbindings_X10.c");
+        logGeneration("com_onemillionworlds_tamarin_openxrbindings_XR10.c");
     }
 
     /**
@@ -156,7 +156,7 @@ public class X10CGenerator extends FileGenerator {
 
         // Generate JNI function signature
         functionString.append("/*\n");
-        functionString.append(" * Class:     com_onemillionworlds_tamarin_openxrbindings_X10\n");
+        functionString.append(" * Class:     com_onemillionworlds_tamarin_openxrbindings_XR10\n");
         functionString.append(" * Method:    n" + functionName + "\n");
         functionString.append(" * Signature: (");
 
@@ -182,7 +182,7 @@ public class X10CGenerator extends FileGenerator {
         functionString.append(" */\n");
 
         // Generate function declaration
-        functionString.append("JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_n" + functionName + "\n");
+        functionString.append("JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_XR10_n" + functionName + "\n");
         functionString.append("  (JNIEnv *env, jclass cls");
 
         // Generate parameter list
