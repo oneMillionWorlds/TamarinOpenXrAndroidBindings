@@ -1,4 +1,4 @@
-import com.onemillionworlds.tamarin.gradle.tasks.CreateStructs
+import com.onemillionworlds.tamarin.gradle.tasks.ParseOpenXr
 
 plugins {
     // Apply the Android library plugin
@@ -95,7 +95,7 @@ task createGeneratedDirs {
     }
 }
 
-task createOpenXrStructs(type: CreateStructs) {
+task parseOpenXrFile(type: ParseOpenXr) {
     dependsOn createGeneratedDirs
     headerFile = openxrHeaderFile
     outputDir = generatedOutputDir
@@ -104,16 +104,26 @@ task createOpenXrStructs(type: CreateStructs) {
 
 // Make sure the CreateStructs task runs before Java compilation
 tasks.withType(JavaCompile) {
-    dependsOn createOpenXrStructs
+    dependsOn parseOpenXrFile
 }
 
-// Ensure extractDebugAnnotations task depends on createOpenXrStructs
+// Ensure extractDebugAnnotations task depends on parseOpenXrFile
 android.libraryVariants.all { variant ->
     tasks.matching { task -> task.name.startsWith("extract") && task.name.endsWith("Annotations") }.all { task ->
-        task.dependsOn createOpenXrStructs
+        task.dependsOn parseOpenXrFile
+    }
+}
+android.libraryVariants.all { variant ->
+    tasks.matching { task -> task.name.startsWith("javaDoc") && task.name.endsWith("Generation") }.all { task ->
+        task.dependsOn parseOpenXrFile
     }
 }
 
+android.libraryVariants.all { variant ->
+    tasks.matching { task -> task.name.equals("sourceReleaseJar")}.all { task ->
+        task.dependsOn parseOpenXrFile
+    }
+}
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.

@@ -29,13 +29,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 
 /**
  * Gradle task to parse OpenXR header files and generate Java classes for constants and structs.
  */
-public class CreateStructs extends DefaultTask {
+public class ParseOpenXr extends DefaultTask {
 
     private final RegularFileProperty headerFile = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputDir = getProject().getObjects().fileProperty();
