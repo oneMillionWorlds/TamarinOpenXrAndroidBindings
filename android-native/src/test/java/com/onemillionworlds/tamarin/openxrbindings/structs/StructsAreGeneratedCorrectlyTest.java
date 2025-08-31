@@ -98,6 +98,13 @@ public class StructsAreGeneratedCorrectlyTest {
         test("XrHandCapsuleFB");
     }
 
+    /**
+     * xrHapticVibration is interesting because it has a parent class so gets an asParent() method
+     */
+    @Test
+    public void xrHapticVibrationTest(){
+        test("XrHapticVibration");
+    }
 
     public static void test(String structName){
         try {
