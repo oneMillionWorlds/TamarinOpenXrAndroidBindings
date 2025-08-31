@@ -92,7 +92,9 @@ The project includes tests that compare generated struct files with reference ve
 ./gradlew updateReferenceStructs
 ```
 
-This task will copy all generated struct files to the reference directory, updating the test expectations. Only run this task when you've verified that the changes to the generated files are correct and should become the new reference standard.
+This task will update only existing reference struct files with their corresponding generated versions. It will not create new reference files. Only run this task when you've verified that the changes to the generated files are correct and should become the new reference standard.
+
+Note: Only a small subset of generated files are used as references in tests. This task preserves that subset and only updates those files that already exist as references.
 
 ## Implementation Details
 

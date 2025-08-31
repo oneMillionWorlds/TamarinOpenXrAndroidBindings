@@ -113,7 +113,7 @@ public class StructsAreGeneratedCorrectlyTest {
 
             // Compare the files
             assertEquals(referenceContent, generatedContent, 
-                    "Generated file " + structName + ".java does not match reference file");
+                    "Generated file " + structName + ".java does not match reference file. If the update is intentional run `./gradlew updateReferenceStructs`");
 
         } catch (IOException e) {
 
