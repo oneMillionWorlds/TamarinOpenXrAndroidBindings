@@ -24,6 +24,10 @@ public abstract class Struct<T extends Struct<T>> implements NativeResource {
         return address;
     }
 
+    public ByteBuffer container() {
+        return container;
+    }
+
     /**
      * Frees the native memory associated with this structure.
      * This method should be called when the structure is no longer needed.

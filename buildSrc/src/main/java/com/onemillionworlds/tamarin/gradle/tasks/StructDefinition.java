@@ -18,6 +18,10 @@ public class StructDefinition {
      */
     private final boolean canBeItsOwnDefault;
 
+    /**
+     * If this struct has a base header that it adds on to this records it
+     */
+    private Optional<String> baseHeader = Optional.empty();
 
     public StructDefinition(String name, boolean canBeItsOwnDefault) {
         this.name = name;
@@ -66,6 +70,14 @@ public class StructDefinition {
      */
     public Optional<String> findCountParameterForPointerField(String fieldName){
         return findCountParameterForPointerField(fieldName, this::hasField);
+    }
+
+    public Optional<String> getBaseHeader() {
+        return baseHeader;
+    }
+
+    public void setBaseHeader(String baseHeader) {
+        this.baseHeader = Optional.ofNullable(baseHeader);
     }
 
     @Override
