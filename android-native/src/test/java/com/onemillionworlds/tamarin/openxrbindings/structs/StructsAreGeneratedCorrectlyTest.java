@@ -19,6 +19,85 @@ public class StructsAreGeneratedCorrectlyTest {
         test("XrActionSetCreateInfo");
     }
 
+    /**
+     * XrActionsSyncInfo is interesting because it has a pointer to struct (and a count of that object)
+     */
+    @Test
+    public void xrActionsSyncInfoTest() {
+        test("XrActionsSyncInfo");
+    }
+
+    /**
+     * XrDebugUtilsMessengerCreateInfoEXT is interesting because it has a PFN_xrDebugUtilsMessengerCallbackEXT
+     * This is a pointer to a function
+     */
+    @Test
+    public void xrDebugUtilsMessengerCreateInfoExtTest() {
+        test("XrDebugUtilsMessengerCreateInfoExt");
+    }
+
+    /**
+     * XrInstanceCreateInfo is interesting because it is a struct that itself contains structs.
+     */
+    @Test
+    public void xrInstanceCreateInfoTest() {
+        test("XrInstanceCreateInfo");
+    }
+
+    /**
+     * XrInteractionProfileDpadBindingEXT is interesting onHaptic is a singular pointer
+     * (with a base class XrHapticBaseHeader but it might be another type)
+     */
+    @Test
+    public void xrInteractionProfileDpadBindingEXTTest() {
+        test("XrInteractionProfileDpadBindingEXT");
+    }
+
+    /**
+     * This one is interesting because actionSets is a pointer to a buffer of handles
+     */
+    @Test
+    public void xrSessionActionSetsAttachInfoTest() {
+        test("XrSessionActionSetsAttachInfo");
+    }
+
+    /**
+     * This one is interesting because uuids is not marked as const so it *looks* like an output for
+     * openXr to read into. But the number is held in uuidCount (implying its an input). I believe
+     * this extension is done incorrectly and it *should* have been marked const but wasn't.
+     * This test makes sure these oddballs generate correctly
+     */
+    @Test
+    public void xrSpaceUuidFilterInfoFBTest() {
+        test("XrSpaceUuidFilterInfoFB");
+    }
+
+    /**
+     * XrSwapchainImageBaseHeader is interesting because it is a base structure type that other types extend.
+     * As such, it should not have a type$Default() method.
+     */
+    @Test
+    public void xrSwapchainImageBaseHeaderTest() {
+        test("XrSwapchainImageBaseHeader");
+    }
+
+    /**
+     * XrVisibilityMaskKHR is interesting because the vertices parameter is written INTO by openXR
+     */
+    @Test
+    public void xrVisibilityMaskKHRTest() {
+        test("XrVisibilityMaskKHR");
+    }
+
+    /**
+     * XrHandCapsuleFB is interesting because it has a constant number of XrVector3fs in it
+     * (and isn't a pointer)
+     */
+    @Test
+    public void xrHandCapsuleFBTest() {
+        test("XrHandCapsuleFB");
+    }
+
 
     public static void test(String structName){
         try {
