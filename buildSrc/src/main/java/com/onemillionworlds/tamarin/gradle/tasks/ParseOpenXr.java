@@ -1,5 +1,6 @@
 package com.onemillionworlds.tamarin.gradle.tasks;
 
+import com.onemillionworlds.tamarin.gradle.XmlHelper;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.ConstantsGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.EnumGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.HandleGenerator;
@@ -16,12 +17,19 @@ import com.onemillionworlds.tamarin.gradle.tasks.parsers.HandleParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.IntTypeDefPasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.LongTypeDefPasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.StructParser;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.XmlStructParser;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -35,15 +43,24 @@ import java.util.regex.Matcher;
 /**
  * Gradle task to parse OpenXR header files and generate Java classes for constants and structs.
  */
+
+
 public class ParseOpenXr extends DefaultTask {
 
     private final RegularFileProperty headerFile = getProject().getObjects().fileProperty();
+
+    private final RegularFileProperty xrXml = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputDir = getProject().getObjects().fileProperty();
     private final RegularFileProperty cOutputDir = getProject().getObjects().fileProperty();
 
     @InputFile
     public RegularFileProperty getHeaderFile() {
         return headerFile;
+    }
+
+    @InputFile
+    public RegularFileProperty getXrXml() {
+        return xrXml;
     }
 
     @OutputDirectory
@@ -56,9 +73,44 @@ public class ParseOpenXr extends DefaultTask {
         return cOutputDir;
     }
 
+    /**
+     * Parses an XML file and returns a Document object that can be traversed.
+     * 
+     * @param xmlFile The XML file to parse
+     * @return A Document object representing the parsed XML
+     * @throws IOException If there is an error reading the file
+     */
+    private Document parseXmlFile(File xmlFile) throws IOException {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(xmlFile);
+            document.getDocumentElement().normalize();
+            return document;
+        } catch (ParserConfigurationException | SAXException e) {
+            getLogger().error("Error parsing XML file: {}", e.getMessage());
+            throw new IOException("Error parsing XML file", e);
+        }
+    }
+
     @TaskAction
     public void execute() throws IOException {
+
+        // we probably should be using the xrXmlFile for everything but started using the c header file
+        // try to get new stuff from xrXmlFile and migrate where possible
         File header = headerFile.getAsFile().get();
+        File xrXmlFile = xrXml.getAsFile().get();
+
+        // Parse the XML file
+        Document xrXmlDocument = parseXmlFile(xrXmlFile);
+        getLogger().lifecycle("Successfully parsed XML file: {}", xrXmlFile.getAbsolutePath());
+
+        // Create an XML helper for traversing the document
+        List<Element> types = XmlHelper.getElements(XmlHelper.getElement(xrXmlDocument.getDocumentElement(), "types").orElseThrow(), "type");
+        Map<String, XmlStructParser.XmlStruct> xmlStructs = XmlStructParser.parseStructs(types);
+
+        getLogger().lifecycle("Found XML structs: {}", xmlStructs.size());
+
         File output = outputDir.getAsFile().get();
         File cOutput = null;
         if (cOutputDir.isPresent()) {
@@ -90,6 +142,11 @@ public class ParseOpenXr extends DefaultTask {
         List<String> flags = new ArrayList<>();
 
         parseHeaderFile(header, constants, structs, enums, functions, atoms, intTypedefs, longTypedefs, handles, flags);
+
+        // attempt to enrich the structs based on their xml counterpart (which really should be used for everything but too late now)
+        for (StructDefinition struct : structs) {
+            xmlStructs.get(struct.getName()).enrich(struct);
+        }
 
         // Log the parsed int and long typedefs
         getLogger().lifecycle("Found {} int typedefs:", intTypedefs.size());

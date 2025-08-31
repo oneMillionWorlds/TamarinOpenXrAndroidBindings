@@ -86,6 +86,7 @@ tasks.withType(JavaCompile) {
 def generatedOutputDir = file("${project.projectDir}/src/main/generated/java/com.onemillionworlds.tamarin.openxrbindings")
 def generatedCOutputDir = file("${project.projectDir}/src/main/generated/native/src")
 def openxrHeaderFile = file("${project.projectDir}/src/native/include/openxr/openxr.h")
+def xrXmlFile = file("${project.projectDir}/src/openxrSpec/xr.xml")
 
 // Create the output directories
 task createGeneratedDirs {
@@ -98,6 +99,7 @@ task createGeneratedDirs {
 task parseOpenXrFile(type: ParseOpenXr) {
     dependsOn createGeneratedDirs
     headerFile = openxrHeaderFile
+    xrXml = xrXmlFile
     outputDir = generatedOutputDir
     cOutputDir = generatedCOutputDir
 }

@@ -228,6 +228,14 @@ public class StructGenerator extends FileGenerator {
         writer.append("        return this;\n");
         writer.append("    }\n\n");
 
+       struct.getBaseHeader().ifPresent(parent -> {
+           writer.append("    /** Get a view of this struct as its parent (for use in methods that take the parent)*/\n");
+           writer.append("    public " + parent + " asParent() {\n");
+           writer.append("        return new "+parent+"(address(), container());\n");
+           writer.append("    }\n\n");
+       });
+
+
         // Add standard factory methods
         writer.append("    // -----------------------------------\n\n");
 
