@@ -4,7 +4,6 @@ project(OpenXRBindings LANGUAGES C CXX)
 
 # Define JNI source files
 set(JNI_SOURCES
-    src/com_onemillionworlds_tamarin_openxrbindings_Library.c
     src/com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil.c
     src/com_onemillionworlds_tamarin_openxrbindings_thickc_ThickC.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../main/generated/native/src/com_onemillionworlds_tamarin_openxrbindings_X10.c

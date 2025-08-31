@@ -27,6 +27,10 @@ android {
             java.srcDirs = ['src/main/java', "src/main/generated/java"]
             jniLibs.srcDirs = ['src/main/jniLibs']
         }
+        test {
+            java.srcDirs = ['src/test/java']
+            resources.srcDirs = ['src/test/resources']
+        }
     }
 
     defaultConfig {
@@ -83,7 +87,7 @@ tasks.withType(JavaCompile) {
 }
 
 // Configure the CreateStructs task
-def generatedOutputDir = file("${project.projectDir}/src/main/generated/java/com.onemillionworlds.tamarin.openxrbindings")
+def generatedOutputDir = file("${project.projectDir}/src/main/generated/java/com/onemillionworlds/tamarin/openxrbindings")
 def generatedCOutputDir = file("${project.projectDir}/src/main/generated/native/src")
 def openxrHeaderFile = file("${project.projectDir}/src/native/include/openxr/openxr.h")
 def xrXmlFile = file("${project.projectDir}/src/openxrSpec/xr.xml")
@@ -135,7 +139,8 @@ dependencies {
     implementation libs.guava
 
     // Android testing dependencies
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation libs.junit.jupiter.api
+    testImplementation libs.jupiter.junit.jupiter.engine
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
@@ -144,6 +149,10 @@ dependencies {
 android.testOptions {
     unitTests {
         includeAndroidResources = true
+        // Use JUnit Platform (JUnit 5)
+        unitTests.all {
+            useJUnitPlatform()
+        }
     }
 }
 
