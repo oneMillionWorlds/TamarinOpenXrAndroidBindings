@@ -1,21 +1,28 @@
 package com.onemillionworlds.tamarin.gradle.tasks.generators;
 
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.ConstParser;
 import org.gradle.api.logging.Logger;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Generator for XR10Constants.java file.
  */
 public class ConstantsGenerator extends FileGenerator {
-    private final Map<String, String> constants;
+    private final Map<String, ConstParser.Const> constants;
+    private final Collection<String> typeDeffedInt;
 
-    public ConstantsGenerator(Logger logger, Map<String, String> constants) {
+    private final Collection<String> typeDeffedLong;
+    public ConstantsGenerator(Logger logger, Map<String, ConstParser.Const> constants, List<String> typeDeffedInt, List<String> typeDeffedLong) {
         super(logger);
         this.constants = constants;
+        this.typeDeffedInt = typeDeffedInt;
+        this.typeDeffedLong = typeDeffedLong;
     }
 
     @Override
@@ -33,12 +40,8 @@ public class ConstantsGenerator extends FileGenerator {
 
             // Write structure types
             writer.write("    // Structure types\n");
-            for (Map.Entry<String, String> entry : constants.entrySet()) {
-                if(entry.getValue().contains("\"")){
-                    writer.write("    public static final String " + entry.getKey() + " = " + entry.getValue() + ";\n");
-                }else{
-                    writer.write("    public static final int " + entry.getKey() + " = " + entry.getValue() + ";\n");
-                }
+            for (Map.Entry<String, ConstParser.Const> entry : constants.entrySet()) {
+                writer.write(entry.getValue().render(typeDeffedInt, typeDeffedLong));
             }
             writer.write("    \n");
             writer.write("    // Pointer size\n");

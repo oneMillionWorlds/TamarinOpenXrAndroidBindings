@@ -7,6 +7,7 @@ import com.onemillionworlds.tamarin.gradle.tasks.generators.StructGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.X10Generator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.X10CGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.AtomParser;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.ConstParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.DefinePasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.EnumParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.FlagsParser;
@@ -78,7 +79,7 @@ public class ParseOpenXr extends DefaultTask {
         }
 
         // Parse the header file
-        Map<String, String> constants = new LinkedHashMap<>();
+        Map<String, ConstParser.Const> constants = new LinkedHashMap<>();
         List<StructDefinition> structs = new ArrayList<>();
         List<EnumDefinition> enums = new ArrayList<>();
         List<FunctionDefinition> functions = new ArrayList<>();
@@ -114,7 +115,7 @@ public class ParseOpenXr extends DefaultTask {
         }
 
         // Generate XR10Constants.java
-        new ConstantsGenerator(getLogger(), constants).generate(output);
+        new ConstantsGenerator(getLogger(), constants, intTypedefs, longTypedefs).generate(output);
 
         // Generate enum classes
         for (EnumDefinition enumDef : enums) {
@@ -142,7 +143,7 @@ public class ParseOpenXr extends DefaultTask {
         }
     }
 
-    private void parseHeaderFile(File headerFile, Map<String, String> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, List<String> atoms, List<String> intTypedefs, List<String> longTypedefs, List<String> handles, List<String> flags) throws IOException {
+    private void parseHeaderFile(File headerFile, Map<String, ConstParser.Const> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, List<String> atoms, List<String> intTypedefs, List<String> longTypedefs, List<String> handles, List<String> flags) throws IOException {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(headerFile))) {
             String line;
@@ -180,18 +181,20 @@ public class ParseOpenXr extends DefaultTask {
                     DefinePasser.parseDefine(line).ifPresent(define -> {
                         String name = define.constantName;
                         String value = define.constantValue;
-                        constants.put(name, value);
+                        constants.put(name, ConstParser.Const.fromDefine(define));
                     });
                 }
+
+                ConstParser.parseConst(line).ifPresent(newConst -> constants.put(newConst.name, newConst));
 
                 // Parse atom definitions
                 AtomParser.parseAtom(line).ifPresent(atoms::add);
 
                 // Parse int typedefs
-                IntTypeDefPasser.parseIntTypedef(line).ifPresent(intTypedefs::add);
+                IntTypeDefPasser.parseIntTypedef(line, intTypedefs).ifPresent(intTypedefs::add);
 
                 // Parse long typedefs
-                LongTypeDefPasser.parseLongTypedef(line).ifPresent(longTypedefs::add);
+                LongTypeDefPasser.parseLongTypedef(line, longTypedefs).ifPresent(longTypedefs::add);
 
                 // Parse handle definitions
                 HandleParser.parseHandle(line).ifPresent(handles::add);
