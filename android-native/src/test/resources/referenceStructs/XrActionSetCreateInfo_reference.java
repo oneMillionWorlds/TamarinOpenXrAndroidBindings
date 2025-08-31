@@ -17,9 +17,9 @@ import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
 
 /**
  * Structure specifying action set create info.
- *
+ * 
  * <h3>Layout</h3>
- *
+ * 
  * <pre><code>
  * struct XrActionSetCreateInfo {
  *     XrStructureType type;
@@ -109,27 +109,27 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
     }
 
     /** Sets the specified value to the {@code type} field. */
-    public XrActionSetCreateInfo type(XrStructureType value) {
+    public XrActionSetCreateInfo type(XrStructureType value) { 
         XrActionSetCreateInfo.ntype(address(), value.getValue());
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
-    public XrActionSetCreateInfo next(long value) {
+    public XrActionSetCreateInfo next(long value) { 
         XrActionSetCreateInfo.nnext(address(), value);
         return this;
     }
     /** Sets the specified value to the {@code actionSetName} field. */
-    public XrActionSetCreateInfo actionSetName(ByteBuffer value) {
+    public XrActionSetCreateInfo actionSetName(ByteBuffer value) { 
         XrActionSetCreateInfo.nactionSetName(address(), value);
         return this;
     }
     /** Sets the specified value to the {@code localizedActionSetName} field. */
-    public XrActionSetCreateInfo localizedActionSetName(ByteBuffer value) {
+    public XrActionSetCreateInfo localizedActionSetName(ByteBuffer value) { 
         XrActionSetCreateInfo.nlocalizedActionSetName(address(), value);
         return this;
     }
     /** Sets the specified value to the {@code priority} field. */
-    public XrActionSetCreateInfo priority(int value) {
+    public XrActionSetCreateInfo priority(int value) { 
         XrActionSetCreateInfo.npriority(address(), value);
         return this;
     }
@@ -370,27 +370,27 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         public int priority() { return XrActionSetCreateInfo.npriority(address()); }
 
         /** Sets the specified value to the {@code type} field. */
-        public Buffer type(XrStructureType value) {
+        public Buffer type(XrStructureType value) { 
             XrActionSetCreateInfo.ntype(address(), value.getValue());
             return this;
         }
         /** Sets the specified value to the {@code next} field. */
-        public Buffer next(long value) {
+        public Buffer next(long value) { 
             XrActionSetCreateInfo.nnext(address(), value);
             return this;
         }
         /** Sets the specified value to the {@code actionSetName} field. */
-        public Buffer actionSetName(ByteBuffer value) {
+        public Buffer actionSetName(ByteBuffer value) { 
             XrActionSetCreateInfo.nactionSetName(address(), value);
             return this;
         }
         /** Sets the specified value to the {@code localizedActionSetName} field. */
-        public Buffer localizedActionSetName(ByteBuffer value) {
+        public Buffer localizedActionSetName(ByteBuffer value) { 
             XrActionSetCreateInfo.nlocalizedActionSetName(address(), value);
             return this;
         }
         /** Sets the specified value to the {@code priority} field. */
-        public Buffer priority(int value) {
+        public Buffer priority(int value) { 
             XrActionSetCreateInfo.npriority(address(), value);
             return this;
         }

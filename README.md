@@ -82,6 +82,18 @@ if (count > 0) {
 
 3. The library will be generated in `lib/build/outputs/aar/`.
 
+### Development Tasks
+
+#### Updating Reference Struct Files
+
+The project includes tests that compare generated struct files with reference versions to ensure consistency. When you make changes to the struct generation code and want to accept the new generated files as the reference:
+
+```
+./gradlew updateReferenceStructs
+```
+
+This task will copy all generated struct files to the reference directory, updating the test expectations. Only run this task when you've verified that the changes to the generated files are correct and should become the new reference standard.
+
 ## Implementation Details
 
 The library uses JNI to bridge between Java and the native OpenXR API. The implementation follows these steps:

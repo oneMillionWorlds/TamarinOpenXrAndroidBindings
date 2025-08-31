@@ -122,7 +122,7 @@ public class StructsAreGeneratedCorrectlyTest {
     }
 
     private static String readResourceFile(String structName) throws IOException {
-        File file = new File(moduleRoot, "src/test/resources/exampleStructs/" + structName + "_reference.java");
+        File file = new File(moduleRoot, "src/test/resources/referenceStructs/" + structName + "_reference.java");
         return readSanitisedFile(file);
     }
 

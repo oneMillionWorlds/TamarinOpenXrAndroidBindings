@@ -156,6 +156,47 @@ android.testOptions {
     }
 }
 
+// Task to update reference struct files with the current generated files
+// This task is not part of the normal build process and should be run explicitly
+// when you want to accept changes to the generated structs
+task updateReferenceStructs {
+    description = 'Updates reference struct files with the current generated files'
+    group = 'Verification'
+
+    doLast {
+        def generatedDir = file("${project.projectDir}/src/main/generated/java/com/onemillionworlds/tamarin/openxrbindings")
+        def referenceDir = file("${project.projectDir}/src/test/resources/referenceStructs")
+
+        // Create reference directory if it doesn't exist
+        if (!referenceDir.exists()) {
+            referenceDir.mkdirs()
+        }
+
+        // Find all Xr*.java files in the generated directory
+        def generatedFiles = generatedDir.listFiles().findAll { 
+            it.name.startsWith("Xr") && it.name.endsWith(".java") 
+        }
+
+        println "Found ${generatedFiles.size()} generated struct files"
+
+        // For each generated file, copy it to the reference directory with _reference.java suffix
+        generatedFiles.each { generatedFile ->
+            def baseName = generatedFile.name.replace(".java", "")
+            def referenceFile = new File(referenceDir, "${baseName}_reference.java")
+
+            // Read the generated file content
+            def content = generatedFile.text
+
+            // Write to the reference file
+            referenceFile.text = content
+
+            println "Updated reference file: ${referenceFile.name}"
+        }
+
+        println "Reference struct files update complete"
+    }
+}
+
 // Use the new Android publishing DSL
 android {
     publishing {

@@ -17,9 +17,9 @@ import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
 
 /**
  * Structure specifying haptic vibration.
- *
+ * 
  * <h3>Layout</h3>
- *
+ * 
  * <pre><code>
  * struct XrHapticVibration {
  *     XrStructureType type;
@@ -109,27 +109,27 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
     }
 
     /** Sets the specified value to the {@code type} field. */
-    public XrHapticVibration type(XrStructureType value) {
+    public XrHapticVibration type(XrStructureType value) { 
         XrHapticVibration.ntype(address(), value.getValue());
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
-    public XrHapticVibration next(long value) {
+    public XrHapticVibration next(long value) { 
         XrHapticVibration.nnext(address(), value);
         return this;
     }
     /** Sets the specified value to the {@code duration} field. */
-    public XrHapticVibration duration(long value) {
+    public XrHapticVibration duration(long value) { 
         XrHapticVibration.nduration(address(), value);
         return this;
     }
     /** Sets the specified value to the {@code frequency} field. */
-    public XrHapticVibration frequency(float value) {
+    public XrHapticVibration frequency(float value) { 
         XrHapticVibration.nfrequency(address(), value);
         return this;
     }
     /** Sets the specified value to the {@code amplitude} field. */
-    public XrHapticVibration amplitude(float value) {
+    public XrHapticVibration amplitude(float value) { 
         XrHapticVibration.namplitude(address(), value);
         return this;
     }
@@ -363,27 +363,27 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
         public float amplitude() { return XrHapticVibration.namplitude(address()); }
 
         /** Sets the specified value to the {@code type} field. */
-        public Buffer type(XrStructureType value) {
+        public Buffer type(XrStructureType value) { 
             XrHapticVibration.ntype(address(), value.getValue());
             return this;
         }
         /** Sets the specified value to the {@code next} field. */
-        public Buffer next(long value) {
+        public Buffer next(long value) { 
             XrHapticVibration.nnext(address(), value);
             return this;
         }
         /** Sets the specified value to the {@code duration} field. */
-        public Buffer duration(long value) {
+        public Buffer duration(long value) { 
             XrHapticVibration.nduration(address(), value);
             return this;
         }
         /** Sets the specified value to the {@code frequency} field. */
-        public Buffer frequency(float value) {
+        public Buffer frequency(float value) { 
             XrHapticVibration.nfrequency(address(), value);
             return this;
         }
         /** Sets the specified value to the {@code amplitude} field. */
-        public Buffer amplitude(float value) {
+        public Buffer amplitude(float value) { 
             XrHapticVibration.namplitude(address(), value);
             return this;
         }
