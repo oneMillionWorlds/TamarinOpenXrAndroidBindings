@@ -159,41 +159,50 @@ android.testOptions {
 // Task to update reference struct files with the current generated files
 // This task is not part of the normal build process and should be run explicitly
 // when you want to accept changes to the generated structs
+// Only updates existing reference files, never creates new ones
 task updateReferenceStructs {
-    description = 'Updates reference struct files with the current generated files'
+    description = 'Updates existing reference struct files with the current generated files'
     group = 'Verification'
 
     doLast {
         def generatedDir = file("${project.projectDir}/src/main/generated/java/com/onemillionworlds/tamarin/openxrbindings")
         def referenceDir = file("${project.projectDir}/src/test/resources/referenceStructs")
 
-        // Create reference directory if it doesn't exist
+        // Ensure reference directory exists
         if (!referenceDir.exists()) {
             referenceDir.mkdirs()
         }
 
-        // Find all Xr*.java files in the generated directory
-        def generatedFiles = generatedDir.listFiles().findAll { 
-            it.name.startsWith("Xr") && it.name.endsWith(".java") 
+        // Find all existing reference files
+        def existingReferenceFiles = referenceDir.listFiles().findAll { 
+            it.name.endsWith("_reference.java") 
         }
 
-        println "Found ${generatedFiles.size()} generated struct files"
+        println "Found ${existingReferenceFiles.size()} existing reference files"
 
-        // For each generated file, copy it to the reference directory with _reference.java suffix
-        generatedFiles.each { generatedFile ->
-            def baseName = generatedFile.name.replace(".java", "")
-            def referenceFile = new File(referenceDir, "${baseName}_reference.java")
+        // Count of updated files
+        def updatedCount = 0
 
-            // Read the generated file content
-            def content = generatedFile.text
+        // For each existing reference file, find the corresponding generated file and update it
+        existingReferenceFiles.each { referenceFile ->
+            def baseName = referenceFile.name.replace("_reference.java", "")
+            def generatedFile = new File(generatedDir, "${baseName}.java")
 
-            // Write to the reference file
-            referenceFile.text = content
+            if (generatedFile.exists()) {
+                // Read the generated file content
+                def content = generatedFile.text
 
-            println "Updated reference file: ${referenceFile.name}"
+                // Write to the reference file
+                referenceFile.text = content
+
+                updatedCount++
+                println "Updated reference file: ${referenceFile.name}"
+            } else {
+                println "Warning: Generated file not found for reference: ${referenceFile.name}"
+            }
         }
 
-        println "Reference struct files update complete"
+        println "Reference struct files update complete. Updated ${updatedCount} files."
     }
 }
 

@@ -99,9 +99,17 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
     public ByteBuffer actionSetName() {
         return nactionSetName(address());
     }
+    /** Returns a String view of the {@code actionSetName} field. */
+    public String actionSetNameString() {
+        return XrActionSetCreateInfo.nactionSetNameString(address());
+    }
     /** Returns the value of the {@code localizedActionSetName} field. */
     public ByteBuffer localizedActionSetName() {
         return nlocalizedActionSetName(address());
+    }
+    /** Returns a String view of the {@code localizedActionSetName} field. */
+    public String localizedActionSetNameString() {
+        return XrActionSetCreateInfo.nlocalizedActionSetNameString(address());
     }
     /** Returns the value of the {@code priority} field. */
     public int priority() {
@@ -364,8 +372,10 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         public long next() { return XrActionSetCreateInfo.nnext(address()); }
         /** Returns the value of the {@code actionSetName} field. */
         public ByteBuffer actionSetName() { return XrActionSetCreateInfo.nactionSetName(address()); }
+        public String actionSetNameString() { return XrActionSetCreateInfo.nactionSetNameString(address()); }
         /** Returns the value of the {@code localizedActionSetName} field. */
         public ByteBuffer localizedActionSetName() { return XrActionSetCreateInfo.nlocalizedActionSetName(address()); }
+        public String localizedActionSetNameString() { return XrActionSetCreateInfo.nlocalizedActionSetNameString(address()); }
         /** Returns the value of the {@code priority} field. */
         public int priority() { return XrActionSetCreateInfo.npriority(address()); }
 

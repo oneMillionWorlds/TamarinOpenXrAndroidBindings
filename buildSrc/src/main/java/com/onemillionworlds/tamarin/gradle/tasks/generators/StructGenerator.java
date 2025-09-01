@@ -434,6 +434,11 @@ public class StructGenerator extends FileGenerator {
                 writer.append("        public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(address(), index); }\n");
             }
 
+            if(field.getJavaType().equals("ByteBuffer")) {
+                // add a bonus string method
+                writer.append("        public String " + fieldNameSanitised + "String() { return " + struct.getName() + ".n" + fieldNameSanitised + "String(address()); }\n");
+            }
+
         }
 
         writer.append("\n");
@@ -538,6 +543,14 @@ public class StructGenerator extends FileGenerator {
             // bonus getter by index if an array of structs
             writer.append("    /** Returns the value of the index-th item in the {@code " + fieldName + "} field. Note to mutate the value get by index then mutate in place*/\n");
             writer.append("    public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(address(), index); }\n");
+        }
+
+        if(field.getJavaType().equals("ByteBuffer")) {
+            // add a bonus string method
+            writer.append("    /** Returns a String view of the {@code " + fieldName + "} field. */\n");
+            writer.append("    public String " + fieldNameSanitised + "String() {\n");
+            writer.append("        return " + struct.getName() + ".n" + fieldNameSanitised + "String(address());\n");
+            writer.append("    }\n");
         }
     }
 
