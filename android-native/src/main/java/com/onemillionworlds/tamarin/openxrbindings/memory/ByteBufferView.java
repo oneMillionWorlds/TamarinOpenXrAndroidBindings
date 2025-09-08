@@ -4,11 +4,11 @@ import com.onemillionworlds.tamarin.openxrbindings.BufferUtils;
 
 import java.nio.ByteBuffer;
 
-public class BufferAndAddress {
+public class ByteBufferView {
     ByteBuffer buffer;
     long address;
 
-    public BufferAndAddress(ByteBuffer buffer, long address) {
+    public ByteBufferView(ByteBuffer buffer, long address) {
         this.buffer = buffer;
         this.address = address;
     }
@@ -22,16 +22,16 @@ public class BufferAndAddress {
     }
 
     /**
-     * Creates a new BufferAndAddress with the specified capacity.
+     * Creates a new ByteBufferView with the specified capacity.
      * <p>
-     * This is managed by java and will be freed when the BufferAndAddress is garbage collected.
+     * This is managed by java and will be freed when the ByteBufferView is garbage collected.
      * </p>
      * @param capacity the capacity in bytes
-     * @return a new BufferAndAddress with the specified capacity.
+     * @return a new ByteBufferView with the specified capacity.
      */
-    public static BufferAndAddress createLongBufferView(int capacity){
+    public static ByteBufferView createLongBufferView(int capacity){
         ByteBuffer buffer = BufferUtils.createByteBuffer(capacity);
         long address = MemoryUtil.memAddress(buffer);
-        return new BufferAndAddress(buffer, address);
+        return new ByteBufferView(buffer, address);
     }
 }

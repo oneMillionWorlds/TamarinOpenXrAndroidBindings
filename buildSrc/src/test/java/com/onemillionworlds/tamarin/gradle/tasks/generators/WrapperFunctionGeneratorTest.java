@@ -55,7 +55,7 @@ class WrapperFunctionGeneratorTest {
                      * @param function (PFN_xrVoidFunction)
                      * @return The XrResult status code
                      */
-                    public static XrResult xrGetInstanceProcAddr(XrInstance instance, BufferAndAddress name, PointerBufferView function) {
+                    public static XrResult xrGetInstanceProcAddr(XrInstance instance, ByteBufferView name, PointerBufferView function) {
                         long nameAddress = name == null ? MemoryUtil.NULL : name.address();
                         long functionAddress = function == null ? MemoryUtil.NULL : function.address();
                         return XrResult.fromValue(nxrGetInstanceProcAddr(instance.getRawHandle(), nameAddress, functionAddress));
@@ -86,7 +86,7 @@ class WrapperFunctionGeneratorTest {
                      * @param buffer (char) Required size XR_MAX_RESULT_STRING_SIZE
                      * @return The XrResult status code
                      */
-                    public static XrResult xrResultToString(XrInstance instance, XrResult value, BufferAndAddress buffer) {
+                    public static XrResult xrResultToString(XrInstance instance, XrResult value, ByteBufferView buffer) {
                         long bufferAddress = buffer == null ? MemoryUtil.NULL : buffer.address();
                         return XrResult.fromValue(nxrResultToString(instance.getRawHandle(), value.getValue(), bufferAddress));
                     }
@@ -309,7 +309,7 @@ class WrapperFunctionGeneratorTest {
                      * @param buffer (uint8_t)
                      * @return The XrResult status code
                      */
-                    public static XrResult xrLoadControllerModelMSFT(XrSession session, long modelKey, int bufferCapacityInput, IntBufferView bufferCountOutput, BufferAndAddress buffer) {
+                    public static XrResult xrLoadControllerModelMSFT(XrSession session, long modelKey, int bufferCapacityInput, IntBufferView bufferCountOutput, ByteBufferView buffer) {
                         long bufferCountOutputAddress = bufferCountOutput == null ? MemoryUtil.NULL : bufferCountOutput.address();
                         long bufferAddress = buffer == null ? MemoryUtil.NULL : buffer.address();
                         return XrResult.fromValue(nxrLoadControllerModelMSFT(session.getRawHandle(), modelKey, bufferCapacityInput, bufferCountOutputAddress, bufferAddress));

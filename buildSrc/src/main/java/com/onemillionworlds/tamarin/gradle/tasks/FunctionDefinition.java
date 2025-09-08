@@ -168,7 +168,7 @@ public class FunctionDefinition {
                     return "PointerBufferView";
                 }
                 if(type.equals("char")){
-                    return "BufferAndAddress";
+                    return "ByteBufferView";
                 }
                 if(isHandle){
                     return type + ".Buffer";
@@ -180,7 +180,7 @@ public class FunctionDefinition {
                     return "LongBufferView";
                 }
                 if(type.equals("uint8_t")){
-                    return "BufferAndAddress";
+                    return "ByteBufferView";
                 }
                 if(type.equals("float")){
                     return "FloatBufferView";

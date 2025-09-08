@@ -47,7 +47,7 @@ public class StructGenerator extends FileGenerator {
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.handles.*;\n");
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;\n");
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;\n");
-        writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.BufferAndAddress;\n");
+        writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;\n");
 
 
         writer.append("\nimport java.nio.ByteBuffer;\n\n");
@@ -435,7 +435,7 @@ public class StructGenerator extends FileGenerator {
                 writer.append("        public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(address(), index); }\n");
             }
 
-            if(field.getJavaType().equals("BufferAndAddress")) {
+            if(field.getJavaType().equals("ByteBufferView")) {
                 // add a bonus string method
                 writer.append("        public String " + fieldNameSanitised + "String() { return " + struct.getName() + ".n" + fieldNameSanitised + "String(address()); }\n");
             }
@@ -546,7 +546,7 @@ public class StructGenerator extends FileGenerator {
             writer.append("    public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(address(), index); }\n");
         }
 
-        if(field.getJavaType().equals("BufferAndAddress")) {
+        if(field.getJavaType().equals("ByteBufferView")) {
             // add a bonus string method
             writer.append("    /** Returns a String view of the {@code " + fieldName + "} field. */\n");
             writer.append("    public String " + fieldNameSanitised + "String() {\n");
@@ -612,11 +612,11 @@ public class StructGenerator extends FileGenerator {
                     writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value) { memCopy(value.address(), struct +" + struct.getName() + "." + fieldNameUpper + "," + javaType + ".SIZEOF); }\n");
                 }
             }
-        } else if (javaType.equals("BufferAndAddress")) {
-            writer.append("    public static BufferAndAddress n" + fieldNameSanitised + "(long struct) { \n");
+        } else if (javaType.equals("ByteBufferView")) {
+            writer.append("    public static ByteBufferView n" + fieldNameSanitised + "(long struct) { \n");
             writer.append("        long address = struct + " + struct.getName() + "." + fieldNameUpper + ";\n");
             writer.append("        ByteBuffer rawBuffer = memByteBuffer(address, " + field.getArraySizeConstant() + ");\n");
-            writer.append("        return new BufferAndAddress(rawBuffer, address);\n");
+            writer.append("        return new ByteBufferView(rawBuffer, address);\n");
             writer.append("    }\n");
 
 
@@ -627,7 +627,7 @@ public class StructGenerator extends FileGenerator {
                 writer.append("    /** max length " + field.getArraySizeConstant() + " */\n");
             }
 
-            writer.append("    public static void n" + fieldNameSanitised + "(long struct, BufferAndAddress value) {\n");
+            writer.append("    public static void n" + fieldNameSanitised + "(long struct, ByteBufferView value) {\n");
             if(field.getArraySizeConstant() != null) {
                 writer.append("        byteBufferLengthCheck(value.getBuffer()," + field.getArraySizeConstant() + ");\n");
             }

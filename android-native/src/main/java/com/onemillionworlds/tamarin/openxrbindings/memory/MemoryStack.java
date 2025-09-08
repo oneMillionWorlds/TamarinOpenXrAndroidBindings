@@ -6,8 +6,6 @@ package com.onemillionworlds.tamarin.openxrbindings.memory;
 import com.onemillionworlds.tamarin.openxrbindings.BufferUtils;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.LongBuffer;
 
 import java.util.LinkedList;
 
@@ -117,10 +115,10 @@ public class MemoryStack implements AutoCloseable {
      * @param capacity the capacity in bytes
      * @return the ByteBuffer
      */
-    public BufferAndAddress malloc(int alignment, int capacity) {
+    public ByteBufferView malloc(int alignment, int capacity) {
         long address = nmalloc(alignment, capacity);
         ByteBuffer buffer = MemoryUtil.memByteBuffer(address, capacity);
-        return new BufferAndAddress(buffer, address);
+        return new ByteBufferView(buffer, address);
     }
 
     /**
@@ -129,10 +127,10 @@ public class MemoryStack implements AutoCloseable {
      * @param capacity the capacity in bytes
      * @return the ByteBuffer
      */
-    public BufferAndAddress calloc(int alignment, int capacity) {
+    public ByteBufferView calloc(int alignment, int capacity) {
         long address = ncalloc(alignment, capacity, 1);
         ByteBuffer buffer = MemoryUtil.memByteBuffer(address, capacity);
-        return new BufferAndAddress(buffer, address);
+        return new ByteBufferView(buffer, address);
     }
 
     /**
@@ -142,7 +140,7 @@ public class MemoryStack implements AutoCloseable {
      * @return the IntBuffer
      */
     public IntBufferView mallocInt(int size) {
-        BufferAndAddress buffer = malloc(4, size * 4);
+        ByteBufferView buffer = malloc(4, size * 4);
         return new IntBufferView(buffer.buffer, buffer.buffer.asIntBuffer(), buffer.address);
     }
 
@@ -153,27 +151,27 @@ public class MemoryStack implements AutoCloseable {
      * @return the IntBuffer
      */
     public IntBufferView callocInt(int size) {
-        BufferAndAddress buffer = calloc(4, size * 4);
+        ByteBufferView buffer = calloc(4, size * 4);
         return new IntBufferView(buffer.buffer, buffer.buffer.asIntBuffer(), buffer.address);
     }
 
     /**
      * Returns a ByteBuffer that represents the specified string on the stack.
      */
-    public BufferAndAddress utf8(String string){
+    public ByteBufferView utf8(String string){
         return utf8(string, true);
     }
 
     /**
      * Returns a ByteBuffer that represents the specified string on the stack.
      */
-    public BufferAndAddress utf8(String string, boolean nullTerminated) {
+    public ByteBufferView utf8(String string, boolean nullTerminated) {
         // Calculate byte length for UTF-8 encoded string
         byte[] bytes = string.getBytes(java.nio.charset.StandardCharsets.UTF_8);
         int size = bytes.length + (nullTerminated ? 1 : 0);
 
         // Allocate buffer
-        BufferAndAddress buffer = malloc(1, size);
+        ByteBufferView buffer = malloc(1, size);
 
         // Copy string bytes
         buffer.buffer.put(bytes);
@@ -196,7 +194,7 @@ public class MemoryStack implements AutoCloseable {
      * @return the IntBuffer
      */
     public LongBufferView callocLong(int size) {
-        BufferAndAddress buffer = calloc(8, size * 8);
+        ByteBufferView buffer = calloc(8, size * 8);
         return new LongBufferView(buffer.buffer, buffer.buffer.asLongBuffer(), buffer.address);
     }
 
@@ -207,7 +205,7 @@ public class MemoryStack implements AutoCloseable {
      * @return the IntBuffer
      */
     public PointerBufferView callocPointer(int size) {
-        BufferAndAddress buffer = calloc(8, size * 8);
+        ByteBufferView buffer = calloc(8, size * 8);
         return new PointerBufferView(buffer.buffer, buffer.buffer.asLongBuffer(), buffer.address);
     }
 
