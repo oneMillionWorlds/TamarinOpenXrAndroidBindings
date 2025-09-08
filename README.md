@@ -34,39 +34,7 @@ dependencies {
 
 ## Usage
 
-### Enumerating API Layer Properties
-
-```java
-import com.onemillionworlds.tamarin.openxrbindings.Library;
-import com.onemillionworlds.tamarin.openxrbindings.XrResult;
-
-// Create an instance of the OpenXR library
-Library openxr = new Library();
-
-// First call to get the count
-int count = openxr.xrEnumerateApiLayerProperties(0, null);
-System.out.println("Found " + count + " API layer properties");
-
-if (count > 0) {
-    // Allocate array for the properties
-    Library.XrApiLayerProperties[] properties = new Library.XrApiLayerProperties[count];
-    for (int i = 0; i < count; i++) {
-        properties[i] = new Library.XrApiLayerProperties();
-    }
-
-    // Second call to get the properties
-    int result = openxr.xrEnumerateApiLayerProperties(count, properties);
-
-    if (XrResult.XR_SUCCEEDED(result)) {
-        System.out.println("Successfully enumerated " + result + " API layer properties:");
-        for (int i = 0; i < result; i++) {
-            System.out.println(properties[i].toString());
-        }
-    } else {
-        System.err.println("Failed to enumerate API layer properties: " + XrResult.toString(result));
-    }
-}
-```
+// todo
 
 ## Building from Source
 
