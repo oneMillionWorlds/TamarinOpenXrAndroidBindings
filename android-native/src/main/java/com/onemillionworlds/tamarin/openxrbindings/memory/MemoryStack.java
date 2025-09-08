@@ -155,6 +155,16 @@ public class MemoryStack implements AutoCloseable {
         return new IntBufferView(buffer.buffer, buffer.buffer.asIntBuffer(), buffer.address);
     }
 
+    public FloatBufferView mallocFloat(int size) {
+        ByteBufferView buffer = malloc(4, size * 4);
+        return new FloatBufferView(buffer.buffer, buffer.buffer.asFloatBuffer(), buffer.address);
+    }
+
+    public FloatBufferView callocFloat(int size) {
+        ByteBufferView buffer = calloc(4, size * 4);
+        return new FloatBufferView(buffer.buffer, buffer.buffer.asFloatBuffer(), buffer.address);
+    }
+
     /**
      * Returns a ByteBuffer that represents the specified string on the stack.
      */
@@ -195,6 +205,11 @@ public class MemoryStack implements AutoCloseable {
      */
     public LongBufferView callocLong(int size) {
         ByteBufferView buffer = calloc(8, size * 8);
+        return new LongBufferView(buffer.buffer, buffer.buffer.asLongBuffer(), buffer.address);
+    }
+
+    public LongBufferView mallocLong(int size) {
+        ByteBufferView buffer = malloc(8, size * 8);
         return new LongBufferView(buffer.buffer, buffer.buffer.asLongBuffer(), buffer.address);
     }
 
