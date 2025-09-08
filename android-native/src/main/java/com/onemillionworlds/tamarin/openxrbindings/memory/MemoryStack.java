@@ -224,6 +224,11 @@ public class MemoryStack implements AutoCloseable {
         return new PointerBufferView(buffer.buffer, buffer.buffer.asLongBuffer(), buffer.address);
     }
 
+    public PointerBufferView mallocPointer(int size) {
+        ByteBufferView buffer = malloc(8, size * 8);
+        return new PointerBufferView(buffer.buffer, buffer.buffer.asLongBuffer(), buffer.address);
+    }
+
     /**
      * Closes this memory stack by popping the current frame.
      */
