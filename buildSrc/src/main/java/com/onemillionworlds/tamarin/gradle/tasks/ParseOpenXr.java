@@ -35,9 +35,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 /**
@@ -143,9 +145,21 @@ public class ParseOpenXr extends DefaultTask {
 
         parseHeaderFile(header, constants, structs, enums, functions, atoms, intTypedefs, longTypedefs, handles, flags);
 
-        // attempt to enrich the structs based on their xml counterpart (which really should be used for everything but too late now)
+        Map<String, List<String>> parentToChildren = new LinkedHashMap<>();
+
         for (StructDefinition struct : structs) {
             xmlStructs.get(struct.getName()).enrich(struct);
+
+            struct.getBaseHeader().ifPresent(baseHeader -> {
+                parentToChildren.computeIfAbsent(baseHeader, k -> new ArrayList<>())
+                        .add(struct.getName());
+            });
+        }
+
+        for (StructDefinition struct : structs) {
+            if(parentToChildren.containsKey(struct.getName())) {
+                struct.setChildren(parentToChildren.get(struct.getName()));
+            }
         }
 
         // Log the parsed int and long typedefs

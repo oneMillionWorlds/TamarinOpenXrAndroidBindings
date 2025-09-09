@@ -23,6 +23,17 @@ public class StructDefinition {
      */
     private Optional<String> baseHeader = Optional.empty();
 
+    /**
+     * If this struct has a type in the XrStructureType enum then this is the value of that enum.
+     * I.e. when a base header has type() called on it it will return this value if it can be cast to this type.
+     */
+    private Optional<String> xrStructureTypeEnumValue = Optional.empty();
+
+    /**
+     * If this struct is a base struct then it can have child structs. This lists those
+     */
+    private List<String> childTypes = new ArrayList<>();
+
     public StructDefinition(String name, boolean canBeItsOwnDefault) {
         this.name = name;
         this.canBeItsOwnDefault = canBeItsOwnDefault;
@@ -78,6 +89,22 @@ public class StructDefinition {
 
     public void setBaseHeader(String baseHeader) {
         this.baseHeader = Optional.ofNullable(baseHeader);
+    }
+
+    public List<String> getChildTypes() {
+        return childTypes;
+    }
+
+    public void setChildren(List<String> childTypes) {
+        this.childTypes = childTypes;
+    }
+
+    public Optional<String> getXrStructureTypeEnumValue() {
+        return xrStructureTypeEnumValue;
+    }
+
+    public void setXrStructureTypeEnumValue(String xrStructureTypeEnumValue) {
+        this.xrStructureTypeEnumValue = Optional.ofNullable(xrStructureTypeEnumValue);
     }
 
     @Override

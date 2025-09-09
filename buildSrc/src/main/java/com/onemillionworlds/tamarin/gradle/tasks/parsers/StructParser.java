@@ -22,10 +22,18 @@ public class StructParser {
         Matcher structStartMatcher = structStartPattern.matcher(triggeringLine);
         if(structStartMatcher.find()){
             String currentStructName = structStartMatcher.group(1);
+
+            String proposedXrStructureTypeEnumValue = createXrStructureTypeEnumValueForStruct(currentStructName);
+
             StructDefinition structDefinition = new StructDefinition(
                     currentStructName,
-                    xrStructureTypeValues.contains(createXrStructureTypeEnumValueForStruct(currentStructName))
+                    xrStructureTypeValues.contains(proposedXrStructureTypeEnumValue)
             );
+
+            if(xrStructureTypeValues.contains(proposedXrStructureTypeEnumValue)){
+                structDefinition.setXrStructureTypeEnumValue(proposedXrStructureTypeEnumValue);
+            }
+
             while (true) {
                 String nextLine = readerOngoing.readLine().replace("XR_MAY_ALIAS", "");
                 if (structEndPattern.matcher(nextLine).find()) {

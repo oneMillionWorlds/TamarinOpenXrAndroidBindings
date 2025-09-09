@@ -48,6 +48,8 @@ public class StructGenerator extends FileGenerator {
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;\n");
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;\n");
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;\n");
+        writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;\n");
+        writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;\n");
 
 
         writer.append("\nimport java.nio.ByteBuffer;\n\n");
@@ -169,6 +171,22 @@ public class StructGenerator extends FileGenerator {
         writer.append("        return new " + struct.getName() + "(address, container);\n");
         writer.append("    }\n\n");
 
+        struct.getBaseHeader().ifPresent(parent -> {
+            writer.append("    /** Get a view of a parent class as if it is this type. \n");
+            writer.append("     * Note! It is the caller's responsibility to make sure it really is that type. To do that consult the type parameter\n");
+            writer.append("     */\n");
+            writer.append("    public static " + struct.getName() + " cast(" + parent+  " from) {\n");
+
+            struct.getXrStructureTypeEnumValue().ifPresent(type -> {
+                writer.append("        if(from.type() != XrStructureType." + type + "){\n");
+                writer.append("            throw new IllegalArgumentException(\"Wrong type passed to cast method. Expected: " + type + " actual: \"+from.type() );\n");
+                writer.append("        }\n\n");
+            });
+
+            writer.append("        return new "+struct.getName()+"(from.address(), from.container());\n");
+            writer.append("    }\n\n");
+        });
+
         writer.append("    /**\n");
         writer.append("     * Creates a {@code " + struct.getName() + "} instance at the current position of the specified {@link ByteBuffer} container. Changes to the buffer's content will be\n");
         writer.append("     * visible to the struct instance and vice versa.\n");
@@ -235,7 +253,14 @@ public class StructGenerator extends FileGenerator {
            writer.append("        return new "+parent+"(address(), container());\n");
            writer.append("    }\n\n");
        });
-
+        struct.getChildTypes().forEach(childType -> {
+            writer.append("    /** Casts the specified {@link " + struct.getName() + "} instance to the {@code " + childType + "} class. \n");
+            writer.append("     * Note it is the callers responsibility to make sure it really is that type (check the type() method) \n");
+            writer.append("     */\n");
+            writer.append("    public " + childType + " as" + childType + "() {\n");
+            writer.append("        return " + childType + ".cast(this);\n");
+            writer.append("    }\n\n");
+        });
 
         // Add standard factory methods
         writer.append("    // -----------------------------------\n\n");
@@ -360,6 +385,9 @@ public class StructGenerator extends FileGenerator {
 
         writer.append("\n");
         writer.append("    // -----------------------------------\n\n");
+
+        // Generate PointBufferView inner class
+        writer.append(generatePointerBufferView(struct));
 
         // Generate Buffer inner class
         writer.append("    /** An array of {@link " + struct.getName() + "} structs. */\n");
@@ -706,6 +734,54 @@ public class StructGenerator extends FileGenerator {
         }
 
         writer.append("        return this;\n");
+        writer.append("    }\n");
+
+        return writer.toString();
+    }
+
+    private static String generatePointerBufferView(StructDefinition struct) {
+        StringBuilder writer = new StringBuilder();
+        String structName = struct.getName();
+        String pointerBufferName = struct.getName() + "PointerBufferView";
+        writer.append("    /** A pointer buffer that holds pointers (aka memory addresses) to "+ structName +"s */\n");
+        writer.append("    public static class " + pointerBufferName + " extends TypedPointerBufferView<" + structName + "> {\n");
+        writer.append("        public " + pointerBufferName + "(PointerBufferView underlyingPointerBuffer) {\n");
+        writer.append("            super(underlyingPointerBuffer, "+ structName+"::create);\n");
+        writer.append("        }\n");
+
+        for(String childType : struct.getChildTypes()) {
+//            public T getByIndex(int index){
+//                return structConstructor.apply( getBufferView().get(index));
+//            }
+//
+//            public void setByIndex(int index, T struct){
+//                getBufferView().put(index, struct.address());
+//            }
+            writer.append("\n        /** Adds a pointer to a "+childType+ " to this buffer. \n");
+            writer.append("         * (This is allowed as " + childType + " extends " +  structName + "\n");
+            writer.append("         * <p>Note there is no getter for this type. To get by type first get the base type then cast in to the child class (using the cast method in the child)  </p>\n");
+            writer.append("         */\n");
+            writer.append("        public void setByIndex(int index, "+childType + " struct){\n");
+            writer.append("            getBufferView().put(index, struct.address());\n");
+            writer.append("        }\n\n");
+
+        }
+
+        writer.append("        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/\n");
+        writer.append("        public static " + pointerBufferName + " calloc(int capacity) {\n");
+        writer.append("            return new " + pointerBufferName + "(PointerBufferView.createPointerBufferView(capacity));\n");
+        writer.append("        }\n\n");
+
+        writer.append("        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/\n");
+        writer.append("        public static " + pointerBufferName + " calloc(int capacity, MemoryStack stack) {\n");
+        writer.append("            return new " + pointerBufferName + "(stack.callocPointer(capacity));\n");
+        writer.append("        }\n\n");
+
+        writer.append("        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/\n");
+        writer.append("        public static " + pointerBufferName + " malloc(int capacity, MemoryStack stack) {\n");
+        writer.append("            return new " + pointerBufferName + "(stack.mallocPointer(capacity));\n");
+        writer.append("        }\n\n");
+
         writer.append("    }\n");
 
         return writer.toString();
