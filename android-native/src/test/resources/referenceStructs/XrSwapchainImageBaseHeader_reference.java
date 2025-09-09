@@ -8,6 +8,9 @@ import com.onemillionworlds.tamarin.openxrbindings.enums.*;
 import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -239,6 +242,27 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
 
     // -----------------------------------
 
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrSwapchainImageBaseHeaders */
+    public static class XrSwapchainImageBaseHeaderPointerBufferView extends TypedPointerBufferView<XrSwapchainImageBaseHeader> {
+        public XrSwapchainImageBaseHeaderPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+            super(underlyingPointerBuffer, XrSwapchainImageBaseHeader::create);
+        }
+        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
+        public static XrSwapchainImageBaseHeaderPointerBufferView calloc(int capacity) {
+            return new XrSwapchainImageBaseHeaderPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        }
+
+        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrSwapchainImageBaseHeaderPointerBufferView calloc(int capacity, MemoryStack stack) {
+            return new XrSwapchainImageBaseHeaderPointerBufferView(stack.callocPointer(capacity));
+        }
+
+        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrSwapchainImageBaseHeaderPointerBufferView malloc(int capacity, MemoryStack stack) {
+            return new XrSwapchainImageBaseHeaderPointerBufferView(stack.mallocPointer(capacity));
+        }
+
+    }
     /** An array of {@link XrSwapchainImageBaseHeader} structs. */
     public static class Buffer extends StructBuffer<XrSwapchainImageBaseHeader, Buffer> {
 

@@ -8,6 +8,9 @@ import com.onemillionworlds.tamarin.openxrbindings.enums.*;
 import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -358,6 +361,27 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
 
     // -----------------------------------
 
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrVisibilityMaskKHRs */
+    public static class XrVisibilityMaskKHRPointerBufferView extends TypedPointerBufferView<XrVisibilityMaskKHR> {
+        public XrVisibilityMaskKHRPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+            super(underlyingPointerBuffer, XrVisibilityMaskKHR::create);
+        }
+        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
+        public static XrVisibilityMaskKHRPointerBufferView calloc(int capacity) {
+            return new XrVisibilityMaskKHRPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        }
+
+        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrVisibilityMaskKHRPointerBufferView calloc(int capacity, MemoryStack stack) {
+            return new XrVisibilityMaskKHRPointerBufferView(stack.callocPointer(capacity));
+        }
+
+        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrVisibilityMaskKHRPointerBufferView malloc(int capacity, MemoryStack stack) {
+            return new XrVisibilityMaskKHRPointerBufferView(stack.mallocPointer(capacity));
+        }
+
+    }
     /** An array of {@link XrVisibilityMaskKHR} structs. */
     public static class Buffer extends StructBuffer<XrVisibilityMaskKHR, Buffer> {
 

@@ -8,6 +8,9 @@ import com.onemillionworlds.tamarin.openxrbindings.enums.*;
 import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -313,6 +316,27 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
 
     // -----------------------------------
 
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrDebugUtilsMessengerCreateInfoEXTs */
+    public static class XrDebugUtilsMessengerCreateInfoEXTPointerBufferView extends TypedPointerBufferView<XrDebugUtilsMessengerCreateInfoEXT> {
+        public XrDebugUtilsMessengerCreateInfoEXTPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+            super(underlyingPointerBuffer, XrDebugUtilsMessengerCreateInfoEXT::create);
+        }
+        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
+        public static XrDebugUtilsMessengerCreateInfoEXTPointerBufferView calloc(int capacity) {
+            return new XrDebugUtilsMessengerCreateInfoEXTPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        }
+
+        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrDebugUtilsMessengerCreateInfoEXTPointerBufferView calloc(int capacity, MemoryStack stack) {
+            return new XrDebugUtilsMessengerCreateInfoEXTPointerBufferView(stack.callocPointer(capacity));
+        }
+
+        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrDebugUtilsMessengerCreateInfoEXTPointerBufferView malloc(int capacity, MemoryStack stack) {
+            return new XrDebugUtilsMessengerCreateInfoEXTPointerBufferView(stack.mallocPointer(capacity));
+        }
+
+    }
     /** An array of {@link XrDebugUtilsMessengerCreateInfoEXT} structs. */
     public static class Buffer extends StructBuffer<XrDebugUtilsMessengerCreateInfoEXT, Buffer> {
 

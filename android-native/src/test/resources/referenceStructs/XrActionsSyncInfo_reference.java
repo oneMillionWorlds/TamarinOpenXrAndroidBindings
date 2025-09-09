@@ -8,6 +8,9 @@ import com.onemillionworlds.tamarin.openxrbindings.enums.*;
 import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -286,6 +289,27 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
 
     // -----------------------------------
 
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrActionsSyncInfos */
+    public static class XrActionsSyncInfoPointerBufferView extends TypedPointerBufferView<XrActionsSyncInfo> {
+        public XrActionsSyncInfoPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+            super(underlyingPointerBuffer, XrActionsSyncInfo::create);
+        }
+        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
+        public static XrActionsSyncInfoPointerBufferView calloc(int capacity) {
+            return new XrActionsSyncInfoPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        }
+
+        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrActionsSyncInfoPointerBufferView calloc(int capacity, MemoryStack stack) {
+            return new XrActionsSyncInfoPointerBufferView(stack.callocPointer(capacity));
+        }
+
+        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrActionsSyncInfoPointerBufferView malloc(int capacity, MemoryStack stack) {
+            return new XrActionsSyncInfoPointerBufferView(stack.mallocPointer(capacity));
+        }
+
+    }
     /** An array of {@link XrActionsSyncInfo} structs. */
     public static class Buffer extends StructBuffer<XrActionsSyncInfo, Buffer> {
 

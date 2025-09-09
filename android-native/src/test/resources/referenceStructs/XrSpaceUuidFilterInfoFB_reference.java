@@ -8,6 +8,9 @@ import com.onemillionworlds.tamarin.openxrbindings.enums.*;
 import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -68,6 +71,17 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     @Override
     protected XrSpaceUuidFilterInfoFB create(long address, ByteBuffer container) {
         return new XrSpaceUuidFilterInfoFB(address, container);
+    }
+
+    /** Get a view of a parent class as if it is this type. 
+     * Note! It is the caller's responsibility to make sure it really is that type. To do that consult the type parameter
+     */
+    public static XrSpaceUuidFilterInfoFB cast(XrSpaceFilterInfoBaseHeaderFB from) {
+        if(from.type() != XrStructureType.XR_TYPE_SPACE_UUID_FILTER_INFO_FB){
+            throw new IllegalArgumentException("Wrong type passed to cast method. Expected: XR_TYPE_SPACE_UUID_FILTER_INFO_FB actual: "+from.type() );
+        }
+
+        return new XrSpaceUuidFilterInfoFB(from.address(), from.container());
     }
 
     /**
@@ -291,6 +305,27 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
 
     // -----------------------------------
 
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrSpaceUuidFilterInfoFBs */
+    public static class XrSpaceUuidFilterInfoFBPointerBufferView extends TypedPointerBufferView<XrSpaceUuidFilterInfoFB> {
+        public XrSpaceUuidFilterInfoFBPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+            super(underlyingPointerBuffer, XrSpaceUuidFilterInfoFB::create);
+        }
+        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
+        public static XrSpaceUuidFilterInfoFBPointerBufferView calloc(int capacity) {
+            return new XrSpaceUuidFilterInfoFBPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        }
+
+        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrSpaceUuidFilterInfoFBPointerBufferView calloc(int capacity, MemoryStack stack) {
+            return new XrSpaceUuidFilterInfoFBPointerBufferView(stack.callocPointer(capacity));
+        }
+
+        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrSpaceUuidFilterInfoFBPointerBufferView malloc(int capacity, MemoryStack stack) {
+            return new XrSpaceUuidFilterInfoFBPointerBufferView(stack.mallocPointer(capacity));
+        }
+
+    }
     /** An array of {@link XrSpaceUuidFilterInfoFB} structs. */
     public static class Buffer extends StructBuffer<XrSpaceUuidFilterInfoFB, Buffer> {
 

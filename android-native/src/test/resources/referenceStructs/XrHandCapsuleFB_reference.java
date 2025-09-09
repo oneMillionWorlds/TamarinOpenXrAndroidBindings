@@ -8,6 +8,9 @@ import com.onemillionworlds.tamarin.openxrbindings.enums.*;
 import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -244,6 +247,27 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
 
     // -----------------------------------
 
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrHandCapsuleFBs */
+    public static class XrHandCapsuleFBPointerBufferView extends TypedPointerBufferView<XrHandCapsuleFB> {
+        public XrHandCapsuleFBPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+            super(underlyingPointerBuffer, XrHandCapsuleFB::create);
+        }
+        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
+        public static XrHandCapsuleFBPointerBufferView calloc(int capacity) {
+            return new XrHandCapsuleFBPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        }
+
+        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrHandCapsuleFBPointerBufferView calloc(int capacity, MemoryStack stack) {
+            return new XrHandCapsuleFBPointerBufferView(stack.callocPointer(capacity));
+        }
+
+        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrHandCapsuleFBPointerBufferView malloc(int capacity, MemoryStack stack) {
+            return new XrHandCapsuleFBPointerBufferView(stack.mallocPointer(capacity));
+        }
+
+    }
     /** An array of {@link XrHandCapsuleFB} structs. */
     public static class Buffer extends StructBuffer<XrHandCapsuleFB, Buffer> {
 

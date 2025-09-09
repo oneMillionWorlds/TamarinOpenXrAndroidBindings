@@ -8,6 +8,9 @@ import com.onemillionworlds.tamarin.openxrbindings.enums.*;
 import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -72,6 +75,17 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
     @Override
     protected XrHapticVibration create(long address, ByteBuffer container) {
         return new XrHapticVibration(address, container);
+    }
+
+    /** Get a view of a parent class as if it is this type. 
+     * Note! It is the caller's responsibility to make sure it really is that type. To do that consult the type parameter
+     */
+    public static XrHapticVibration cast(XrHapticBaseHeader from) {
+        if(from.type() != XrStructureType.XR_TYPE_HAPTIC_VIBRATION){
+            throw new IllegalArgumentException("Wrong type passed to cast method. Expected: XR_TYPE_HAPTIC_VIBRATION actual: "+from.type() );
+        }
+
+        return new XrHapticVibration(from.address(), from.container());
     }
 
     /**
@@ -300,6 +314,27 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
 
     // -----------------------------------
 
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrHapticVibrations */
+    public static class XrHapticVibrationPointerBufferView extends TypedPointerBufferView<XrHapticVibration> {
+        public XrHapticVibrationPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+            super(underlyingPointerBuffer, XrHapticVibration::create);
+        }
+        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
+        public static XrHapticVibrationPointerBufferView calloc(int capacity) {
+            return new XrHapticVibrationPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        }
+
+        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrHapticVibrationPointerBufferView calloc(int capacity, MemoryStack stack) {
+            return new XrHapticVibrationPointerBufferView(stack.callocPointer(capacity));
+        }
+
+        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrHapticVibrationPointerBufferView malloc(int capacity, MemoryStack stack) {
+            return new XrHapticVibrationPointerBufferView(stack.mallocPointer(capacity));
+        }
+
+    }
     /** An array of {@link XrHapticVibration} structs. */
     public static class Buffer extends StructBuffer<XrHapticVibration, Buffer> {
 

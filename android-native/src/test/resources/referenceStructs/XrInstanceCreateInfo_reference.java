@@ -8,6 +8,9 @@ import com.onemillionworlds.tamarin.openxrbindings.enums.*;
 import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -349,6 +352,27 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
 
     // -----------------------------------
 
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrInstanceCreateInfos */
+    public static class XrInstanceCreateInfoPointerBufferView extends TypedPointerBufferView<XrInstanceCreateInfo> {
+        public XrInstanceCreateInfoPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+            super(underlyingPointerBuffer, XrInstanceCreateInfo::create);
+        }
+        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
+        public static XrInstanceCreateInfoPointerBufferView calloc(int capacity) {
+            return new XrInstanceCreateInfoPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        }
+
+        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrInstanceCreateInfoPointerBufferView calloc(int capacity, MemoryStack stack) {
+            return new XrInstanceCreateInfoPointerBufferView(stack.callocPointer(capacity));
+        }
+
+        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrInstanceCreateInfoPointerBufferView malloc(int capacity, MemoryStack stack) {
+            return new XrInstanceCreateInfoPointerBufferView(stack.mallocPointer(capacity));
+        }
+
+    }
     /** An array of {@link XrInstanceCreateInfo} structs. */
     public static class Buffer extends StructBuffer<XrInstanceCreateInfo, Buffer> {
 

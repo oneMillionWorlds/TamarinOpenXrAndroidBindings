@@ -8,6 +8,9 @@ import com.onemillionworlds.tamarin.openxrbindings.enums.*;
 import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -96,6 +99,17 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
     @Override
     protected XrInteractionProfileDpadBindingEXT create(long address, ByteBuffer container) {
         return new XrInteractionProfileDpadBindingEXT(address, container);
+    }
+
+    /** Get a view of a parent class as if it is this type. 
+     * Note! It is the caller's responsibility to make sure it really is that type. To do that consult the type parameter
+     */
+    public static XrInteractionProfileDpadBindingEXT cast(XrBindingModificationBaseHeaderKHR from) {
+        if(from.type() != XrStructureType.XR_TYPE_INTERACTION_PROFILE_DPAD_BINDING_EXT){
+            throw new IllegalArgumentException("Wrong type passed to cast method. Expected: XR_TYPE_INTERACTION_PROFILE_DPAD_BINDING_EXT actual: "+from.type() );
+        }
+
+        return new XrInteractionProfileDpadBindingEXT(from.address(), from.container());
     }
 
     /**
@@ -418,6 +432,27 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
 
     // -----------------------------------
 
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrInteractionProfileDpadBindingEXTs */
+    public static class XrInteractionProfileDpadBindingEXTPointerBufferView extends TypedPointerBufferView<XrInteractionProfileDpadBindingEXT> {
+        public XrInteractionProfileDpadBindingEXTPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+            super(underlyingPointerBuffer, XrInteractionProfileDpadBindingEXT::create);
+        }
+        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
+        public static XrInteractionProfileDpadBindingEXTPointerBufferView calloc(int capacity) {
+            return new XrInteractionProfileDpadBindingEXTPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        }
+
+        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrInteractionProfileDpadBindingEXTPointerBufferView calloc(int capacity, MemoryStack stack) {
+            return new XrInteractionProfileDpadBindingEXTPointerBufferView(stack.callocPointer(capacity));
+        }
+
+        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrInteractionProfileDpadBindingEXTPointerBufferView malloc(int capacity, MemoryStack stack) {
+            return new XrInteractionProfileDpadBindingEXTPointerBufferView(stack.mallocPointer(capacity));
+        }
+
+    }
     /** An array of {@link XrInteractionProfileDpadBindingEXT} structs. */
     public static class Buffer extends StructBuffer<XrInteractionProfileDpadBindingEXT, Buffer> {
 

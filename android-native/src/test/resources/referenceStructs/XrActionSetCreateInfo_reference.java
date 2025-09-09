@@ -8,6 +8,9 @@ import com.onemillionworlds.tamarin.openxrbindings.enums.*;
 import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -96,7 +99,7 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         return nnext(address());
     }
     /** Returns the value of the {@code actionSetName} field. */
-    public ByteBuffer actionSetName() {
+    public ByteBufferView actionSetName() {
         return nactionSetName(address());
     }
     /** Returns a String view of the {@code actionSetName} field. */
@@ -104,7 +107,7 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         return XrActionSetCreateInfo.nactionSetNameString(address());
     }
     /** Returns the value of the {@code localizedActionSetName} field. */
-    public ByteBuffer localizedActionSetName() {
+    public ByteBufferView localizedActionSetName() {
         return nlocalizedActionSetName(address());
     }
     /** Returns a String view of the {@code localizedActionSetName} field. */
@@ -127,12 +130,12 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         return this;
     }
     /** Sets the specified value to the {@code actionSetName} field. */
-    public XrActionSetCreateInfo actionSetName(ByteBuffer value) { 
+    public XrActionSetCreateInfo actionSetName(ByteBufferView value) { 
         XrActionSetCreateInfo.nactionSetName(address(), value);
         return this;
     }
     /** Sets the specified value to the {@code localizedActionSetName} field. */
-    public XrActionSetCreateInfo localizedActionSetName(ByteBuffer value) { 
+    public XrActionSetCreateInfo localizedActionSetName(ByteBufferView value) { 
         XrActionSetCreateInfo.nlocalizedActionSetName(address(), value);
         return this;
     }
@@ -148,8 +151,8 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
     public XrActionSetCreateInfo set(
         XrStructureType type,
         long next,
-        ByteBuffer actionSetName,
-        ByteBuffer localizedActionSetName,
+        ByteBufferView actionSetName,
+        ByteBufferView localizedActionSetName,
         int priority
     ) {
         type(type);
@@ -291,22 +294,30 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
     public static long nnext(long struct) { return memGetAddress(struct + XrActionSetCreateInfo.NEXT); }
     public static void nnext(long struct, long value) { memPutAddress(struct + XrActionSetCreateInfo.NEXT, value); }
     /** Unsafe version of actionSetName}. */
-    public static ByteBuffer nactionSetName(long struct) { return memByteBuffer(struct + XrActionSetCreateInfo.ACTIONSETNAME, XR_MAX_ACTION_SET_NAME_SIZE); }
+    public static ByteBufferView nactionSetName(long struct) { 
+        long address = struct + XrActionSetCreateInfo.ACTIONSETNAME;
+        ByteBuffer rawBuffer = memByteBuffer(address, XR_MAX_ACTION_SET_NAME_SIZE);
+        return new ByteBufferView(rawBuffer, address);
+    }
     /** Unsafe version of actionSetName. */
     public static String nactionSetNameString(long struct) { return memUTF8(struct + XrActionSetCreateInfo.ACTIONSETNAME); }
     /** max length XR_MAX_ACTION_SET_NAME_SIZE */
-    public static void nactionSetName(long struct, ByteBuffer value) {
-        byteBufferLengthCheck(value,XR_MAX_ACTION_SET_NAME_SIZE);
-        memCopy(memAddress(value), struct + XrActionSetCreateInfo.ACTIONSETNAME, value.remaining());
+    public static void nactionSetName(long struct, ByteBufferView value) {
+        byteBufferLengthCheck(value.getBuffer(),XR_MAX_ACTION_SET_NAME_SIZE);
+        memCopy(value.address(), struct + XrActionSetCreateInfo.ACTIONSETNAME, value.getBuffer().remaining());
     }
     /** Unsafe version of localizedActionSetName}. */
-    public static ByteBuffer nlocalizedActionSetName(long struct) { return memByteBuffer(struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME, XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE); }
+    public static ByteBufferView nlocalizedActionSetName(long struct) { 
+        long address = struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME;
+        ByteBuffer rawBuffer = memByteBuffer(address, XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE);
+        return new ByteBufferView(rawBuffer, address);
+    }
     /** Unsafe version of localizedActionSetName. */
     public static String nlocalizedActionSetNameString(long struct) { return memUTF8(struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME); }
     /** max length XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE */
-    public static void nlocalizedActionSetName(long struct, ByteBuffer value) {
-        byteBufferLengthCheck(value,XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE);
-        memCopy(memAddress(value), struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME, value.remaining());
+    public static void nlocalizedActionSetName(long struct, ByteBufferView value) {
+        byteBufferLengthCheck(value.getBuffer(),XR_MAX_LOCALIZED_ACTION_SET_NAME_SIZE);
+        memCopy(value.address(), struct + XrActionSetCreateInfo.LOCALIZEDACTIONSETNAME, value.getBuffer().remaining());
     }
     /** Unsafe version of priority}. */
     public static int npriority(long struct) { return memGetInt(struct + XrActionSetCreateInfo.PRIORITY); }
@@ -315,6 +326,27 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
 
     // -----------------------------------
 
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrActionSetCreateInfos */
+    public static class XrActionSetCreateInfoPointerBufferView extends TypedPointerBufferView<XrActionSetCreateInfo> {
+        public XrActionSetCreateInfoPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+            super(underlyingPointerBuffer, XrActionSetCreateInfo::create);
+        }
+        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
+        public static XrActionSetCreateInfoPointerBufferView calloc(int capacity) {
+            return new XrActionSetCreateInfoPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        }
+
+        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrActionSetCreateInfoPointerBufferView calloc(int capacity, MemoryStack stack) {
+            return new XrActionSetCreateInfoPointerBufferView(stack.callocPointer(capacity));
+        }
+
+        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
+        public static XrActionSetCreateInfoPointerBufferView malloc(int capacity, MemoryStack stack) {
+            return new XrActionSetCreateInfoPointerBufferView(stack.mallocPointer(capacity));
+        }
+
+    }
     /** An array of {@link XrActionSetCreateInfo} structs. */
     public static class Buffer extends StructBuffer<XrActionSetCreateInfo, Buffer> {
 
@@ -371,10 +403,10 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         /** Returns the value of the {@code next} field. */
         public long next() { return XrActionSetCreateInfo.nnext(address()); }
         /** Returns the value of the {@code actionSetName} field. */
-        public ByteBuffer actionSetName() { return XrActionSetCreateInfo.nactionSetName(address()); }
+        public ByteBufferView actionSetName() { return XrActionSetCreateInfo.nactionSetName(address()); }
         public String actionSetNameString() { return XrActionSetCreateInfo.nactionSetNameString(address()); }
         /** Returns the value of the {@code localizedActionSetName} field. */
-        public ByteBuffer localizedActionSetName() { return XrActionSetCreateInfo.nlocalizedActionSetName(address()); }
+        public ByteBufferView localizedActionSetName() { return XrActionSetCreateInfo.nlocalizedActionSetName(address()); }
         public String localizedActionSetNameString() { return XrActionSetCreateInfo.nlocalizedActionSetNameString(address()); }
         /** Returns the value of the {@code priority} field. */
         public int priority() { return XrActionSetCreateInfo.npriority(address()); }
@@ -390,12 +422,12 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
             return this;
         }
         /** Sets the specified value to the {@code actionSetName} field. */
-        public Buffer actionSetName(ByteBuffer value) { 
+        public Buffer actionSetName(ByteBufferView value) { 
             XrActionSetCreateInfo.nactionSetName(address(), value);
             return this;
         }
         /** Sets the specified value to the {@code localizedActionSetName} field. */
-        public Buffer localizedActionSetName(ByteBuffer value) { 
+        public Buffer localizedActionSetName(ByteBufferView value) { 
             XrActionSetCreateInfo.nlocalizedActionSetName(address(), value);
             return this;
         }
