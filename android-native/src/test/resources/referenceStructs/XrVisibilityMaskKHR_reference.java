@@ -362,23 +362,23 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     // -----------------------------------
 
     /** A pointer buffer that holds pointers (aka memory addresses) to XrVisibilityMaskKHRs */
-    public static class XrVisibilityMaskKHRPointerBufferView extends TypedPointerBufferView<XrVisibilityMaskKHR> {
-        public XrVisibilityMaskKHRPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+    public static class PointerBuffer extends TypedPointerBufferView<XrVisibilityMaskKHR> {
+        public PointerBuffer(PointerBufferView underlyingPointerBuffer) {
             super(underlyingPointerBuffer, XrVisibilityMaskKHR::create);
         }
         /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
-        public static XrVisibilityMaskKHRPointerBufferView calloc(int capacity) {
-            return new XrVisibilityMaskKHRPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        public static PointerBuffer calloc(int capacity) {
+            return new PointerBuffer(PointerBufferView.createPointerBufferView(capacity));
         }
 
         /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
-        public static XrVisibilityMaskKHRPointerBufferView calloc(int capacity, MemoryStack stack) {
-            return new XrVisibilityMaskKHRPointerBufferView(stack.callocPointer(capacity));
+        public static PointerBuffer calloc(int capacity, MemoryStack stack) {
+            return new PointerBuffer(stack.callocPointer(capacity));
         }
 
         /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
-        public static XrVisibilityMaskKHRPointerBufferView malloc(int capacity, MemoryStack stack) {
-            return new XrVisibilityMaskKHRPointerBufferView(stack.mallocPointer(capacity));
+        public static PointerBuffer malloc(int capacity, MemoryStack stack) {
+            return new PointerBuffer(stack.mallocPointer(capacity));
         }
 
     }

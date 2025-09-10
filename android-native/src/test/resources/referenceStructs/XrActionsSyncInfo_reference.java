@@ -290,23 +290,23 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
     // -----------------------------------
 
     /** A pointer buffer that holds pointers (aka memory addresses) to XrActionsSyncInfos */
-    public static class XrActionsSyncInfoPointerBufferView extends TypedPointerBufferView<XrActionsSyncInfo> {
-        public XrActionsSyncInfoPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+    public static class PointerBuffer extends TypedPointerBufferView<XrActionsSyncInfo> {
+        public PointerBuffer(PointerBufferView underlyingPointerBuffer) {
             super(underlyingPointerBuffer, XrActionsSyncInfo::create);
         }
         /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
-        public static XrActionsSyncInfoPointerBufferView calloc(int capacity) {
-            return new XrActionsSyncInfoPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        public static PointerBuffer calloc(int capacity) {
+            return new PointerBuffer(PointerBufferView.createPointerBufferView(capacity));
         }
 
         /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
-        public static XrActionsSyncInfoPointerBufferView calloc(int capacity, MemoryStack stack) {
-            return new XrActionsSyncInfoPointerBufferView(stack.callocPointer(capacity));
+        public static PointerBuffer calloc(int capacity, MemoryStack stack) {
+            return new PointerBuffer(stack.callocPointer(capacity));
         }
 
         /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
-        public static XrActionsSyncInfoPointerBufferView malloc(int capacity, MemoryStack stack) {
-            return new XrActionsSyncInfoPointerBufferView(stack.mallocPointer(capacity));
+        public static PointerBuffer malloc(int capacity, MemoryStack stack) {
+            return new PointerBuffer(stack.mallocPointer(capacity));
         }
 
     }

@@ -742,10 +742,9 @@ public class StructGenerator extends FileGenerator {
     private static String generatePointerBufferView(StructDefinition struct) {
         StringBuilder writer = new StringBuilder();
         String structName = struct.getName();
-        String pointerBufferName = struct.getName() + "PointerBufferView";
         writer.append("    /** A pointer buffer that holds pointers (aka memory addresses) to "+ structName +"s */\n");
-        writer.append("    public static class " + pointerBufferName + " extends TypedPointerBufferView<" + structName + "> {\n");
-        writer.append("        public " + pointerBufferName + "(PointerBufferView underlyingPointerBuffer) {\n");
+        writer.append("    public static class PointerBuffer extends TypedPointerBufferView<" + structName + "> {\n");
+        writer.append("        public PointerBuffer(PointerBufferView underlyingPointerBuffer) {\n");
         writer.append("            super(underlyingPointerBuffer, "+ structName+"::create);\n");
         writer.append("        }\n");
 
@@ -768,18 +767,18 @@ public class StructGenerator extends FileGenerator {
         }
 
         writer.append("        /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/\n");
-        writer.append("        public static " + pointerBufferName + " calloc(int capacity) {\n");
-        writer.append("            return new " + pointerBufferName + "(PointerBufferView.createPointerBufferView(capacity));\n");
+        writer.append("        public static PointerBuffer calloc(int capacity) {\n");
+        writer.append("            return new PointerBuffer(PointerBufferView.createPointerBufferView(capacity));\n");
         writer.append("        }\n\n");
 
         writer.append("        /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/\n");
-        writer.append("        public static " + pointerBufferName + " calloc(int capacity, MemoryStack stack) {\n");
-        writer.append("            return new " + pointerBufferName + "(stack.callocPointer(capacity));\n");
+        writer.append("        public static PointerBuffer calloc(int capacity, MemoryStack stack) {\n");
+        writer.append("            return new PointerBuffer(stack.callocPointer(capacity));\n");
         writer.append("        }\n\n");
 
         writer.append("        /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/\n");
-        writer.append("        public static " + pointerBufferName + " malloc(int capacity, MemoryStack stack) {\n");
-        writer.append("            return new " + pointerBufferName + "(stack.mallocPointer(capacity));\n");
+        writer.append("        public static PointerBuffer malloc(int capacity, MemoryStack stack) {\n");
+        writer.append("            return new PointerBuffer(stack.mallocPointer(capacity));\n");
         writer.append("        }\n\n");
 
         writer.append("    }\n");

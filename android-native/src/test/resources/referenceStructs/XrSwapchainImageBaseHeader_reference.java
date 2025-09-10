@@ -243,23 +243,23 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
     // -----------------------------------
 
     /** A pointer buffer that holds pointers (aka memory addresses) to XrSwapchainImageBaseHeaders */
-    public static class XrSwapchainImageBaseHeaderPointerBufferView extends TypedPointerBufferView<XrSwapchainImageBaseHeader> {
-        public XrSwapchainImageBaseHeaderPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+    public static class PointerBuffer extends TypedPointerBufferView<XrSwapchainImageBaseHeader> {
+        public PointerBuffer(PointerBufferView underlyingPointerBuffer) {
             super(underlyingPointerBuffer, XrSwapchainImageBaseHeader::create);
         }
         /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
-        public static XrSwapchainImageBaseHeaderPointerBufferView calloc(int capacity) {
-            return new XrSwapchainImageBaseHeaderPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        public static PointerBuffer calloc(int capacity) {
+            return new PointerBuffer(PointerBufferView.createPointerBufferView(capacity));
         }
 
         /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
-        public static XrSwapchainImageBaseHeaderPointerBufferView calloc(int capacity, MemoryStack stack) {
-            return new XrSwapchainImageBaseHeaderPointerBufferView(stack.callocPointer(capacity));
+        public static PointerBuffer calloc(int capacity, MemoryStack stack) {
+            return new PointerBuffer(stack.callocPointer(capacity));
         }
 
         /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
-        public static XrSwapchainImageBaseHeaderPointerBufferView malloc(int capacity, MemoryStack stack) {
-            return new XrSwapchainImageBaseHeaderPointerBufferView(stack.mallocPointer(capacity));
+        public static PointerBuffer malloc(int capacity, MemoryStack stack) {
+            return new PointerBuffer(stack.mallocPointer(capacity));
         }
 
     }

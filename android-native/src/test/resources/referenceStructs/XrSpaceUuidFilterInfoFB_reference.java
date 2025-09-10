@@ -306,23 +306,23 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     // -----------------------------------
 
     /** A pointer buffer that holds pointers (aka memory addresses) to XrSpaceUuidFilterInfoFBs */
-    public static class XrSpaceUuidFilterInfoFBPointerBufferView extends TypedPointerBufferView<XrSpaceUuidFilterInfoFB> {
-        public XrSpaceUuidFilterInfoFBPointerBufferView(PointerBufferView underlyingPointerBuffer) {
+    public static class PointerBuffer extends TypedPointerBufferView<XrSpaceUuidFilterInfoFB> {
+        public PointerBuffer(PointerBufferView underlyingPointerBuffer) {
             super(underlyingPointerBuffer, XrSpaceUuidFilterInfoFB::create);
         }
         /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
-        public static XrSpaceUuidFilterInfoFBPointerBufferView calloc(int capacity) {
-            return new XrSpaceUuidFilterInfoFBPointerBufferView(PointerBufferView.createPointerBufferView(capacity));
+        public static PointerBuffer calloc(int capacity) {
+            return new PointerBuffer(PointerBufferView.createPointerBufferView(capacity));
         }
 
         /** Callocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
-        public static XrSpaceUuidFilterInfoFBPointerBufferView calloc(int capacity, MemoryStack stack) {
-            return new XrSpaceUuidFilterInfoFBPointerBufferView(stack.callocPointer(capacity));
+        public static PointerBuffer calloc(int capacity, MemoryStack stack) {
+            return new PointerBuffer(stack.callocPointer(capacity));
         }
 
         /** Mallocs a new TypedPointerBufferView with the specified capacity. (Will be created on the stack do no manually free)*/
-        public static XrSpaceUuidFilterInfoFBPointerBufferView malloc(int capacity, MemoryStack stack) {
-            return new XrSpaceUuidFilterInfoFBPointerBufferView(stack.mallocPointer(capacity));
+        public static PointerBuffer malloc(int capacity, MemoryStack stack) {
+            return new PointerBuffer(stack.mallocPointer(capacity));
         }
 
     }
