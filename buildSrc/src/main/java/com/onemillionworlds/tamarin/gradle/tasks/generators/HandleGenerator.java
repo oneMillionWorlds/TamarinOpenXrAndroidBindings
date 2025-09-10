@@ -79,8 +79,8 @@ public class HandleGenerator extends FileGenerator {
 
         // buffer for this handle type (basically just a long buffer view)
 
-        writer.append("    public static class Buffer extends HandleBufferView<" + handleName + "> {\n");
-        writer.append("        public Buffer(LongBufferView viewToAdopt){\n");
+        writer.append("    public static class HandleBuffer extends HandleBufferView<" + handleName + "> {\n");
+        writer.append("        public HandleBuffer(LongBufferView viewToAdopt){\n");
         writer.append("            super(viewToAdopt, " + handleName + "::new);\n");
         writer.append("        }\n");
         writer.append("    }\n");
@@ -89,25 +89,25 @@ public class HandleGenerator extends FileGenerator {
 
         // create (with new memory)
         writer.append("    /**\n");
-        writer.append("     * Creates a new buffer for " + handleName + " instances. NOTE must be manually freed\n");
+        writer.append("     * Creates a new HandleBuffer for " + handleName + " instances. NOTE must be manually freed\n");
         writer.append("     *\n");
         writer.append("     * @param capacity The number of handles of this type that can be held.\n");
         writer.append("     */\n");
-        writer.append("    public static Buffer create(int capacity) {\n");
+        writer.append("    public static HandleBuffer create(int capacity) {\n");
         writer.append("        LongBufferView buffer = BufferUtils.createLongBufferView(capacity);\n");
-        writer.append("        return new Buffer(buffer);\n");
+        writer.append("        return new HandleBuffer(buffer);\n");
         writer.append("    }\n");
 
         // create (on the stack)
         writer.append("    /**\n");
-        writer.append("     * Creates a new buffer for " + handleName + " instances on the stack. NOTE must NOT be manually freed\n");
+        writer.append("     * Creates a new HandleBuffer for " + handleName + " instances on the stack. NOTE must NOT be manually freed\n");
         writer.append("     *\n");
         writer.append("     * @param stack The stack to allocate this buffer on.\n");
         writer.append("     * @param capacity The number of handles of this type that can be held.\n");
         writer.append("     */\n");
-        writer.append("    public static Buffer create(MemoryStack stack, int capacity) {\n");
+        writer.append("    public static HandleBuffer create(MemoryStack stack, int capacity) {\n");
         writer.append("        LongBufferView buffer = stack.callocLong(capacity);\n");
-        writer.append("        return new Buffer(buffer);\n");
+        writer.append("        return new HandleBuffer(buffer);\n");
         writer.append("    }\n");
 
         writer.append("    /**\n");
@@ -116,9 +116,9 @@ public class HandleGenerator extends FileGenerator {
         writer.append("     * @param buffer The buffer to adopt.\n");
         writer.append("     * @param address The memory address of the buffer\n");
         writer.append("     */\n");
-        writer.append("    public static Buffer create(ByteBuffer buffer, long address) {\n");
+        writer.append("    public static HandleBuffer create(ByteBuffer buffer, long address) {\n");
         writer.append("        LongBufferView bufferView = new LongBufferView(buffer, buffer.asLongBuffer(), address);\n");
-        writer.append("        return new Buffer(bufferView);\n");
+        writer.append("        return new HandleBuffer(bufferView);\n");
         writer.append("    }\n");
 
         writer.append("}\n");

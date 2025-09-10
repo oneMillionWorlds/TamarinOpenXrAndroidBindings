@@ -99,7 +99,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         return ncountActionSets(address());
     }
     /** Returns the value of the {@code actionSets} field. */
-    public XrActionSet.Buffer actionSets() {
+    public XrActionSet.HandleBuffer actionSets() {
         return nactionSets(address());
     }
 
@@ -119,7 +119,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         return this;
     }
     /** Sets the specified value to the {@code actionSets} field. */
-    public XrSessionActionSetsAttachInfo actionSets(XrActionSet.Buffer value) { 
+    public XrSessionActionSetsAttachInfo actionSets(XrActionSet.HandleBuffer value) { 
         XrSessionActionSetsAttachInfo.nactionSets(address(), value);
         return this;
     }
@@ -131,7 +131,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         XrStructureType type,
         long next,
         int countActionSets,
-        XrActionSet.Buffer actionSets
+        XrActionSet.HandleBuffer actionSets
     ) {
         type(type);
         next(next);
@@ -274,13 +274,13 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     public static int ncountActionSets(long struct) { return memGetInt(struct + XrSessionActionSetsAttachInfo.COUNTACTIONSETS); }
     public static void ncountActionSets(long struct, int value) { memPutInt(struct + XrSessionActionSetsAttachInfo.COUNTACTIONSETS, value); }
     /** Unsafe version of actionSets}. */
-    public static XrActionSet.Buffer nactionSets(long struct) { 
+    public static XrActionSet.HandleBuffer nactionSets(long struct) { 
         long address = memGetAddress(struct + XrSessionActionSetsAttachInfo.ACTIONSETS);
         int count = ncountActionSets(struct);
         ByteBuffer buffer = memByteBuffer(address, count * Long.BYTES);
         return XrActionSet.create(buffer, address); 
     }
-    public static void nactionSets(long struct, XrActionSet.Buffer value ) {
+    public static void nactionSets(long struct, XrActionSet.HandleBuffer value ) {
         memPutAddress(struct + XrSessionActionSetsAttachInfo.ACTIONSETS, value.address());
         ncountActionSets(struct + XrSessionActionSetsAttachInfo.ACTIONSETS, value.capacity());
     }
@@ -367,7 +367,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         /** Returns the value of the {@code countActionSets} field. */
         public int countActionSets() { return XrSessionActionSetsAttachInfo.ncountActionSets(address()); }
         /** Returns the value of the {@code actionSets} field. */
-        public XrActionSet.Buffer actionSets() { return XrSessionActionSetsAttachInfo.nactionSets(address()); }
+        public XrActionSet.HandleBuffer actionSets() { return XrSessionActionSetsAttachInfo.nactionSets(address()); }
 
         /** Sets the specified value to the {@code type} field. */
         public Buffer type(XrStructureType value) { 
@@ -385,7 +385,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
             return this;
         }
         /** Sets the specified value to the {@code actionSets} field. */
-        public Buffer actionSets(XrActionSet.Buffer value) { 
+        public Buffer actionSets(XrActionSet.HandleBuffer value) { 
             XrSessionActionSetsAttachInfo.nactionSets(address(), value);
             return this;
         }

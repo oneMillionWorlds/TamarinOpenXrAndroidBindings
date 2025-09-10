@@ -171,7 +171,7 @@ public class FunctionDefinition {
                     return "ByteBufferView";
                 }
                 if(isHandle){
-                    return type + ".Buffer";
+                    return type + ".HandleBuffer";
                 }
                 if(type.equals("uint32_t") || type.equals("int32_t") || isTypeDefInt || isEnumType){
                     return "IntBufferView";
