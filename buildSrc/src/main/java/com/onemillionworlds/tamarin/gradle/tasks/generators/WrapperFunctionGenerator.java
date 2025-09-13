@@ -20,6 +20,7 @@ public class WrapperFunctionGenerator {
             // Generate wrapper method
             functionString.append("    /**\n");
             functionString.append("     * " + getJavaDocDescription(function) + "\n");
+            functionString.append("     * <p>For documentation see <a href=\"https://registry.khronos.org/OpenXR/specs/1.1/man/html/" + function.getName() + ".html\">khronos docs</a></p>\n");
             functionString.append("     * \n");
 
             // Generate parameter documentation

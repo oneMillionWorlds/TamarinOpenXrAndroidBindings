@@ -18,6 +18,10 @@ public class LongBufferView extends JavaBufferView<java.nio.LongBuffer>{
         getBufferView().put(index, value);
     }
 
+    public int capacity(){
+        return getBufferView().capacity();
+    }
+
     /**
      * Creates a new LongBufferView with the specified capacity.
      * <p>

@@ -19,6 +19,10 @@ public class PointerBufferView extends JavaBufferView<LongBuffer>{
         getBufferView().put(index, value);
     }
 
+    public int capacity(){
+        return getBufferView().capacity();
+    }
+
     /**
      * Creates a new PointerBufferView with the specified capacity.
      * <p>

@@ -18,6 +18,9 @@ public class IntBufferView extends JavaBufferView<java.nio.IntBuffer>{
         getBufferView().put(index, value);
     }
 
+    public int capacity(){
+        return getBufferView().capacity();
+    }
 
     /**
      * Creates a new IntBufferView with the specified capacity.

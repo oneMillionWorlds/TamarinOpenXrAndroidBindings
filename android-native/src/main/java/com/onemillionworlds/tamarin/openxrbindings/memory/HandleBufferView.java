@@ -28,7 +28,4 @@ public class HandleBufferView<T extends Handle> extends LongBufferView {
         getBufferView().put(index, handle.getRawHandle());
     }
 
-    public int capacity(){
-        return getBufferView().capacity();
-    }
 }

@@ -18,6 +18,10 @@ public class FloatBufferView extends JavaBufferView<java.nio.FloatBuffer>{
         getBufferView().put(index, value);
     }
 
+    public int capacity(){
+        return getBufferView().capacity();
+    }
+
     /**
      * Creates a new FloatBufferView with the specified capacity.
      * <p>

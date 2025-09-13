@@ -21,6 +21,10 @@ public class ByteBufferView {
         return address;
     }
 
+    public int capacity(){
+        return buffer.capacity();
+    }
+
     /**
      * Creates a new ByteBufferView with the specified capacity.
      * <p>
