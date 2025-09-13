@@ -50,6 +50,7 @@ import java.util.regex.Matcher;
 public class ParseOpenXr extends DefaultTask {
 
     private final RegularFileProperty headerFile = getProject().getObjects().fileProperty();
+    private final RegularFileProperty platformHeaderFile = getProject().getObjects().fileProperty();
 
     private final RegularFileProperty xrXml = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputDir = getProject().getObjects().fileProperty();
@@ -58,6 +59,11 @@ public class ParseOpenXr extends DefaultTask {
     @InputFile
     public RegularFileProperty getHeaderFile() {
         return headerFile;
+    }
+
+    @InputFile
+    public RegularFileProperty getPlatformHeaderFile() {
+        return platformHeaderFile;
     }
 
     @InputFile
@@ -127,12 +133,20 @@ public class ParseOpenXr extends DefaultTask {
         }
 
         getLogger().lifecycle("Parsing header file: {}", header.getAbsolutePath());
+
+        // Check if platform header file is provided
+        File platformHeader = null;
+        if (platformHeaderFile.isPresent()) {
+            platformHeader = platformHeaderFile.getAsFile().get();
+            getLogger().lifecycle("Parsing platform header file: {}", platformHeader.getAbsolutePath());
+        }
+
         getLogger().lifecycle("Output directory: {}", output.getAbsolutePath());
         if (cOutput != null) {
             getLogger().lifecycle("Generated C output directory: {}", cOutput.getAbsolutePath());
         }
 
-        // Parse the header file
+        // Parse the header files
         Map<String, ConstParser.Const> constants = new LinkedHashMap<>();
         List<StructDefinition> structs = new ArrayList<>();
         List<EnumDefinition> enums = new ArrayList<>();
@@ -143,12 +157,20 @@ public class ParseOpenXr extends DefaultTask {
         List<String> handles = new ArrayList<>();
         List<String> flags = new ArrayList<>();
 
+        // Parse main header file
         parseHeaderFile(header, constants, structs, enums, functions, atoms, intTypedefs, longTypedefs, handles, flags);
+
+        parseHeaderFile(platformHeader, constants, structs, enums, functions, atoms, intTypedefs, longTypedefs, handles, flags);
 
         Map<String, List<String>> parentToChildren = new LinkedHashMap<>();
 
         for (StructDefinition struct : structs) {
-            xmlStructs.get(struct.getName()).enrich(struct);
+            XmlStructParser.XmlStruct xmlStruct = xmlStructs.get(struct.getName());
+            if (xmlStruct != null) {
+                xmlStruct.enrich(struct);
+            } else {
+                throw new RuntimeException("No XML information found for struct:"+ struct.getName());
+            }
 
             struct.getBaseHeader().ifPresent(baseHeader -> {
                 parentToChildren.computeIfAbsent(baseHeader, k -> new ArrayList<>())
@@ -218,7 +240,6 @@ public class ParseOpenXr extends DefaultTask {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(headerFile))) {
             String line;
-
             while ((line = reader.readLine()) != null) {
                 // Check if we're entering an enum
 
