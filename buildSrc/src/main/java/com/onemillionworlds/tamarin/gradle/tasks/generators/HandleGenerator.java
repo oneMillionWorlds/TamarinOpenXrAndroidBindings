@@ -105,7 +105,7 @@ public class HandleGenerator extends FileGenerator {
         writer.append("     * @param stack The stack to allocate this buffer on.\n");
         writer.append("     * @param capacity The number of handles of this type that can be held.\n");
         writer.append("     */\n");
-        writer.append("    public static HandleBuffer create(MemoryStack stack, int capacity) {\n");
+        writer.append("    public static HandleBuffer create(int capacity, MemoryStack stack) {\n");
         writer.append("        LongBufferView buffer = stack.callocLong(capacity);\n");
         writer.append("        return new HandleBuffer(buffer);\n");
         writer.append("    }\n");

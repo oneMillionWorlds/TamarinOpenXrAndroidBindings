@@ -31,6 +31,7 @@ public abstract class Struct<T extends Struct<T>> implements NativeResource {
     /**
      * Frees the native memory associated with this structure.
      * This method should be called when the structure is no longer needed.
+     * <p>Should ONLY be called if this struct owns the memory (which is almost never the case)</p>
      */
     @Override
     public void free() {
@@ -56,5 +57,9 @@ public abstract class Struct<T extends Struct<T>> implements NativeResource {
     public T set(T src) {
         MemoryUtil.memCopy(src.address(), address(), sizeof());
         return (T)this;
+    }
+
+    public void clear(){
+        MemoryUtil.memZeroBytes(address(), sizeof());
     }
 }
