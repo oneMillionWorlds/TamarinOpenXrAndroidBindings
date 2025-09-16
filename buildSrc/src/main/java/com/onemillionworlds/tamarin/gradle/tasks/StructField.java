@@ -134,19 +134,7 @@ public class StructField {
         if (type.equals("XrStructureType")) return SIZE_4_BYTES;
         if (isPointer || type.startsWith("PFN")) return SIZE_POINTER;
 
-        // Special struct sizes
-        if (type.equals("XrVector3f")) return "12";
-        if (type.equals("XrQuaternionf")) return "16";
-        if (type.equals("XrPosef")) return "28";
-        if (type.equals("XrExtent2Df")) return "8";
-        if (type.equals("XrFovf")) return "16";
-        if (type.equals("XrApplicationInfo")) return "344";
-        if (type.equals("XrSystemGraphicsProperties")) return "12";
-        if (type.equals("XrSystemTrackingProperties")) return "8";
-        if (type.equals("XrFormFactor")) return "4";
-
-        // Default size for other types
-        return SIZE_4_BYTES;
+        throw new RuntimeException("Unknown memory size for type " + type);
     }
 
     /**
@@ -184,6 +172,13 @@ public class StructField {
             return "short";
         } else if (isStructByValue()) {
             return type;
+        } else if (type.equals("EGLDisplay") || type.equals("EGLConfig") || type.equals("EGLContext") || 
+                  type.equals("EGLenum")) {
+            // EGL types are pointers or enums on Android
+            return "long";
+        } else if (type.equals("jobject")) {
+            // JNI types
+            return "long";
         }
 
         // Default to the type itself for other types (likely structs)
@@ -217,8 +212,12 @@ public class StructField {
             return "memGetDouble";
         } else if (type.equals("int16_t")) {
             return "memGetShort";
+        } else if (type.equals("EGLDisplay") || type.equals("EGLConfig") || type.equals("EGLContext")) {
+            // EGL types are pointers on Android
+            return "memGetAddress";
         }
-        throw new RuntimeException("Unexpected type: " + this);
+        // Default to long for unknown types
+        return "memGetLong";
     }
 
     public String getMemorySetMethod() {
@@ -243,8 +242,12 @@ public class StructField {
             return "memPutDouble";
         } else if (type.equals("int16_t")) {
             return "memPutShort";
+        } else if (type.equals("EGLDisplay") || type.equals("EGLConfig") || type.equals("EGLContext")) {
+            // EGL types are pointers on Android
+            return "memPutAddress";
         }
-        throw new RuntimeException("Unexpected type: " + this);
+        // Default to long for unknown types
+        return "memPutLong";
     }
 
     /**

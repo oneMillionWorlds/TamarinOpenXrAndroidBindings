@@ -18,9 +18,13 @@ import com.onemillionworlds.tamarin.gradle.tasks.parsers.IntTypeDefPasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.LongTypeDefPasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.StructParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.XmlStructParser;
+import com.onemillionworlds.tamarin.gradle.tasks.utility.IfDefParser;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.w3c.dom.Document;
@@ -32,14 +36,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 
 /**
@@ -49,21 +52,15 @@ import java.util.regex.Matcher;
 
 public class ParseOpenXr extends DefaultTask {
 
-    private final RegularFileProperty headerFile = getProject().getObjects().fileProperty();
-    private final RegularFileProperty platformHeaderFile = getProject().getObjects().fileProperty();
+    private final ConfigurableFileCollection headerFiles = getProject().files();
 
     private final RegularFileProperty xrXml = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputDir = getProject().getObjects().fileProperty();
     private final RegularFileProperty cOutputDir = getProject().getObjects().fileProperty();
 
-    @InputFile
-    public RegularFileProperty getHeaderFile() {
-        return headerFile;
-    }
-
-    @InputFile
-    public RegularFileProperty getPlatformHeaderFile() {
-        return platformHeaderFile;
+    @InputFiles
+    public ConfigurableFileCollection getHeaderFiles() {
+        return headerFiles;
     }
 
     @InputFile
@@ -106,7 +103,6 @@ public class ParseOpenXr extends DefaultTask {
 
         // we probably should be using the xrXmlFile for everything but started using the c header file
         // try to get new stuff from xrXmlFile and migrate where possible
-        File header = headerFile.getAsFile().get();
         File xrXmlFile = xrXml.getAsFile().get();
 
         // Parse the XML file
@@ -132,15 +128,6 @@ public class ParseOpenXr extends DefaultTask {
             output.mkdirs();
         }
 
-        getLogger().lifecycle("Parsing header file: {}", header.getAbsolutePath());
-
-        // Check if platform header file is provided
-        File platformHeader = null;
-        if (platformHeaderFile.isPresent()) {
-            platformHeader = platformHeaderFile.getAsFile().get();
-            getLogger().lifecycle("Parsing platform header file: {}", platformHeader.getAbsolutePath());
-        }
-
         getLogger().lifecycle("Output directory: {}", output.getAbsolutePath());
         if (cOutput != null) {
             getLogger().lifecycle("Generated C output directory: {}", cOutput.getAbsolutePath());
@@ -157,10 +144,11 @@ public class ParseOpenXr extends DefaultTask {
         List<String> handles = new ArrayList<>();
         List<String> flags = new ArrayList<>();
 
-        // Parse main header file
-        parseHeaderFile(header, constants, structs, enums, functions, atoms, intTypedefs, longTypedefs, handles, flags);
 
-        parseHeaderFile(platformHeader, constants, structs, enums, functions, atoms, intTypedefs, longTypedefs, handles, flags);
+        for (File header : headerFiles) {
+            getLogger().lifecycle("Pasring header {}", header.getAbsolutePath());
+            parseHeaderFile(header, constants, structs, enums, functions, atoms, intTypedefs, longTypedefs, handles, flags);
+        }
 
         Map<String, List<String>> parentToChildren = new LinkedHashMap<>();
 
@@ -238,7 +226,11 @@ public class ParseOpenXr extends DefaultTask {
 
     private void parseHeaderFile(File headerFile, Map<String, ConstParser.Const> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, List<String> atoms, List<String> intTypedefs, List<String> longTypedefs, List<String> handles, List<String> flags) throws IOException {
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(headerFile))) {
+        List<String> defs = List.of("XR_EXTENSION_PROTOTYPES", "XR_USE_PLATFORM_ANDROID", "XR_USE_GRAPHICS_API_OPENGL_ES");
+
+        String parsedHeaderFile = IfDefParser.processIfDefs(Files.readString(headerFile.toPath()), defs);
+
+        try (BufferedReader reader = new BufferedReader(new StringReader(parsedHeaderFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 // Check if we're entering an enum

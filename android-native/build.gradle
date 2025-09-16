@@ -103,8 +103,7 @@ task createGeneratedDirs {
 
 task parseOpenXrFile(type: ParseOpenXr) {
     dependsOn createGeneratedDirs
-    headerFile = openxrHeaderFile
-    platformHeaderFile = openxrPlatformHeaderFile
+    headerFiles.from(openxrHeaderFile, openxrPlatformHeaderFile)
     xrXml = xrXmlFile
     outputDir = generatedOutputDir
     cOutputDir = generatedCOutputDir
