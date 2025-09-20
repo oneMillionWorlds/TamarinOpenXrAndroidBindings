@@ -52,6 +52,13 @@ import java.util.regex.Matcher;
 
 public class ParseOpenXr extends DefaultTask {
 
+    /**
+     * These are extra handle types not defined in the headers unfortunately
+     */
+    private static final List<String> HANDLES_EXTRA = List.of("EGLDisplay", "EGLConfig", "EGLContext");
+
+    private static final List<String> HAND_WRITTEN_ENUMS = List.of("EGLenum");
+
     private final ConfigurableFileCollection headerFiles = getProject().files();
 
     private final RegularFileProperty xrXml = getProject().getObjects().fileProperty();
@@ -141,7 +148,7 @@ public class ParseOpenXr extends DefaultTask {
         List<String> atoms = new ArrayList<>();
         List<String> intTypedefs = new ArrayList<>();
         List<String> longTypedefs = new ArrayList<>();
-        List<String> handles = new ArrayList<>();
+        List<String> handles = new ArrayList<>(HANDLES_EXTRA);
         List<String> flags = new ArrayList<>();
 
 
@@ -287,7 +294,11 @@ public class ParseOpenXr extends DefaultTask {
                 FlagsParser.parseFlags(line).ifPresent(flags::add);
 
                 if(StructParser.structStartPattern.matcher(line).find()) {
-                    List<String> knownEnums = enums.stream().map(EnumDefinition::getName).toList();
+                    List<String> knownEnums = new ArrayList<>(enums.size() + HAND_WRITTEN_ENUMS.size());
+                    knownEnums.addAll(enums.stream().map(EnumDefinition::getName).toList());
+                    knownEnums.addAll(HAND_WRITTEN_ENUMS);
+
+
                     List<String> knownStructs = structs.stream().map(StructDefinition::getName).toList();
 
                     List<String> xrStructureTypeValues = enums.stream()

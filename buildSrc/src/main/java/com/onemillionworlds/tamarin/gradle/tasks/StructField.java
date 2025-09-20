@@ -134,6 +134,13 @@ public class StructField {
         if (type.equals("XrStructureType")) return SIZE_4_BYTES;
         if (isPointer || type.startsWith("PFN")) return SIZE_POINTER;
 
+        if(isStruct){
+            return type + ".SIZEOF";
+        }
+        if(isEnumType){
+            return SIZE_4_BYTES;
+        }
+
         throw new RuntimeException("Unknown memory size for type " + type);
     }
 
