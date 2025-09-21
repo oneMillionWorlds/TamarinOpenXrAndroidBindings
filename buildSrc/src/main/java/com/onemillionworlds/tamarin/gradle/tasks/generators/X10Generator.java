@@ -8,11 +8,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Generator for XR10.java file containing Java method pairs for OpenXR functions.
  */
 public class X10Generator extends FileGenerator {
+
+    private static Set<String> methodsToSkip = Set.of(
+            /*
+             * this takes a jobject so is confusing, and we won't use it anyway
+             * (as it creates a new openGL context rather than adopting an existing one)
+             */
+            "xrCreateSwapchainAndroidSurfaceKHR"
+    );
+
     private final List<FunctionDefinition> functions;
 
 
@@ -51,7 +61,9 @@ public class X10Generator extends FileGenerator {
 
             // Generate method pairs for each function
             for (FunctionDefinition function : functions) {
-                generateMethodPair(writer, function);
+                if(!methodsToSkip.contains(function.getName())) {
+                    generateMethodPair(writer, function);
+                }
             }
 
             writer.write("}\n");
