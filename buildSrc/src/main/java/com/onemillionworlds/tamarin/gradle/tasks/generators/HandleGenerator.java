@@ -89,7 +89,7 @@ public class HandleGenerator extends FileGenerator {
 
         // create (with new memory)
         writer.append("    /**\n");
-        writer.append("     * Creates a new HandleBuffer for " + handleName + " instances. NOTE must be manually freed\n");
+        writer.append("     * Creates a new HandleBuffer for " + handleName + " instances. NOTE must not be manually freed (the JVM will free it)\n");
         writer.append("     *\n");
         writer.append("     * @param capacity The number of handles of this type that can be held.\n");
         writer.append("     */\n");
