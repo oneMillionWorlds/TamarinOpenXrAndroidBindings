@@ -111,8 +111,8 @@ JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_thickc_T
     return (jint)resolveResult;
 }
 
-JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_thickc_ThickC_setupDebug
-  (JNIEnv* env, jclass clazz, jobject instance, jobject messageConsumer) {
+JNIEXPORT jlong JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_thickc_ThickC_setupDebug
+  (JNIEnv* env, jclass clazz, jobject instance, jobject messageConsumer, jintArray resultCodeArray) {
 
     // Clean up any existing consumer
     if (g_messageConsumer != NULL) {
@@ -130,7 +130,12 @@ JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_thickc_T
 
         if (g_acceptMethod == NULL) {
             LOGE("Failed to get Consumer.accept method ID");
-            return (jint)XR_ERROR_INITIALIZATION_FAILED;
+            // Set result code
+            if (resultCodeArray != NULL) {
+                jint resultCode = (jint)XR_ERROR_INITIALIZATION_FAILED;
+                (*env)->SetIntArrayRegion(env, resultCodeArray, 0, 1, &resultCode);
+            }
+            return 0; // Return 0 handle on failure
         }
 
         // Clean up local reference
@@ -143,7 +148,12 @@ JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_thickc_T
 
     if (getRawHandleMethod == NULL) {
         LOGE("Failed to get XrInstance.getRawHandle method ID");
-        return (jint)XR_ERROR_INITIALIZATION_FAILED;
+        // Set result code
+        if (resultCodeArray != NULL) {
+            jint resultCode = (jint)XR_ERROR_INITIALIZATION_FAILED;
+            (*env)->SetIntArrayRegion(env, resultCodeArray, 0, 1, &resultCode);
+        }
+        return 0; // Return 0 handle on failure
     }
 
     jlong instanceHandle = (*env)->CallLongMethod(env, instance, getRawHandleMethod);
@@ -160,7 +170,12 @@ JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_thickc_T
 
     if (result != XR_SUCCESS || xrCreateDebugUtilsMessengerEXT == NULL) {
         LOGE("Failed to get xrCreateDebugUtilsMessengerEXT function pointer: %d", result);
-        return (jint)result;
+        // Set result code
+        if (resultCodeArray != NULL) {
+            jint resultCode = (jint)result;
+            (*env)->SetIntArrayRegion(env, resultCodeArray, 0, 1, &resultCode);
+        }
+        return 0; // Return 0 handle on failure
     }
 
     // Create the debug utils messenger
@@ -183,11 +198,17 @@ JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_thickc_T
     XrDebugUtilsMessengerEXT messenger;
     result = xrCreateDebugUtilsMessengerEXT((XrInstance)instanceHandle, &createInfo, &messenger);
 
-    if (result != XR_SUCCESS) {
-        LOGE("Failed to create debug utils messenger: %d", result);
-    } else {
-        LOGI("Debug utils messenger created successfully");
+    // Set result code
+    if (resultCodeArray != NULL) {
+        jint resultCode = (jint)result;
+        (*env)->SetIntArrayRegion(env, resultCodeArray, 0, 1, &resultCode);
     }
 
-    return (jint)result;
+    if (result != XR_SUCCESS) {
+        LOGE("Failed to create debug utils messenger: %d", result);
+        return 0; // Return 0 handle on failure
+    } else {
+        LOGI("Debug utils messenger created successfully");
+        return (jlong)(uintptr_t)messenger; // Return the messenger handle
+    }
 }
