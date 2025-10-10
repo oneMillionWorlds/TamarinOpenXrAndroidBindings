@@ -25,7 +25,10 @@ android {
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src/main/java', "src/main/generated/java"]
+            java.srcDirs = ['src/main/java']
+            // Wire generated sources so any task consuming sources (compile, sourcesJar, javadoc, etc.)
+            // will automatically run parseOpenXrFile first via builtBy linkage.
+            java.srcDir(files("src/main/generated/java").builtBy('parseOpenXrFile'))
             jniLibs.srcDirs = ['src/main/jniLibs']
         }
         test {
@@ -131,6 +134,18 @@ android.libraryVariants.all { variant ->
     tasks.matching { task -> task.name.equals("sourceReleaseJar")}.all { task ->
         task.dependsOn parseOpenXrFile
     }
+}
+
+// Ensure native build (CMake/externalNativeBuild) runs after generating sources
+// This guarantees the generated C file exists before CMake config/build tasks
+// Covers various AGP task names across versions
+tasks.matching { task ->
+    def n = task.name
+    return (n.startsWith("externalNativeBuild") ||
+           n.startsWith("configureCMake") ||
+           (n.startsWith("generate") && n.contains("CMake"))) && ! n.contains("clean")
+}.all { task ->
+    task.dependsOn parseOpenXrFile
 }
 
 dependencies {
