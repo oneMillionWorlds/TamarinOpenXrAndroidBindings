@@ -4,11 +4,12 @@ plugins {
     // Apply the Android library plugin
     id 'com.android.library'
     id 'maven-publish'
+    id 'signing'
     id 'com.onemillionworlds.tamarin.createstructs'
 }
 
 group = "com.onemillionworlds.tamarin"
-version = "1.0.6-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -220,7 +221,7 @@ android {
 afterEvaluate {
     publishing {
         publications {
-            release(MavenPublication) {
+            mavenJava(MavenPublication) {
                 groupId = group
                 artifactId = 'openxr-bindings-native'
                 version = version
@@ -235,7 +236,24 @@ afterEvaluate {
             }
         }
         repositories {
+            // Local publishing for development/testing
             mavenLocal()
+            // Sonatype OSSRH for Maven Central
+            maven {
+                name = 'SonaType'
+                url = uri('https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/')
+                credentials {
+                    username = findProperty('ossrhUsername') ?: System.getenv('OSSRH_USERNAME')
+                    password = findProperty('ossrhPassword') ?: System.getenv('OSSRH_PASSWORD')
+                }
+            }
+        }
+    }
+    // Sign the publication if signing properties are present
+    signing {
+        def hasSigning = project.hasProperty('signing.keyId') || project.hasProperty('signingKey') || project.hasProperty('signing.secretKeyRingFile')
+        if (hasSigning) {
+            sign publishing.publications.mavenJava
         }
     }
 }
