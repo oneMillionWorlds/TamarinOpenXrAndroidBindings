@@ -6,7 +6,7 @@ project(OpenXRBindings LANGUAGES C CXX)
 set(JNI_SOURCES
     src/com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil.c
     src/com_onemillionworlds_tamarin_openxrbindings_thickc_ThickC.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../main/generated/native/src/com_onemillionworlds_tamarin_openxrbindings_X10.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../main/generated/native/src/com_onemillionworlds_tamarin_openxrbindings_XR10.c
 )
 
 set(OPENXR_LOADER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../main/jniLibs/arm64-v8a/libopenxr_loader.so")
