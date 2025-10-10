@@ -72,11 +72,12 @@ public class X10CGenerator extends FileGenerator {
                 writer.write("#define " + def + "\n");
             }
 
+            // Include manual EGL handle definitions needed by some platform structs
+            writer.write("#include \"../../../../native/include/tamarinManualDefines.h\"\n\n");
 
             // Include OpenXR headers
             writer.write("#include \"../../../../native/include/openxr/openxr.h\"\n");
-            writer.write("#include \"../../../../native/include/openxr/openxr_platform.h\"\n\n");
-
+            writer.write("#include \"../../../../native/include/openxr/openxr_platform.h\"\n");
             // Define logging macros
             writer.write("#define TAG \"XR10\"\n");
             writer.write("#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)\n");
