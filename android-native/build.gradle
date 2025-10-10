@@ -19,7 +19,7 @@ repositories {
 
 android {
     namespace 'com.onemillionworlds.tamarin.openxrbindings'
-    compileSdk 33
+    compileSdk 36
 
     // Specify the manifest file location
     sourceSets {
@@ -35,8 +35,8 @@ android {
     }
 
     defaultConfig {
-        minSdk 24
-        targetSdk 33
+        minSdk 26
+        targetSdk 36
 
         // Configure CMake
         externalNativeBuild {
@@ -256,4 +256,14 @@ afterEvaluate {
             sign publishing.publications.mavenJava
         }
     }
+}
+
+// Ensure `gradlew clean` removes the generated sources and native code under src/main/generated
+// We delete the whole directory; it will be recreated by `createGeneratedDirs`/`parseOpenXrFile` during the next build.
+tasks.register('cleanGenerated', Delete) {
+    delete file("${project.projectDir}/src/main/generated")
+}
+
+tasks.named('clean') {
+    dependsOn 'cleanGenerated'
 }
