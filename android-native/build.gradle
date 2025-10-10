@@ -19,7 +19,7 @@ repositories {
 
 android {
     namespace 'com.onemillionworlds.tamarin.openxrbindings'
-    compileSdk 36
+    compileSdk 34
 
     // Specify the manifest file location
     sourceSets {
@@ -39,7 +39,7 @@ android {
 
     defaultConfig {
         minSdk 26
-        targetSdk 36
+        targetSdk 34
 
         // Configure CMake
         externalNativeBuild {
