@@ -1,6 +1,7 @@
 package com.onemillionworlds.tamarin.gradle.tasks.generators;
 
 import com.onemillionworlds.tamarin.gradle.tasks.FunctionDefinition;
+import com.onemillionworlds.tamarin.gradle.tasks.ParseOpenXr;
 import org.gradle.api.logging.Logger;
 
 import java.io.BufferedWriter;
@@ -67,8 +68,10 @@ public class X10CGenerator extends FileGenerator {
             writer.write("#include <android/log.h>\n\n");
 
             // Define XR_EXTENSION_PROTOTYPES to enable extension function prototypes
-            writer.write("// Define XR_EXTENSION_PROTOTYPES to enable extension function prototypes\n");
-            writer.write("#define XR_EXTENSION_PROTOTYPES\n\n");
+            for(String def : ParseOpenXr.STANDARD_DEFS){
+                writer.write("#define " + def + "\n");
+            }
+
 
             // Include OpenXR headers
             writer.write("#include \"../../../../native/include/openxr/openxr.h\"\n");

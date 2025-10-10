@@ -24,7 +24,6 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.w3c.dom.Document;
@@ -51,6 +50,8 @@ import java.util.regex.Matcher;
 
 
 public class ParseOpenXr extends DefaultTask {
+
+    public static List<String> STANDARD_DEFS = List.of("XR_EXTENSION_PROTOTYPES", "XR_USE_PLATFORM_ANDROID", "XR_USE_GRAPHICS_API_OPENGL_ES");
 
     /**
      * These are extra handle types not defined in the headers unfortunately
@@ -233,9 +234,7 @@ public class ParseOpenXr extends DefaultTask {
 
     private void parseHeaderFile(File headerFile, Map<String, ConstParser.Const> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, List<String> atoms, List<String> intTypedefs, List<String> longTypedefs, List<String> handles, List<String> flags) throws IOException {
 
-        List<String> defs = List.of("XR_EXTENSION_PROTOTYPES", "XR_USE_PLATFORM_ANDROID", "XR_USE_GRAPHICS_API_OPENGL_ES");
-
-        String parsedHeaderFile = IfDefParser.processIfDefs(Files.readString(headerFile.toPath()), defs);
+        String parsedHeaderFile = IfDefParser.processIfDefs(Files.readString(headerFile.toPath()), STANDARD_DEFS);
 
         try (BufferedReader reader = new BufferedReader(new StringReader(parsedHeaderFile))) {
             String line;
