@@ -121,6 +121,13 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
         return this;
     }
 
+    /** Casts the specified {@link XrSwapchainImageBaseHeader} instance to the {@code XrSwapchainImageOpenGLESKHR} class. 
+     * Note it is the callers responsibility to make sure it really is that type (check the type() method) 
+     */
+    public XrSwapchainImageOpenGLESKHR asXrSwapchainImageOpenGLESKHR() {
+        return XrSwapchainImageOpenGLESKHR.cast(this);
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrSwapchainImageBaseHeader} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
@@ -247,6 +254,15 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
         public PointerBuffer(PointerBufferView underlyingPointerBuffer) {
             super(underlyingPointerBuffer, XrSwapchainImageBaseHeader::create);
         }
+
+        /** Adds a pointer to a XrSwapchainImageOpenGLESKHR to this buffer. 
+         * (This is allowed as XrSwapchainImageOpenGLESKHR extends XrSwapchainImageBaseHeader
+         * <p>Note there is no getter for this type. To get by type first get the base type then cast in to the child class (using the cast method in the child)  </p>
+         */
+        public void setByIndex(int index, XrSwapchainImageOpenGLESKHR struct){
+            getBufferView().put(index, struct.address());
+        }
+
         /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
         public static PointerBuffer calloc(int capacity) {
             return new PointerBuffer(PointerBufferView.createPointerBufferView(capacity));

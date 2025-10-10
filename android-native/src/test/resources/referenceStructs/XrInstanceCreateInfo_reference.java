@@ -60,7 +60,7 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
             Layout.__member(4),
             Layout.__member(POINTER_SIZE),
             Layout.__member(8),
-            Layout.__member(344),
+            Layout.__member(XrApplicationInfo.SIZEOF),
             Layout.__member(4),
             Layout.__member(POINTER_SIZE),
             Layout.__member(4),
