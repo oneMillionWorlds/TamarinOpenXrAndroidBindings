@@ -33,7 +33,7 @@ public class StructsAreGeneratedCorrectlyTest {
      */
     @Test
     public void xrDebugUtilsMessengerCreateInfoExtTest() {
-        test("XrDebugUtilsMessengerCreateInfoExt");
+        test("XrDebugUtilsMessengerCreateInfoEXT");
     }
 
     /**
