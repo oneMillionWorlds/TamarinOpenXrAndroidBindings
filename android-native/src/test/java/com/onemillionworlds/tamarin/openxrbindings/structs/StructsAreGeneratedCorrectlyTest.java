@@ -133,6 +133,35 @@ public class StructsAreGeneratedCorrectlyTest {
     }
 
     private static String readSanitisedFile(File file) throws IOException {
+        // Enforce exact filename match even on case-insensitive file systems (e.g., Windows)
+        File parent = file.getParentFile();
+        if (parent == null || !parent.isDirectory()) {
+            throw new IOException("Parent directory does not exist for: " + file.getAbsolutePath());
+        }
+        String expectedName = file.getName();
+        String[] siblings = parent.list();
+        if (siblings == null) {
+            throw new IOException("Unable to list directory: " + parent.getAbsolutePath());
+        }
+        boolean exactMatch = false;
+        boolean caseInsensitiveOnlyMatch = false;
+        for (String name : siblings) {
+            if (name.equals(expectedName)) {
+                exactMatch = true;
+                break;
+            }
+            if (name.equalsIgnoreCase(expectedName)) {
+                caseInsensitiveOnlyMatch = true;
+            }
+        }
+        if (!exactMatch) {
+            String message = "Expected file name '" + expectedName + "' not found exactly in: " + parent.getAbsolutePath();
+            if (caseInsensitiveOnlyMatch) {
+                message += " (found only case-insensitive match)";
+            }
+            throw new IOException(message);
+        }
+
         return Files.readAllLines(file.toPath())
                 .stream()
                 .map(String::stripTrailing)
