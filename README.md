@@ -77,6 +77,10 @@ The library uses JNI to bridge between Java and the native OpenXR API. The imple
 
 This project is licensed under the Apache 2.0 License - see the LICENSE file for details.
 
+## Publishing
+
+This project publishes to Maven Central via the Sonatype Central Publisher Portal using a USER_MANAGED flow. See README_PUBLISHING.md for up-to-date instructions.
+
 ## Acknowledgments
 
 - The OpenXR Working Group for the OpenXR API

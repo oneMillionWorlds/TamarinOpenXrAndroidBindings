@@ -18,6 +18,9 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    - name: Grant execute permission for upload script
+      run: chmod +x .github/scripts/upload_central.sh
+
     - name: Build with Gradle
       run: ./gradlew build
 
@@ -31,9 +34,18 @@ jobs:
         echo "signing.secretKeyRingFile=./secring.gpg" >> gradle.properties
         echo "ossrhUsername=${{ secrets.OSSRH_USERNAME }}" >> gradle.properties
         echo "ossrhPassword=${{ secrets.OSSRH_PASSWORD }}" >> gradle.properties
+        # Central Publisher Portal credentials (uses same account as OSSRH)
+        echo "centralUsername=${{ secrets.OSSRH_USERNAME }}" >> gradle.properties
+        echo "centralPassword=${{ secrets.OSSRH_PASSWORD }}" >> gradle.properties
 
-    - name: Publish package
-      run: ./gradlew publishMavenJavaPublicationToSonaTypeRepository
+    - name: Prepare Central bundle (stage + zip)
+      run: ./gradlew :android-native:prepareCentralBundle
+
+    - name: Upload bundle via Central Publisher API (USER_MANAGED)
+      run: .github/scripts/upload_central.sh "android-native/build/central-bundle.zip"
+      env:
+        CENTRAL_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+        CENTRAL_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
 
     - name: Tag and update version
       run: |

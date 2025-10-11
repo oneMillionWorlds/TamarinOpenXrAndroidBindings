@@ -253,7 +253,13 @@ afterEvaluate {
         repositories {
             // Local publishing for development/testing
             mavenLocal()
-            // Sonatype OSSRH for Maven Central
+            // Local directory used to assemble a Central Portal bundle (staging area)
+            // This keeps publishToMavenLocal working and avoids pushing to OSSRH.
+            maven {
+                name = 'CentralPortalStaging'
+                url = uri("${buildDir}/central-portal-staging")
+            }
+            // Sonatype OSSRH (legacy) — left in place for local testing only; CI no longer uses it
             maven {
                 name = 'SonaType'
                 url = uri('https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/')
@@ -281,4 +287,36 @@ tasks.register('cleanGenerated', Delete) {
 
 tasks.named('clean') {
     dependsOn 'cleanGenerated'
+}
+
+
+// --- Central Publisher API integration (USER_MANAGED) ---
+ext.centralPortalStagingDir = file("${buildDir}/central-portal-staging")
+
+// Helper task alias with clearer name
+tasks.register('publishToCentralPortalStaging') {
+    dependsOn 'publishMavenJavaPublicationToCentralPortalStagingRepository'
+    group = 'publishing'
+    description = 'Publishes the mavenJava publication to local Central Portal staging directory.'
+}
+
+tasks.register('zipCentralPortalBundle', Zip) {
+    group = 'publishing'
+    description = 'Zips the Central Portal staging directory into build/central-bundle.zip'
+    dependsOn 'publishToCentralPortalStaging'
+    from(centralPortalStagingDir)
+    archiveFileName = 'central-bundle.zip'
+    destinationDirectory = file("${buildDir}")
+}
+
+tasks.register('prepareCentralBundle') {
+    group = 'publishing'
+    description = 'Stages and zips artifacts ready for Central Publisher Portal upload (no network).'
+    dependsOn 'zipCentralPortalBundle'
+}
+
+tasks.register('publishViaCentralPortal') {
+    group = 'publishing'
+    description = 'Stages and zips artifacts ready for Central Publisher Portal upload (no network).'
+    dependsOn 'prepareCentralBundle'
 }
