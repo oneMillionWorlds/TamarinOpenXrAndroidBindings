@@ -70,19 +70,40 @@ The previous OSSRH (SonaType) repository configuration remains in the Gradle fil
 
 ### Manual testing of validated bundles
 
-Central supports consuming validated (but not yet published) artifacts via a special repository that requires an Authorization header. In gradle this would be done like
+Central supports consuming validated (but not yet published) artifacts via a special repository that requires an Authorization header.
+
+In Gradle, use the built-in HTTP header authentication types:
+- org.gradle.api.credentials.HttpHeaderCredentials
+- org.gradle.authentication.http.HttpHeaderAuthentication
+
+Example configuration that reads the header name/value from gradle.properties:
 
 ```
 repositories {
     maven {
         name = "centralManualTesting"
-        url "https://central.sonatype.com/api/v1/publisher/deployments/download/"
-        credentials(HttpHeaderCredentials)
+        url = uri("https://central.sonatype.com/api/v1/publisher/deployments/download/")
+        credentials(org.gradle.api.credentials.HttpHeaderCredentials) {
+            name = findProperty('centralManualTestingAuthHeaderName') as String
+            value = findProperty('centralManualTestingAuthHeaderValue') as String
+        }
         authentication {
-            header(HttpHeaderAuthentication)
+            header(org.gradle.authentication.http.HttpHeaderAuthentication)
         }
     }
     mavenCentral()
 }
 ```
+
+And in your gradle.properties:
+
+```
+# Use a Bearer token made from base64(username:password). See PublishingUsingPortalApi.txt.
+centralManualTestingAuthHeaderName=Authorization
+centralManualTestingAuthHeaderValue=Bearer <base64-username-colon-password>
+```
+
+Notes:
+- This repository exposes only VALIDATED (not yet published) files; once you publish, resolve from Maven Central as usual.
+- The exact same header works for both single-deployment and multi-deployment endpoints (see PublishingUsingPortalApi.txt for full details).
 
