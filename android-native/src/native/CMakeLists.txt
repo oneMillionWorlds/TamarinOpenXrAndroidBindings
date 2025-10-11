@@ -9,7 +9,7 @@ set(JNI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../main/generated/native/src/com_onemillionworlds_tamarin_openxrbindings_XR10.c
 )
 
-set(OPENXR_LOADER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../main/jniLibs/arm64-v8a/libopenxr_loader.so")
+set(OPENXR_LOADER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../main/jnilibs/arm64-v8a/libopenxr_loader.so")
 
 
 # Define JNI library

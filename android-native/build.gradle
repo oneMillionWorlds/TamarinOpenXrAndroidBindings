@@ -29,7 +29,7 @@ android {
             // Wire generated sources so any task consuming sources (compile, sourcesJar, javadoc, etc.)
             // will automatically run parseOpenXrFile first via builtBy linkage.
             java.srcDir(files("src/main/generated/java").builtBy('parseOpenXrFile'))
-            jniLibs.srcDirs = ['src/main/jniLibs']
+            jniLibs.srcDirs = ['src/main/jnilibs']
         }
         test {
             java.srcDirs = ['src/test/java']
