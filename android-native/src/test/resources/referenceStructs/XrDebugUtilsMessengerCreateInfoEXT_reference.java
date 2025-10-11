@@ -5,14 +5,17 @@
 package com.onemillionworlds.tamarin.openxrbindings;
 
 import com.onemillionworlds.tamarin.openxrbindings.enums.*;
+import com.onemillionworlds.tamarin.openxrbindings.handles.*;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryStack;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
+import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
 import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
 import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
 
 import java.nio.ByteBuffer;
 
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
+import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
 
 /**
