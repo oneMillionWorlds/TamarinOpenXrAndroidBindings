@@ -247,6 +247,30 @@ afterEvaluate {
                     name = 'Tamarin OpenXR Native Bindings'
                     description = 'Native bindings for OpenXR on Android'
                     url = 'https://github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings'
+
+                    licenses {
+                        license {
+                            name = 'BSD 3-Clause License'
+                            url = 'https://opensource.org/licenses/BSD-3-Clause'
+                            distribution = 'repo'
+                        }
+                    }
+
+                    scm {
+                        url = 'https://github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings'
+                        connection = 'scm:git:https://github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings.git'
+                        developerConnection = 'scm:git:ssh://git@github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings.git'
+                        tag = 'HEAD'
+                    }
+
+                    developers {
+                        developer {
+                            id = 'richard-tingle'
+                            name = 'Richard Tingle'
+                            organization = 'oneMillionWorlds'
+                            organizationUrl = 'https://github.com/oneMillionWorlds'
+                        }
+                    }
                 }
             }
         }
