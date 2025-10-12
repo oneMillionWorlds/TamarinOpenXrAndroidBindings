@@ -49,26 +49,26 @@ jobs:
 
     - name: Tag and update version
       run: |
-        # Extract current version from build.gradle
-        VERSION=$(grep "version = " build.gradle | awk -F\' '{print $2}')
+        # Extract current version from gradle.properties
+        VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
         echo "Current version: $VERSION"
         
         # Create and push the tag for the current version
         git tag "v$VERSION"
         git push origin "v$VERSION"
         
-        # Increment version for the next cycle
+        # Increment version for the next cycle (bumps last numeric segment)
         NEW_VERSION=$(echo $VERSION | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
         echo "New version: $NEW_VERSION"
         
-        # Update build.gradle with the new version
-        sed -i "s/version = '$VERSION'/version = '$NEW_VERSION'/" build.gradle
+        # Update gradle.properties with the new version
+        sed -i "s/^version=$VERSION/version=$NEW_VERSION/" gradle.properties
         
         # Commit the change
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add build.gradle
-        git commit -m "Increment version to $NEW_VERSION [skip ci]"
+        git add gradle.properties
+        git commit -m "Increment version to $NEW_VERSION [skip ci]" || echo "No changes to commit"
         
         # Push the commit
         git push origin HEAD:${{ github.ref }}
