@@ -24,7 +24,7 @@ public class CWrapperFunctionGenerator {
             
             // Generate JNI function signature
             functionString.append("/*\n");
-            functionString.append(" * Class:     com_onemillionworlds_tamarin_openxrbindings_X10\n");
+            functionString.append(" * Class:     com_onemillionworlds_tamarin_openxrbindings_XR10\n");
             functionString.append(" * Method:    n" + functionName + "\n");
             functionString.append(" * Signature: (");
             
@@ -50,8 +50,8 @@ public class CWrapperFunctionGenerator {
             functionString.append(" */\n");
             
             // Generate function declaration
-            functionString.append("JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_X10_n" + functionName + "\n");
-            functionString.append("  (JNIEnv *env");
+            functionString.append("JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_XR10_n" + functionName + "\n");
+            functionString.append("  (JNIEnv *env, jclass cls");
             
             // Generate parameter list
             for (int i = 0; i < function.getParameters().size(); i++) {
