@@ -139,7 +139,16 @@ public class StructGenerator extends FileGenerator {
             String fieldType = field.getType();
 
             layoutBuilder.append("            ");
-            layoutBuilder.append(field.getLayoutMember());
+            // If the field is a nested struct (not a pointer and not an array), include the alignment when generating the layout member
+            if (field.isStruct() && !field.isPointer() && field.getArraySizeConstant() == null) {
+                layoutBuilder.append("Layout.__member(")
+                             .append(fieldType)
+                             .append(".SIZEOF, ")
+                             .append(fieldType)
+                             .append(".ALIGNOF)");
+            } else {
+                layoutBuilder.append(field.getLayoutMember());
+            }
 
             if (i < struct.getFields().size() - 1) {
                 layoutBuilder.append(",\n");
