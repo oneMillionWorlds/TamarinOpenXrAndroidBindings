@@ -52,7 +52,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
             Layout.__member(4),
             Layout.__member(POINTER_SIZE),
             Layout.__member(4),
-            Layout.__member(8)
+            Layout.__member(POINTER_SIZE)
         );
 
         SIZEOF = layout.getSize();

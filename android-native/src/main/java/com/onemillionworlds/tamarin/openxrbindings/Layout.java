@@ -90,10 +90,19 @@ public class Layout {
     }
     
     /**
-     * Creates a new member info for an array.
+     * Creates a new member info for an array, using the element size as the array alignment.
+     * For arrays of primitive types, alignment is typically equal to the element size.
      */
     public static MemberInfo __array(int elementSize, int length) {
         return new MemberInfo(elementSize * length, elementSize);
+    }
+    
+    /**
+     * Creates a new member info for an array with an explicit alignment.
+     * This should be used when the element's alignment differs from its size (e.g., arrays of structs).
+     */
+    public static MemberInfo __array(int elementSize, int alignment, int length) {
+        return new MemberInfo(elementSize * length, alignment);
     }
     
     /**

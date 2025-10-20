@@ -124,15 +124,17 @@ public class StructField {
      * @return The memory size as a string
      */
     public String getMemorySize() {
+        if (isPointer || type.startsWith("PFN")) return SIZE_POINTER;
         if (type.equals("char")) return SIZE_1_BYTE;
         if (type.equals("int16_t")) return SIZE_2_BYTES;
         if (type.equals("float")) return SIZE_4_BYTES;
         if (type.equals("double")) return SIZE_8_BYTES;
+        if(type.equals("uint8_t")) return SIZE_1_BYTE;
         if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) return SIZE_4_BYTES;
         if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") || 
             isHandle || isAtom || isFlag || isTypeDefLong) return SIZE_8_BYTES;
         if (type.equals("XrStructureType")) return SIZE_4_BYTES;
-        if (isPointer || type.startsWith("PFN")) return SIZE_POINTER;
+
 
         if(isStruct){
             return type + ".SIZEOF";
@@ -264,9 +266,21 @@ public class StructField {
      */
     public String getLayoutMember() {
         if (arraySizeConstant != null) {
-            return "Layout.__array(" + SIZE_1_BYTE + ", " + arraySizeConstant + ")";
+            if(isStruct){
+                return "Layout.__array(" + getMemorySize() + ", " + getAlignOf() + ", " + arraySizeConstant + ")";
+            }else{
+                return "Layout.__array(" + getMemorySize() + ", " + arraySizeConstant + ")";
+            }
         } else {
             return "Layout.__member(" + getMemorySize() + ")";
+        }
+    }
+
+    public String getAlignOf(){
+        if(isStruct){
+            return type + ".ALIGNOF";
+        } else{
+            throw new RuntimeException("Cannot get alignof for non-struct field " + name);
         }
     }
 

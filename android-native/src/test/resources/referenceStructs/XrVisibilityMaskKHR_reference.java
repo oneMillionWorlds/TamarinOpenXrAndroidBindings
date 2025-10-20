@@ -64,7 +64,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
             Layout.__member(POINTER_SIZE),
             Layout.__member(4),
             Layout.__member(4),
-            Layout.__member(4)
+            Layout.__member(POINTER_SIZE)
         );
 
         SIZEOF = layout.getSize();
