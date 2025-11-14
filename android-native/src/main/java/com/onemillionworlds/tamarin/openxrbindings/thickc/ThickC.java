@@ -3,6 +3,7 @@ package com.onemillionworlds.tamarin.openxrbindings.thickc;
 
 import android.app.Activity;
 
+import android.content.Context;
 import com.onemillionworlds.tamarin.openxrbindings.XR10;
 import com.onemillionworlds.tamarin.openxrbindings.XR10Constants;
 import com.onemillionworlds.tamarin.openxrbindings.enums.XrResult;
@@ -28,10 +29,10 @@ public class ThickC {
     /**
      * Initializes the OpenXR loader on Android. This must be called before any other OpenXR call.
      *
-     * @param activity the Android activity (used internally to get application context)
+     * @param activityContext the Android activity application context
      * @return the result code from xrInitializeLoaderKHR (0 == XR_SUCCESS)
      */
-    public static native int initializeLoader(Activity activity);
+    public static native int initializeLoader(Context activityContext);
 
     /**
      * Sets up the OpenXR debug messenger with the specified message consumer.
