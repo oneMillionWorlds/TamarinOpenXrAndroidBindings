@@ -18,6 +18,7 @@ class WrapperFunctionGeneratorTest {
         String expectedValue = """
                     /**
                      * Wrapper for xrEnumerateApiLayerProperties OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrEnumerateApiLayerProperties.html">khronos docs</a></p>
                      *\s
                      * @param propertyCapacityInput (uint32_t)
                      * @param propertyCountOutput (uint32_t)
@@ -29,7 +30,7 @@ class WrapperFunctionGeneratorTest {
                         long propertiesAddress = properties == null ? MemoryUtil.NULL : properties.address();
                         return XrResult.fromValue(nxrEnumerateApiLayerProperties(propertyCapacityInput, propertyCountOutputAddress, propertiesAddress));
                     }
-                    
+                
                     public static native int nxrEnumerateApiLayerProperties(int propertyCapacityInput, long propertyCountOutput, long properties);
                 """;
 
@@ -49,6 +50,7 @@ class WrapperFunctionGeneratorTest {
         String expectedValue = """
                     /**
                      * Wrapper for xrGetInstanceProcAddr OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrGetInstanceProcAddr.html">khronos docs</a></p>
                      *\s
                      * @param instance (XrInstance)
                      * @param name (char)
@@ -80,6 +82,7 @@ class WrapperFunctionGeneratorTest {
         String expectedValue = """
                     /**
                      * Wrapper for xrResultToString OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrResultToString.html">khronos docs</a></p>
                      *\s
                      * @param instance (XrInstance)
                      * @param value (XrResult)
@@ -109,6 +112,7 @@ class WrapperFunctionGeneratorTest {
         String expectedValue = """
                     /**
                      * Wrapper for xrGetSystem OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrGetSystem.html">khronos docs</a></p>
                      *\s
                      * @param instance (XrInstance)
                      * @param getInfo (XrSystemGetInfo)
@@ -140,6 +144,7 @@ class WrapperFunctionGeneratorTest {
         String expectedValue = """
                     /**
                      * Wrapper for xrLocateSpace OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrLocateSpace.html">khronos docs</a></p>
                      *\s
                      * @param space (XrSpace)
                      * @param baseSpace (XrSpace)
@@ -170,6 +175,7 @@ class WrapperFunctionGeneratorTest {
         String expectedValue = """
                     /**
                      * Wrapper for xrSetInputDeviceStateVector2fEXT OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrSetInputDeviceStateVector2fEXT.html">khronos docs</a></p>
                      *\s
                      * @param session (XrSession)
                      * @param topLevelPath (XrPath)
@@ -202,6 +208,7 @@ class WrapperFunctionGeneratorTest {
         String expectedValue = """
                     /**
                      * Wrapper for xrEnumerateEnvironmentBlendModes OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrEnumerateEnvironmentBlendModes.html">khronos docs</a></p>
                      *\s
                      * @param instance (XrInstance)
                      * @param systemId (XrSystemId)
@@ -235,6 +242,7 @@ class WrapperFunctionGeneratorTest {
         String expectedValue = """
                     /**
                      * Wrapper for xrEnumerateSwapchainFormats OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrEnumerateSwapchainFormats.html">khronos docs</a></p>
                      *\s
                      * @param session (XrSession)
                      * @param formatCapacityInput (uint32_t)
@@ -267,6 +275,7 @@ class WrapperFunctionGeneratorTest {
         String expectedValue = """
                     /**
                      * Wrapper for xrThermalGetTemperatureTrendEXT OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrThermalGetTemperatureTrendEXT.html">khronos docs</a></p>
                      *\s
                      * @param session (XrSession)
                      * @param domain (XrPerfSettingsDomainEXT)
@@ -301,6 +310,7 @@ class WrapperFunctionGeneratorTest {
         String expectedValue = """
                     /**
                      * Wrapper for xrLoadControllerModelMSFT OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrLoadControllerModelMSFT.html">khronos docs</a></p>
                      *\s
                      * @param session (XrSession)
                      * @param modelKey (XrControllerModelKeyMSFT)

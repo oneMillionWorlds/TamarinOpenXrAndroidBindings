@@ -211,4 +211,37 @@ class CWrapperFunctionGeneratorTest {
         String actualValue = CWrapperFunctionGenerator.generateCWrapperFunction(functionDefinition);
         assertEquals(expectedValue.trim(), actualValue.trim());
     }
+
+    @Test
+    void generateCWrapperFunction_xrGetSystemProperties() {
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrGetSystemProperties", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false, false, false, true, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemId", "systemId", false, false, false, true, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemProperties", "properties", true, false, false, false, false, false, false, false, false, false));
+
+        String expectedValue = """
+                /*
+                 * Class:     com_onemillionworlds_tamarin_openxrbindings_XR10
+                 * Method:    nxrGetSystemProperties
+                 * Signature: (JJJ)I
+                 */
+                JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_XR10_nxrGetSystemProperties
+                  (JNIEnv *env, jclass cls, jlong instance, jlong systemId, jlong properties) {
+
+                    // Convert JNI parameters to OpenXR parameters
+                    XrInstance instanceHandle = (XrInstance)(intptr_t)instance;
+                    XrSystemId systemIdValue = (XrSystemId)systemId;
+                    XrSystemProperties *propertiesPtr = (XrSystemProperties *)(intptr_t)properties;
+
+                    // Call the OpenXR function
+                    XrResult result = xrGetSystemProperties(instanceHandle, systemIdValue, propertiesPtr);
+
+                    // Return the result as a jint
+                    return (jint)result;
+                }
+                """;
+
+        String actualValue = CWrapperFunctionGenerator.generateCWrapperFunction(functionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
 }

@@ -37,30 +37,30 @@ public class HandleGeneratorTest {
                         super(rawHandle);
                     }
                 
-                    public static class Buffer extends HandleBufferView<XrActionSet> {
-                        public Buffer(LongBufferView viewToAdopt){
+                    public static class HandleBuffer extends HandleBufferView<XrActionSet> {
+                        public HandleBuffer(LongBufferView viewToAdopt){
                             super(viewToAdopt, XrActionSet::new);
                         }
                     }
                 
                     /**
-                     * Creates a new buffer for XrActionSet instances. NOTE must be manually freed
+                     * Creates a new HandleBuffer for XrActionSet instances. NOTE must not be manually freed (the JVM will free it)
                      *
                      * @param capacity The number of handles of this type that can be held.
                      */
-                    public static Buffer create(int capacity) {
+                    public static HandleBuffer create(int capacity) {
                         LongBufferView buffer = BufferUtils.createLongBufferView(capacity);
-                        return new Buffer(buffer);
+                        return new HandleBuffer(buffer);
                     }
                     /**
-                     * Creates a new buffer for XrActionSet instances on the stack. NOTE must NOT be manually freed
+                     * Creates a new HandleBuffer for XrActionSet instances on the stack. NOTE must NOT be manually freed
                      *
                      * @param stack The stack to allocate this buffer on.
                      * @param capacity The number of handles of this type that can be held.
                      */
-                    public static Buffer create(MemoryStack stack, int capacity) {
+                    public static HandleBuffer create(int capacity, MemoryStack stack) {
                         LongBufferView buffer = stack.callocLong(capacity);
-                        return new Buffer(buffer);
+                        return new HandleBuffer(buffer);
                     }
                     /**
                      * Adopts an existing byte buffer a new buffer and an address as a handle buffer. NOTE if it must or must not be manually freed should follow the underlying buffer
@@ -68,9 +68,9 @@ public class HandleGeneratorTest {
                      * @param buffer The buffer to adopt.
                      * @param address The memory address of the buffer
                      */
-                    public static Buffer create(ByteBuffer buffer, long address) {
+                    public static HandleBuffer create(ByteBuffer buffer, long address) {
                         LongBufferView bufferView = new LongBufferView(buffer, buffer.asLongBuffer(), address);
-                        return new Buffer(bufferView);
+                        return new HandleBuffer(bufferView);
                     }
                 }
                 """;

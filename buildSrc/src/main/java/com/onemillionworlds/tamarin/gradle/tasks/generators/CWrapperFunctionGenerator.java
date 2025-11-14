@@ -38,7 +38,7 @@ public class CWrapperFunctionGenerator {
                     functionString.append("J"); // long
                 } else if (param.isEnumType()) {
                     functionString.append("I"); // int
-                } else if (param.isTypeDefLong() || param.isFlag()) {
+                } else if (param.isTypeDefLong() || param.isFlag() || param.isAtom()) {
                     functionString.append("J"); // long
                 } else if (param.getType().equals("float")) {
                     functionString.append("F"); // float
@@ -66,7 +66,7 @@ public class CWrapperFunctionGenerator {
                     functionString.append(", jlong " + paramName);
                 } else if (param.isEnumType()) {
                     functionString.append(", jint " + paramName);
-                } else if (param.isTypeDefLong() || param.isFlag()) {
+                } else if (param.isTypeDefLong() || param.isFlag() || param.isAtom()) {
                     functionString.append(", jlong " + paramName);
                 } else if (param.getType().equals("float")) {
                     functionString.append(", jfloat " + paramName);
@@ -98,7 +98,7 @@ public class CWrapperFunctionGenerator {
                 } else if (param.isEnumType()) {
                     functionString.append("    " + paramType + " " + paramName + "Value = (" + 
                                          paramType + ")" + paramName + ";\n");
-                } else if (param.isTypeDefLong() || param.isFlag()) {
+                } else if (param.isTypeDefLong() || param.isFlag() || param.isAtom()) {
                     functionString.append("    " + paramType + " " + paramName + "Value = (" + 
                                          paramType + ")" + paramName + ";\n");
                 } else if (param.getType().equals("float")) {
@@ -123,7 +123,7 @@ public class CWrapperFunctionGenerator {
                     // For structs passed by value, we need to dereference the pointer
                     functionString.append("*" + paramName + "Ptr");
                 } else if (param.getType().equals("uint32_t") || param.isTypeDefInt() || 
-                          param.isEnumType() || param.isTypeDefLong() || param.isFlag() || 
+                          param.isEnumType() || param.isTypeDefLong() || param.isFlag() || param.isAtom() ||
                           param.getType().equals("float")) {
                     functionString.append(paramName + "Value");
                 } else if (param.isHandle()) {
