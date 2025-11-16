@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 public class ThickC {
 
     static {
-        System.loadLibrary("openxrjni"); // or whatever your .so is named
+        System.loadLibrary("openxrjni");
     }
 
     /**

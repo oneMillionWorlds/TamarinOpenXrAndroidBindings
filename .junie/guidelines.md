@@ -18,6 +18,8 @@
 
 8. **Security**: Be mindful of security best practices when modifying code.
 
+9. **Method overloading** Update, don't overload. If you're asked to make a change to a method update that method. Don't overload it and create a new method with the additional parameters unless explicitly asked to.
+
 ## Project-Specific Rules
 
 1. **Do not try to make unrelated fixes to the project.** If you build the project and it won't compile but those issues appear unrelated to your change or preexisting do not attempt to fix them. Note them to the user and finish the task.
