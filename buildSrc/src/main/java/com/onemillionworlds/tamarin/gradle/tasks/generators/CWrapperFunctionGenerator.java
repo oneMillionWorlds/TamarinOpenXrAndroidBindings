@@ -18,6 +18,15 @@ public class CWrapperFunctionGenerator {
      * @return The C wrapper function code
      */
     public static String generateCWrapperFunction(FunctionDefinition function) {
+            return generateCWrapperFunction(function, false);
+        }
+
+        /**
+         * Generates a C wrapper function for a given OpenXR function.
+         * When useFunctionPointer is true, generates code that calls through an extension function pointer
+         * (e.g., <name>Func) and includes a null-check; otherwise calls the function directly.
+         */
+        public static String generateCWrapperFunction(FunctionDefinition function, boolean useFunctionPointer) {
         try {
             StringBuilder functionString = new StringBuilder();
             String functionName = function.getName();
@@ -109,8 +118,18 @@ public class CWrapperFunctionGenerator {
                 }
             }
             
-            functionString.append("\n    // Call the OpenXR function\n");
-            functionString.append("    XrResult result = " + functionName + "(");
+            if (useFunctionPointer) {
+                functionString.append("\n    // Check if the function pointer is available\n");
+                functionString.append("    if (" + functionName + "Func == NULL) {\n");
+                functionString.append("        LOGE(\"Extension function " + functionName + " not available\");\n");
+                functionString.append("        return XR_ERROR_FUNCTION_UNSUPPORTED;\n");
+                functionString.append("    }\n\n");
+                functionString.append("    // Call the OpenXR function through the function pointer\n");
+                functionString.append("    XrResult result = " + functionName + "Func(");
+            } else {
+                functionString.append("\n    // Call the OpenXR function\n");
+                functionString.append("    XrResult result = " + functionName + "(");
+            }
             
             // Generate arguments for OpenXR function call
             for (int i = 0; i < function.getParameters().size(); i++) {

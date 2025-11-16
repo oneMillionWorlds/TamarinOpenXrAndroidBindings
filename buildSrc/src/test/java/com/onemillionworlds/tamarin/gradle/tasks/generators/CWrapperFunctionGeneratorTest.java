@@ -244,4 +244,37 @@ class CWrapperFunctionGeneratorTest {
         String actualValue = CWrapperFunctionGenerator.generateCWrapperFunction(functionDefinition);
         assertEquals(expectedValue.trim(), actualValue.trim());
     }
+    
+    @Test
+    void generateCWrapperFunction_xrGetOpenGLESGraphicsRequirementsKHR() {
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrGetOpenGLESGraphicsRequirementsKHR", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false, false, false, true, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemId", "systemId", false, false, false, true, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrGraphicsRequirementsOpenGLESKHR", "graphicsRequirements", true, false, false, false, false, false, false, false, false, false));
+
+        String expectedValue = """
+                /*
+                 * Class:     com_onemillionworlds_tamarin_openxrbindings_XR10
+                 * Method:    nxrGetOpenGLESGraphicsRequirementsKHR
+                 * Signature: (JJJ)I
+                 */
+                JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_XR10_nxrGetOpenGLESGraphicsRequirementsKHR
+                  (JNIEnv *env, jclass cls, jlong instance, jlong systemId, jlong graphicsRequirements) {
+
+                    // Convert JNI parameters to OpenXR parameters
+                    XrInstance instanceHandle = (XrInstance)(intptr_t)instance;
+                    XrSystemId systemIdValue = (XrSystemId)systemId;
+                    XrGraphicsRequirementsOpenGLESKHR *graphicsRequirementsPtr = (XrGraphicsRequirementsOpenGLESKHR *)(intptr_t)graphicsRequirements;
+
+                    // Call the OpenXR function
+                    XrResult result = xrGetOpenGLESGraphicsRequirementsKHR(instanceHandle, systemIdValue, graphicsRequirementsPtr);
+
+                    // Return the result as a jint
+                    return (jint)result;
+                }
+                """;
+
+        String actualValue = CWrapperFunctionGenerator.generateCWrapperFunction(functionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
 }
