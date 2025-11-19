@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <android/log.h>
 
 #define TAG "Library"
@@ -69,7 +70,7 @@ static XrBool32 XRAPI_PTR debugMessengerCallback(
 
 
 JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_thickc_ThickC_initializeLoader
-  (JNIEnv* env, jclass clazz, jobject activity) {
+  (JNIEnv* env, jclass clazz, jobject activity, jlong outbufferAddress) {
 
     // Step 1: Get JavaVM* from JNIEnv
     JavaVM* javaVm = NULL;
@@ -97,6 +98,14 @@ JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_thickc_T
     loaderInitializeInfoAndroid.next = NULL;
     loaderInitializeInfoAndroid.applicationVM = javaVm;
     loaderInitializeInfoAndroid.applicationContext = globalActivity;
+
+    // Write back javaVm and activity pointers into the provided out buffer (as longs)
+    if (outbufferAddress != 0) {
+        jlong* out = (jlong*)(uintptr_t)outbufferAddress;
+        out[0] = (jlong)(uintptr_t)javaVm;
+        out[1] = (jlong)(uintptr_t)globalActivity;
+    }
+
     XrResult resolveResult = xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR*)&loaderInitializeInfoAndroid);
 
 
