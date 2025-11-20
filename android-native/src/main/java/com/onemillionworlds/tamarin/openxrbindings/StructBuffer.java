@@ -137,7 +137,6 @@ public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T
     }
 
 
-
     /**
      * Returns a factory for creating elements of this buffer.
      */
@@ -152,4 +151,48 @@ public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T
      * Creates a new buffer with the specified parameters.
      */
     protected abstract B create(long address, ByteBuffer container, int mark, int position, int limit, int capacity);
+
+    @Override
+    public String toString() {
+        String structName;
+        T factory = null;
+        try {
+            factory = getElementFactory();
+        } catch (Throwable t) {
+            // ignore, fallback if factory retrieval fails
+        }
+        if (factory != null) {
+            String simple = factory.getClass().getSimpleName();
+            structName = (simple != null && !simple.isEmpty()) ? simple : factory.getClass().getName();
+        } else {
+            structName = "Struct";
+        }
+        String bufferName = structName + ".Buffer";
+
+        StringBuilder sb = new StringBuilder(bufferName).append('{');
+        sb.append("address=").append("0x").append(Long.toHexString(address));
+        sb.append(", mark=").append(mark);
+        sb.append(", position=").append(position);
+        sb.append(", limit=").append(limit);
+        sb.append(", capacity=").append(capacity);
+        try {
+            sb.append(", sizeof=").append(sizeof());
+        } catch (Throwable t) {
+            sb.append("<error:").append(t.getClass().getSimpleName()).append(">");
+        }
+        sb.append(", elements=[");
+        int count = limit;
+        for (int i = 0; i < count; i++) {
+            if (i > 0) sb.append(", ");
+            try {
+                T elem = get(i);
+                sb.append(elem);
+            } catch (Throwable t) {
+                sb.append("<error:").append(t.getClass().getSimpleName()).append(">");
+            }
+        }
+        sb.append(']');
+        sb.append('}');
+        return sb.toString();
+    }
 }
