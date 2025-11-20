@@ -153,6 +153,24 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("XrActionsSyncInfo{");
+        sb.append("type=");
+        sb.append(String.valueOf(type()));
+        sb.append(", ");
+        sb.append("next=");
+        sb.append(String.valueOf(next()));
+        sb.append(", ");
+        sb.append("countActiveActionSets=");
+        sb.append(String.valueOf(countActiveActionSets()));
+        sb.append(", ");
+        sb.append("activeActionSets=");
+        sb.append(String.valueOf(activeActionSets()));
+        sb.append('}');
+        return sb.toString();
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrActionsSyncInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */

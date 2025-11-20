@@ -153,6 +153,24 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("XrSessionActionSetsAttachInfo{");
+        sb.append("type=");
+        sb.append(String.valueOf(type()));
+        sb.append(", ");
+        sb.append("next=");
+        sb.append(String.valueOf(next()));
+        sb.append(", ");
+        sb.append("countActionSets=");
+        sb.append(String.valueOf(countActionSets()));
+        sb.append(", ");
+        sb.append("actionSets=");
+        sb.append(String.valueOf(actionSets()));
+        sb.append('}');
+        return sb.toString();
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrSessionActionSetsAttachInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */

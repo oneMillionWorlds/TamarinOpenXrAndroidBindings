@@ -120,6 +120,26 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("XrHandCapsuleFB{");
+        sb.append("points=");
+        sb.append('[');
+        for(int iArr=0;iArr<XR_HAND_TRACKING_CAPSULE_POINT_COUNT_FB;iArr++){
+            if(iArr>0) sb.append(", ");
+            sb.append(points(iArr));
+        }
+        sb.append(']');
+        sb.append(", ");
+        sb.append("radius=");
+        sb.append(String.valueOf(radius()));
+        sb.append(", ");
+        sb.append("joint=");
+        sb.append(String.valueOf(joint()));
+        sb.append('}');
+        return sb.toString();
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrHandCapsuleFB} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */

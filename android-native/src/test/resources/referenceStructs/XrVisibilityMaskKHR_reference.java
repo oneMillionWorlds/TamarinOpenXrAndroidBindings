@@ -213,6 +213,36 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("XrVisibilityMaskKHR{");
+        sb.append("type=");
+        sb.append(String.valueOf(type()));
+        sb.append(", ");
+        sb.append("next=");
+        sb.append(String.valueOf(next()));
+        sb.append(", ");
+        sb.append("vertexCapacityInput=");
+        sb.append(String.valueOf(vertexCapacityInput()));
+        sb.append(", ");
+        sb.append("vertexCountOutput=");
+        sb.append(String.valueOf(vertexCountOutput()));
+        sb.append(", ");
+        sb.append("vertices=");
+        sb.append(String.valueOf(vertices()));
+        sb.append(", ");
+        sb.append("indexCapacityInput=");
+        sb.append(String.valueOf(indexCapacityInput()));
+        sb.append(", ");
+        sb.append("indexCountOutput=");
+        sb.append(String.valueOf(indexCountOutput()));
+        sb.append(", ");
+        sb.append("indices=");
+        sb.append(String.valueOf(indices()));
+        sb.append('}');
+        return sb.toString();
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrVisibilityMaskKHR} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */

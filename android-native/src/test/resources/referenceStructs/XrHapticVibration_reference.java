@@ -179,6 +179,27 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("XrHapticVibration{");
+        sb.append("type=");
+        sb.append(String.valueOf(type()));
+        sb.append(", ");
+        sb.append("next=");
+        sb.append(String.valueOf(next()));
+        sb.append(", ");
+        sb.append("duration=");
+        sb.append(String.valueOf(duration()));
+        sb.append(", ");
+        sb.append("frequency=");
+        sb.append(String.valueOf(frequency()));
+        sb.append(", ");
+        sb.append("amplitude=");
+        sb.append(String.valueOf(amplitude()));
+        sb.append('}');
+        return sb.toString();
+    }
+
     /** Get a view of this struct as its parent (for use in methods that take the parent)*/
     public XrHapticBaseHeader asParent() {
         return new XrHapticBaseHeader(address(), container());

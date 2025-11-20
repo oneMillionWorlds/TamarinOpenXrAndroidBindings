@@ -176,6 +176,27 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("XrActionSetCreateInfo{");
+        sb.append("type=");
+        sb.append(String.valueOf(type()));
+        sb.append(", ");
+        sb.append("next=");
+        sb.append(String.valueOf(next()));
+        sb.append(", ");
+        sb.append("actionSetName=");
+        sb.append(actionSetNameString());
+        sb.append(", ");
+        sb.append("localizedActionSetName=");
+        sb.append(localizedActionSetNameString());
+        sb.append(", ");
+        sb.append("priority=");
+        sb.append(String.valueOf(priority()));
+        sb.append('}');
+        return sb.toString();
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrActionSetCreateInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */

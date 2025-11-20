@@ -256,6 +256,45 @@ public class StructGenerator extends FileGenerator {
         writer.append("        return this;\n");
         writer.append("    }\n\n");
 
+        // Generate toString method
+        writer.append("    @Override\n");
+        writer.append("    public String toString() {\n");
+        writer.append("        StringBuilder sb = new StringBuilder(\"").append(struct.getName()).append("{\");\n");
+        // Build field appends
+        for (int i = 0; i < struct.getFields().size(); i++) {
+            StructField field = struct.getFields().get(i);
+            String fieldName = field.getName();
+            String fieldNameSanitised = sanitiseFieldName(fieldName);
+            String javaType = field.getJavaType();
+
+            writer.append("        sb.append(\"").append(fieldName).append("=\");\n");
+            if (field.isStruct()) {
+                if (!field.isPointer() && field.getArraySizeConstant() != null) {
+                    // Fixed array of structs
+                    writer.append("        sb.append('[');\n");
+                    writer.append("        for(int iArr=0;iArr<").append(field.getArraySizeConstant()).append(";iArr++){\n");
+                    writer.append("            if(iArr>0) sb.append(\", \");\n");
+                    writer.append("            sb.append(").append(fieldNameSanitised).append("(iArr));\n");
+                    writer.append("        }\n");
+                    writer.append("        sb.append(']');\n");
+                } else {
+                    // Single struct or pointer forms: rely on getter's toString/null handling
+                    writer.append("        sb.append(String.valueOf(").append(fieldNameSanitised).append("()));\n");
+                }
+            } else if ("ByteBufferView".equals(javaType)) {
+                // Use the String view for C char arrays
+                writer.append("        sb.append(").append(fieldNameSanitised).append("String());\n");
+            } else {
+                writer.append("        sb.append(String.valueOf(").append(fieldNameSanitised).append("()));\n");
+            }
+            if (i < struct.getFields().size() - 1) {
+                writer.append("        sb.append(\", \");\n");
+            }
+        }
+        writer.append("        sb.append('}');\n");
+        writer.append("        return sb.toString();\n");
+        writer.append("    }\n\n");
+
        struct.getBaseHeader().ifPresent(parent -> {
            writer.append("    /** Get a view of this struct as its parent (for use in methods that take the parent)*/\n");
            writer.append("    public " + parent + " asParent() {\n");

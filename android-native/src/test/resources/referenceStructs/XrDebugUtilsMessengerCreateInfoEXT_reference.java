@@ -183,6 +183,30 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("XrDebugUtilsMessengerCreateInfoEXT{");
+        sb.append("type=");
+        sb.append(String.valueOf(type()));
+        sb.append(", ");
+        sb.append("next=");
+        sb.append(String.valueOf(next()));
+        sb.append(", ");
+        sb.append("messageSeverities=");
+        sb.append(String.valueOf(messageSeverities()));
+        sb.append(", ");
+        sb.append("messageTypes=");
+        sb.append(String.valueOf(messageTypes()));
+        sb.append(", ");
+        sb.append("userCallback=");
+        sb.append(String.valueOf(userCallback()));
+        sb.append(", ");
+        sb.append("userData=");
+        sb.append(String.valueOf(userData()));
+        sb.append('}');
+        return sb.toString();
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrDebugUtilsMessengerCreateInfoEXT} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */

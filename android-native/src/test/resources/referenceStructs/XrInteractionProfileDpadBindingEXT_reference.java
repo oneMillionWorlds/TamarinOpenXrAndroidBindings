@@ -269,6 +269,45 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("XrInteractionProfileDpadBindingEXT{");
+        sb.append("type=");
+        sb.append(String.valueOf(type()));
+        sb.append(", ");
+        sb.append("next=");
+        sb.append(String.valueOf(next()));
+        sb.append(", ");
+        sb.append("binding=");
+        sb.append(String.valueOf(binding()));
+        sb.append(", ");
+        sb.append("actionSet=");
+        sb.append(String.valueOf(actionSet()));
+        sb.append(", ");
+        sb.append("forceThreshold=");
+        sb.append(String.valueOf(forceThreshold()));
+        sb.append(", ");
+        sb.append("forceThresholdReleased=");
+        sb.append(String.valueOf(forceThresholdReleased()));
+        sb.append(", ");
+        sb.append("centerRegion=");
+        sb.append(String.valueOf(centerRegion()));
+        sb.append(", ");
+        sb.append("wedgeAngle=");
+        sb.append(String.valueOf(wedgeAngle()));
+        sb.append(", ");
+        sb.append("isSticky=");
+        sb.append(String.valueOf(isSticky()));
+        sb.append(", ");
+        sb.append("onHaptic=");
+        sb.append(String.valueOf(onHaptic()));
+        sb.append(", ");
+        sb.append("offHaptic=");
+        sb.append(String.valueOf(offHaptic()));
+        sb.append('}');
+        return sb.toString();
+    }
+
     /** Get a view of this struct as its parent (for use in methods that take the parent)*/
     public XrBindingModificationBaseHeaderKHR asParent() {
         return new XrBindingModificationBaseHeaderKHR(address(), container());

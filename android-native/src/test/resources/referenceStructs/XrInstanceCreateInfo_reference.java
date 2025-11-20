@@ -213,6 +213,36 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("XrInstanceCreateInfo{");
+        sb.append("type=");
+        sb.append(String.valueOf(type()));
+        sb.append(", ");
+        sb.append("next=");
+        sb.append(String.valueOf(next()));
+        sb.append(", ");
+        sb.append("createFlags=");
+        sb.append(String.valueOf(createFlags()));
+        sb.append(", ");
+        sb.append("applicationInfo=");
+        sb.append(String.valueOf(applicationInfo()));
+        sb.append(", ");
+        sb.append("enabledApiLayerCount=");
+        sb.append(String.valueOf(enabledApiLayerCount()));
+        sb.append(", ");
+        sb.append("enabledApiLayerNames=");
+        sb.append(String.valueOf(enabledApiLayerNames()));
+        sb.append(", ");
+        sb.append("enabledExtensionCount=");
+        sb.append(String.valueOf(enabledExtensionCount()));
+        sb.append(", ");
+        sb.append("enabledExtensionNames=");
+        sb.append(String.valueOf(enabledExtensionNames()));
+        sb.append('}');
+        return sb.toString();
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrInstanceCreateInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */

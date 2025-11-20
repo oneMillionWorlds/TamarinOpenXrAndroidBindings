@@ -164,6 +164,24 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
         return this;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("XrSpaceUuidFilterInfoFB{");
+        sb.append("type=");
+        sb.append(String.valueOf(type()));
+        sb.append(", ");
+        sb.append("next=");
+        sb.append(String.valueOf(next()));
+        sb.append(", ");
+        sb.append("uuidCount=");
+        sb.append(String.valueOf(uuidCount()));
+        sb.append(", ");
+        sb.append("uuids=");
+        sb.append(String.valueOf(uuids()));
+        sb.append('}');
+        return sb.toString();
+    }
+
     /** Get a view of this struct as its parent (for use in methods that take the parent)*/
     public XrSpaceFilterInfoBaseHeaderFB asParent() {
         return new XrSpaceFilterInfoBaseHeaderFB(address(), container());
