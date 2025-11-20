@@ -489,69 +489,6 @@ public class StructGenerator extends FileGenerator {
         writer.append("            return ELEMENT_FACTORY;\n");
         writer.append("        }\n\n");
 
-        // Generate getters for Buffer
-        for (StructField field : struct.getFields()) {
-            String fieldType = field.getType();
-            String fieldName = field.getName();
-            String fieldNameSanitised = sanitiseFieldName(fieldName);
-            String javaType = field.getJavaType();
-
-            writer.append("        /** Returns the value of the {@code " + fieldName + "} field. */\n");
-            if (field.isEnumType()) {
-                writer.append("        public " + field.getJavaType() + " " + fieldNameSanitised + "() { return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(address())); }\n");
-            } else if (field.isHandle() && !field.isPointer()) {
-                writer.append("        public " + javaType + " " + fieldNameSanitised + "() { return new " + javaType + "(" + struct.getName() + ".n" + fieldName + "(address())); }\n");
-            } else {
-                writer.append("        public " + javaType + " " + fieldNameSanitised + "() { return " + struct.getName() + ".n" + fieldNameSanitised + "(address()); }\n");
-            }
-
-            if(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer()) {
-                // bonus getter by index if an array of structs
-                writer.append("        /** Returns the value of the index-th item in the {@code " + fieldName + "} field. Note to mutate the value get by index then mutate in place*/\n");
-                writer.append("        public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(address(), index); }\n");
-            }
-
-            if(field.getJavaType().equals("ByteBufferView")) {
-                // add a bonus string method
-                writer.append("        public String " + fieldNameSanitised + "String() { return " + struct.getName() + ".n" + fieldNameSanitised + "String(address()); }\n");
-            }
-
-        }
-
-        writer.append("\n");
-
-        // Generate setters for Buffer
-        for (StructField field : struct.getFields()) {
-            String fieldType = field.getJavaType();
-            String fieldName = field.getName();
-
-            if(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer()) {
-                // no setter for arrays of structs
-                continue;
-            }
-
-            String fieldNameSanitised = sanitiseFieldName(fieldName);
-
-            writer.append("        /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
-            writer.append("        public Buffer " + fieldNameSanitised + "(" + fieldType + " value) { \n");
-            if(field.isEnumType()){
-                writer.append("            " + struct.getName() + ".n" + fieldNameSanitised + "(address(), value.getValue());\n");
-            } else if(field.isHandle() && !field.isPointer()){
-                writer.append("            " + struct.getName() + ".n" + fieldNameSanitised + "(address(), value.getRawHandle());\n");
-            } else{
-                writer.append("            " + struct.getName() + ".n" + fieldNameSanitised + "(address(), value);\n");
-            }
-            writer.append("            return this;\n");
-            writer.append("        }\n");
-        }
-
-        // Add type$Default method for Buffer if the struct has a type field
-        if (hasTypeField && struct.canBeItsOwnDefault()) {
-            String typeConstant = StructParser.createXrStructureTypeEnumValueForStruct(struct.getName());
-            writer.append("        /** Sets the specified value to the {@code type} field. */\n");
-            writer.append("        public Buffer type$Default() { return type(XrStructureType." + typeConstant + "); }\n");
-        }
-
         writer.append("    }\n");
         writer.append("}\n");
 

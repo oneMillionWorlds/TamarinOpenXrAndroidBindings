@@ -407,43 +407,5 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
             return ELEMENT_FACTORY;
         }
 
-        /** Returns the value of the {@code type} field. */
-        public XrStructureType type() { return XrStructureType.fromValue(XrHapticVibration.ntype(address())); }
-        /** Returns the value of the {@code next} field. */
-        public long next() { return XrHapticVibration.nnext(address()); }
-        /** Returns the value of the {@code duration} field. */
-        public long duration() { return XrHapticVibration.nduration(address()); }
-        /** Returns the value of the {@code frequency} field. */
-        public float frequency() { return XrHapticVibration.nfrequency(address()); }
-        /** Returns the value of the {@code amplitude} field. */
-        public float amplitude() { return XrHapticVibration.namplitude(address()); }
-
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type(XrStructureType value) { 
-            XrHapticVibration.ntype(address(), value.getValue());
-            return this;
-        }
-        /** Sets the specified value to the {@code next} field. */
-        public Buffer next(long value) { 
-            XrHapticVibration.nnext(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code duration} field. */
-        public Buffer duration(long value) { 
-            XrHapticVibration.nduration(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code frequency} field. */
-        public Buffer frequency(float value) { 
-            XrHapticVibration.nfrequency(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code amplitude} field. */
-        public Buffer amplitude(float value) { 
-            XrHapticVibration.namplitude(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type$Default() { return type(XrStructureType.XR_TYPE_HAPTIC_VIBRATION); }
     }
 }

@@ -339,24 +339,5 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
             return ELEMENT_FACTORY;
         }
 
-        /** Returns the value of the {@code points} field. */
-        public XrVector3f.Buffer points() { return XrHandCapsuleFB.npoints(address()); }
-        /** Returns the value of the index-th item in the {@code points} field. Note to mutate the value get by index then mutate in place*/
-        public XrVector3f points(int index) { return XrHandCapsuleFB.npoints(address(), index); }
-        /** Returns the value of the {@code radius} field. */
-        public float radius() { return XrHandCapsuleFB.nradius(address()); }
-        /** Returns the value of the {@code joint} field. */
-        public XrHandJointEXT joint() { return XrHandJointEXT.fromValue(XrHandCapsuleFB.njoint(address())); }
-
-        /** Sets the specified value to the {@code radius} field. */
-        public Buffer radius(float value) { 
-            XrHandCapsuleFB.nradius(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code joint} field. */
-        public Buffer joint(XrHandJointEXT value) { 
-            XrHandCapsuleFB.njoint(address(), value.getValue());
-            return this;
-        }
     }
 }

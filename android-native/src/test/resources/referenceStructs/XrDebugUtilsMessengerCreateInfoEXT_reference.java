@@ -412,50 +412,5 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
             return ELEMENT_FACTORY;
         }
 
-        /** Returns the value of the {@code type} field. */
-        public XrStructureType type() { return XrStructureType.fromValue(XrDebugUtilsMessengerCreateInfoEXT.ntype(address())); }
-        /** Returns the value of the {@code next} field. */
-        public long next() { return XrDebugUtilsMessengerCreateInfoEXT.nnext(address()); }
-        /** Returns the value of the {@code messageSeverities} field. */
-        public long messageSeverities() { return XrDebugUtilsMessengerCreateInfoEXT.nmessageSeverities(address()); }
-        /** Returns the value of the {@code messageTypes} field. */
-        public long messageTypes() { return XrDebugUtilsMessengerCreateInfoEXT.nmessageTypes(address()); }
-        /** Returns the value of the {@code userCallback} field. */
-        public long userCallback() { return XrDebugUtilsMessengerCreateInfoEXT.nuserCallback(address()); }
-        /** Returns the value of the {@code userData} field. */
-        public long userData() { return XrDebugUtilsMessengerCreateInfoEXT.nuserData(address()); }
-
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type(XrStructureType value) { 
-            XrDebugUtilsMessengerCreateInfoEXT.ntype(address(), value.getValue());
-            return this;
-        }
-        /** Sets the specified value to the {@code next} field. */
-        public Buffer next(long value) { 
-            XrDebugUtilsMessengerCreateInfoEXT.nnext(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code messageSeverities} field. */
-        public Buffer messageSeverities(long value) { 
-            XrDebugUtilsMessengerCreateInfoEXT.nmessageSeverities(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code messageTypes} field. */
-        public Buffer messageTypes(long value) { 
-            XrDebugUtilsMessengerCreateInfoEXT.nmessageTypes(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code userCallback} field. */
-        public Buffer userCallback(long value) { 
-            XrDebugUtilsMessengerCreateInfoEXT.nuserCallback(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code userData} field. */
-        public Buffer userData(long value) { 
-            XrDebugUtilsMessengerCreateInfoEXT.nuserData(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type$Default() { return type(XrStructureType.XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT); }
     }
 }

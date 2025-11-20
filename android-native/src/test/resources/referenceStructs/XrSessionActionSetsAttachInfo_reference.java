@@ -378,36 +378,5 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
             return ELEMENT_FACTORY;
         }
 
-        /** Returns the value of the {@code type} field. */
-        public XrStructureType type() { return XrStructureType.fromValue(XrSessionActionSetsAttachInfo.ntype(address())); }
-        /** Returns the value of the {@code next} field. */
-        public long next() { return XrSessionActionSetsAttachInfo.nnext(address()); }
-        /** Returns the value of the {@code countActionSets} field. */
-        public int countActionSets() { return XrSessionActionSetsAttachInfo.ncountActionSets(address()); }
-        /** Returns the value of the {@code actionSets} field. */
-        public XrActionSet.HandleBuffer actionSets() { return XrSessionActionSetsAttachInfo.nactionSets(address()); }
-
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type(XrStructureType value) { 
-            XrSessionActionSetsAttachInfo.ntype(address(), value.getValue());
-            return this;
-        }
-        /** Sets the specified value to the {@code next} field. */
-        public Buffer next(long value) { 
-            XrSessionActionSetsAttachInfo.nnext(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code countActionSets} field. */
-        public Buffer countActionSets(int value) { 
-            XrSessionActionSetsAttachInfo.ncountActionSets(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code actionSets} field. */
-        public Buffer actionSets(XrActionSet.HandleBuffer value) { 
-            XrSessionActionSetsAttachInfo.nactionSets(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type$Default() { return type(XrStructureType.XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO); }
     }
 }

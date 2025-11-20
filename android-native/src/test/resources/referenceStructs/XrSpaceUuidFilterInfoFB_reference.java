@@ -395,36 +395,5 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
             return ELEMENT_FACTORY;
         }
 
-        /** Returns the value of the {@code type} field. */
-        public XrStructureType type() { return XrStructureType.fromValue(XrSpaceUuidFilterInfoFB.ntype(address())); }
-        /** Returns the value of the {@code next} field. */
-        public long next() { return XrSpaceUuidFilterInfoFB.nnext(address()); }
-        /** Returns the value of the {@code uuidCount} field. */
-        public int uuidCount() { return XrSpaceUuidFilterInfoFB.nuuidCount(address()); }
-        /** Returns the value of the {@code uuids} field. */
-        public XrUuidEXT.Buffer uuids() { return XrSpaceUuidFilterInfoFB.nuuids(address()); }
-
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type(XrStructureType value) { 
-            XrSpaceUuidFilterInfoFB.ntype(address(), value.getValue());
-            return this;
-        }
-        /** Sets the specified value to the {@code next} field. */
-        public Buffer next(long value) { 
-            XrSpaceUuidFilterInfoFB.nnext(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code uuidCount} field. */
-        public Buffer uuidCount(int value) { 
-            XrSpaceUuidFilterInfoFB.nuuidCount(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code uuids} field. */
-        public Buffer uuids(XrUuidEXT.Buffer value) { 
-            XrSpaceUuidFilterInfoFB.nuuids(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type$Default() { return type(XrStructureType.XR_TYPE_SPACE_UUID_FILTER_INFO_FB); }
     }
 }

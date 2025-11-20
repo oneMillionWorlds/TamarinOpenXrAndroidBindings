@@ -379,36 +379,5 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
             return ELEMENT_FACTORY;
         }
 
-        /** Returns the value of the {@code type} field. */
-        public XrStructureType type() { return XrStructureType.fromValue(XrActionsSyncInfo.ntype(address())); }
-        /** Returns the value of the {@code next} field. */
-        public long next() { return XrActionsSyncInfo.nnext(address()); }
-        /** Returns the value of the {@code countActiveActionSets} field. */
-        public int countActiveActionSets() { return XrActionsSyncInfo.ncountActiveActionSets(address()); }
-        /** Returns the value of the {@code activeActionSets} field. */
-        public XrActiveActionSet.Buffer activeActionSets() { return XrActionsSyncInfo.nactiveActionSets(address()); }
-
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type(XrStructureType value) { 
-            XrActionsSyncInfo.ntype(address(), value.getValue());
-            return this;
-        }
-        /** Sets the specified value to the {@code next} field. */
-        public Buffer next(long value) { 
-            XrActionsSyncInfo.nnext(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code countActiveActionSets} field. */
-        public Buffer countActiveActionSets(int value) { 
-            XrActionsSyncInfo.ncountActiveActionSets(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code activeActionSets} field. */
-        public Buffer activeActionSets(XrActiveActionSet.Buffer value) { 
-            XrActionsSyncInfo.nactiveActionSets(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type$Default() { return type(XrStructureType.XR_TYPE_ACTIONS_SYNC_INFO); }
     }
 }

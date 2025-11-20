@@ -342,20 +342,5 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
             return ELEMENT_FACTORY;
         }
 
-        /** Returns the value of the {@code type} field. */
-        public XrStructureType type() { return XrStructureType.fromValue(XrSwapchainImageBaseHeader.ntype(address())); }
-        /** Returns the value of the {@code next} field. */
-        public long next() { return XrSwapchainImageBaseHeader.nnext(address()); }
-
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type(XrStructureType value) { 
-            XrSwapchainImageBaseHeader.ntype(address(), value.getValue());
-            return this;
-        }
-        /** Sets the specified value to the {@code next} field. */
-        public Buffer next(long value) { 
-            XrSwapchainImageBaseHeader.nnext(address(), value);
-            return this;
-        }
     }
 }

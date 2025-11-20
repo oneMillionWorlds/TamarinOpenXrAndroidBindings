@@ -419,45 +419,5 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
             return ELEMENT_FACTORY;
         }
 
-        /** Returns the value of the {@code type} field. */
-        public XrStructureType type() { return XrStructureType.fromValue(XrActionSetCreateInfo.ntype(address())); }
-        /** Returns the value of the {@code next} field. */
-        public long next() { return XrActionSetCreateInfo.nnext(address()); }
-        /** Returns the value of the {@code actionSetName} field. */
-        public ByteBufferView actionSetName() { return XrActionSetCreateInfo.nactionSetName(address()); }
-        public String actionSetNameString() { return XrActionSetCreateInfo.nactionSetNameString(address()); }
-        /** Returns the value of the {@code localizedActionSetName} field. */
-        public ByteBufferView localizedActionSetName() { return XrActionSetCreateInfo.nlocalizedActionSetName(address()); }
-        public String localizedActionSetNameString() { return XrActionSetCreateInfo.nlocalizedActionSetNameString(address()); }
-        /** Returns the value of the {@code priority} field. */
-        public int priority() { return XrActionSetCreateInfo.npriority(address()); }
-
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type(XrStructureType value) { 
-            XrActionSetCreateInfo.ntype(address(), value.getValue());
-            return this;
-        }
-        /** Sets the specified value to the {@code next} field. */
-        public Buffer next(long value) { 
-            XrActionSetCreateInfo.nnext(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code actionSetName} field. */
-        public Buffer actionSetName(ByteBufferView value) { 
-            XrActionSetCreateInfo.nactionSetName(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code localizedActionSetName} field. */
-        public Buffer localizedActionSetName(ByteBufferView value) { 
-            XrActionSetCreateInfo.nlocalizedActionSetName(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code priority} field. */
-        public Buffer priority(int value) { 
-            XrActionSetCreateInfo.npriority(address(), value);
-            return this;
-        }
-        /** Sets the specified value to the {@code type} field. */
-        public Buffer type$Default() { return type(XrStructureType.XR_TYPE_ACTION_SET_CREATE_INFO); }
     }
 }
