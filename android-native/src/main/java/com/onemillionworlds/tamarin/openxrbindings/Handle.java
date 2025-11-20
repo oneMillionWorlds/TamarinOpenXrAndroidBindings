@@ -34,4 +34,11 @@ public class Handle {
     public int hashCode() {
         return Objects.hashCode(rawHandle);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{rawHandle=" + rawHandle + "}";
+    }
+
+
 }
