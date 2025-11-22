@@ -117,21 +117,25 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     /** Sets the specified value to the {@code type} field. */
     public XrSpaceUuidFilterInfoFB type(XrStructureType value) { 
         XrSpaceUuidFilterInfoFB.ntype(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrSpaceUuidFilterInfoFB next(long value) { 
         XrSpaceUuidFilterInfoFB.nnext(address(), value);
+        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code uuidCount} field. */
     public XrSpaceUuidFilterInfoFB uuidCount(int value) { 
         XrSpaceUuidFilterInfoFB.nuuidCount(address(), value);
+        this.checkSetCalled &= ~NOT_SET_UUIDCOUNT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code uuids} field. */
     public XrSpaceUuidFilterInfoFB uuids(XrUuidEXT.Buffer value) { 
         XrSpaceUuidFilterInfoFB.nuuids(address(), value);
+        this.checkSetCalled &= ~NOT_SET_UUIDS_MASK;
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -182,6 +186,44 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_TYPE_MASK = 1 << 0;
+    private static final int NOT_SET_NEXT_MASK = 1 << 1;
+    private static final int NOT_SET_UUIDCOUNT_MASK = 1 << 2;
+    private static final int NOT_SET_UUIDS_MASK = 1 << 3;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_UUIDCOUNT_MASK | NOT_SET_UUIDS_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("type");
+        }
+        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("next");
+        }
+        if ((checkSetCalled & NOT_SET_UUIDCOUNT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("uuidCount");
+        }
+        if ((checkSetCalled & NOT_SET_UUIDS_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("uuids");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrSpaceUuidFilterInfoFB has unset fields: " + missing.toString());
+        }
+    }
+
     /** Get a view of this struct as its parent (for use in methods that take the parent)*/
     public XrSpaceFilterInfoBaseHeaderFB asParent() {
         return new XrSpaceFilterInfoBaseHeaderFB(address(), container());
@@ -191,7 +233,9 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
 
     /** Returns a new {@code XrSpaceUuidFilterInfoFB} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrSpaceUuidFilterInfoFB malloc() {
-        return new XrSpaceUuidFilterInfoFB(nmemAllocChecked(SIZEOF), null);
+        XrSpaceUuidFilterInfoFB instance = new XrSpaceUuidFilterInfoFB(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrSpaceUuidFilterInfoFB} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -264,7 +308,9 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
      * @param stack the stack from which to allocate
      */
     public static XrSpaceUuidFilterInfoFB malloc(MemoryStack stack) {
-        return new XrSpaceUuidFilterInfoFB(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrSpaceUuidFilterInfoFB instance = new XrSpaceUuidFilterInfoFB(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**

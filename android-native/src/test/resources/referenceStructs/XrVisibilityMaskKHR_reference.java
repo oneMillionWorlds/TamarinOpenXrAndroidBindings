@@ -138,41 +138,49 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     /** Sets the specified value to the {@code type} field. */
     public XrVisibilityMaskKHR type(XrStructureType value) { 
         XrVisibilityMaskKHR.ntype(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrVisibilityMaskKHR next(long value) { 
         XrVisibilityMaskKHR.nnext(address(), value);
+        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code vertexCapacityInput} field. */
     public XrVisibilityMaskKHR vertexCapacityInput(int value) { 
         XrVisibilityMaskKHR.nvertexCapacityInput(address(), value);
+        this.checkSetCalled &= ~NOT_SET_VERTEXCAPACITYINPUT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code vertexCountOutput} field. */
     public XrVisibilityMaskKHR vertexCountOutput(int value) { 
         XrVisibilityMaskKHR.nvertexCountOutput(address(), value);
+        this.checkSetCalled &= ~NOT_SET_VERTEXCOUNTOUTPUT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code vertices} field. */
     public XrVisibilityMaskKHR vertices(XrVector2f.Buffer value) { 
         XrVisibilityMaskKHR.nvertices(address(), value);
+        this.checkSetCalled &= ~NOT_SET_VERTICES_MASK;
         return this;
     }
     /** Sets the specified value to the {@code indexCapacityInput} field. */
     public XrVisibilityMaskKHR indexCapacityInput(int value) { 
         XrVisibilityMaskKHR.nindexCapacityInput(address(), value);
+        this.checkSetCalled &= ~NOT_SET_INDEXCAPACITYINPUT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code indexCountOutput} field. */
     public XrVisibilityMaskKHR indexCountOutput(int value) { 
         XrVisibilityMaskKHR.nindexCountOutput(address(), value);
+        this.checkSetCalled &= ~NOT_SET_INDEXCOUNTOUTPUT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code indices} field. */
     public XrVisibilityMaskKHR indices(long value) { 
         XrVisibilityMaskKHR.nindices(address(), value);
+        this.checkSetCalled &= ~NOT_SET_INDICES_MASK;
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -243,11 +251,71 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_TYPE_MASK = 1 << 0;
+    private static final int NOT_SET_NEXT_MASK = 1 << 1;
+    private static final int NOT_SET_VERTEXCAPACITYINPUT_MASK = 1 << 2;
+    private static final int NOT_SET_VERTEXCOUNTOUTPUT_MASK = 1 << 3;
+    private static final int NOT_SET_VERTICES_MASK = 1 << 4;
+    private static final int NOT_SET_INDEXCAPACITYINPUT_MASK = 1 << 5;
+    private static final int NOT_SET_INDEXCOUNTOUTPUT_MASK = 1 << 6;
+    private static final int NOT_SET_INDICES_MASK = 1 << 7;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_VERTEXCAPACITYINPUT_MASK | NOT_SET_VERTEXCOUNTOUTPUT_MASK | NOT_SET_VERTICES_MASK | NOT_SET_INDEXCAPACITYINPUT_MASK | NOT_SET_INDEXCOUNTOUTPUT_MASK | NOT_SET_INDICES_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("type");
+        }
+        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("next");
+        }
+        if ((checkSetCalled & NOT_SET_VERTEXCAPACITYINPUT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("vertexCapacityInput");
+        }
+        if ((checkSetCalled & NOT_SET_VERTEXCOUNTOUTPUT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("vertexCountOutput");
+        }
+        if ((checkSetCalled & NOT_SET_VERTICES_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("vertices");
+        }
+        if ((checkSetCalled & NOT_SET_INDEXCAPACITYINPUT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("indexCapacityInput");
+        }
+        if ((checkSetCalled & NOT_SET_INDEXCOUNTOUTPUT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("indexCountOutput");
+        }
+        if ((checkSetCalled & NOT_SET_INDICES_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("indices");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrVisibilityMaskKHR has unset fields: " + missing.toString());
+        }
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrVisibilityMaskKHR} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrVisibilityMaskKHR malloc() {
-        return new XrVisibilityMaskKHR(nmemAllocChecked(SIZEOF), null);
+        XrVisibilityMaskKHR instance = new XrVisibilityMaskKHR(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrVisibilityMaskKHR} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -320,7 +388,9 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
      * @param stack the stack from which to allocate
      */
     public static XrVisibilityMaskKHR malloc(MemoryStack stack) {
-        return new XrVisibilityMaskKHR(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrVisibilityMaskKHR instance = new XrVisibilityMaskKHR(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**

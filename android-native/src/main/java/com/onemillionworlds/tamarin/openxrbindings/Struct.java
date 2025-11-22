@@ -21,8 +21,11 @@ public abstract class Struct<T extends Struct<T>> implements NativeResource {
      */
     @Override
     public long address() {
+        checkValidStateForUse();
         return address;
     }
+
+    abstract void checkValidStateForUse();
 
     public ByteBuffer container() {
         return container;

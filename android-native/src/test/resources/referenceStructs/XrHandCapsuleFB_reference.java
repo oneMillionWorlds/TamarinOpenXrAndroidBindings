@@ -100,11 +100,13 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
     /** Sets the specified value to the {@code radius} field. */
     public XrHandCapsuleFB radius(float value) { 
         XrHandCapsuleFB.nradius(address(), value);
+        this.checkSetCalled &= ~NOT_SET_RADIUS_MASK;
         return this;
     }
     /** Sets the specified value to the {@code joint} field. */
     public XrHandCapsuleFB joint(XrHandJointEXT value) { 
         XrHandCapsuleFB.njoint(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_JOINT_MASK;
         return this;
     }
 
@@ -140,11 +142,41 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_RADIUS_MASK = 1 << 0;
+    private static final int NOT_SET_JOINT_MASK = 1 << 1;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_RADIUS_MASK | NOT_SET_JOINT_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_RADIUS_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("radius");
+        }
+        if ((checkSetCalled & NOT_SET_JOINT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("joint");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrHandCapsuleFB has unset fields: " + missing.toString());
+        }
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrHandCapsuleFB} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrHandCapsuleFB malloc() {
-        return new XrHandCapsuleFB(nmemAllocChecked(SIZEOF), null);
+        XrHandCapsuleFB instance = new XrHandCapsuleFB(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrHandCapsuleFB} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -217,7 +249,9 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
      * @param stack the stack from which to allocate
      */
     public static XrHandCapsuleFB malloc(MemoryStack stack) {
-        return new XrHandCapsuleFB(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrHandCapsuleFB instance = new XrHandCapsuleFB(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**

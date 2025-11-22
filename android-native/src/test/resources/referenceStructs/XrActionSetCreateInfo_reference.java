@@ -122,26 +122,31 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
     /** Sets the specified value to the {@code type} field. */
     public XrActionSetCreateInfo type(XrStructureType value) { 
         XrActionSetCreateInfo.ntype(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrActionSetCreateInfo next(long value) { 
         XrActionSetCreateInfo.nnext(address(), value);
+        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code actionSetName} field. */
     public XrActionSetCreateInfo actionSetName(ByteBufferView value) { 
         XrActionSetCreateInfo.nactionSetName(address(), value);
+        this.checkSetCalled &= ~NOT_SET_ACTIONSETNAME_MASK;
         return this;
     }
     /** Sets the specified value to the {@code localizedActionSetName} field. */
     public XrActionSetCreateInfo localizedActionSetName(ByteBufferView value) { 
         XrActionSetCreateInfo.nlocalizedActionSetName(address(), value);
+        this.checkSetCalled &= ~NOT_SET_LOCALIZEDACTIONSETNAME_MASK;
         return this;
     }
     /** Sets the specified value to the {@code priority} field. */
     public XrActionSetCreateInfo priority(int value) { 
         XrActionSetCreateInfo.npriority(address(), value);
+        this.checkSetCalled &= ~NOT_SET_PRIORITY_MASK;
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -197,11 +202,56 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_TYPE_MASK = 1 << 0;
+    private static final int NOT_SET_NEXT_MASK = 1 << 1;
+    private static final int NOT_SET_ACTIONSETNAME_MASK = 1 << 2;
+    private static final int NOT_SET_LOCALIZEDACTIONSETNAME_MASK = 1 << 3;
+    private static final int NOT_SET_PRIORITY_MASK = 1 << 4;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_ACTIONSETNAME_MASK | NOT_SET_LOCALIZEDACTIONSETNAME_MASK | NOT_SET_PRIORITY_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("type");
+        }
+        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("next");
+        }
+        if ((checkSetCalled & NOT_SET_ACTIONSETNAME_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("actionSetName");
+        }
+        if ((checkSetCalled & NOT_SET_LOCALIZEDACTIONSETNAME_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("localizedActionSetName");
+        }
+        if ((checkSetCalled & NOT_SET_PRIORITY_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("priority");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrActionSetCreateInfo has unset fields: " + missing.toString());
+        }
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrActionSetCreateInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrActionSetCreateInfo malloc() {
-        return new XrActionSetCreateInfo(nmemAllocChecked(SIZEOF), null);
+        XrActionSetCreateInfo instance = new XrActionSetCreateInfo(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrActionSetCreateInfo} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -274,7 +324,9 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
      * @param stack the stack from which to allocate
      */
     public static XrActionSetCreateInfo malloc(MemoryStack stack) {
-        return new XrActionSetCreateInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrActionSetCreateInfo instance = new XrActionSetCreateInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**

@@ -138,41 +138,49 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
     /** Sets the specified value to the {@code type} field. */
     public XrInstanceCreateInfo type(XrStructureType value) { 
         XrInstanceCreateInfo.ntype(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrInstanceCreateInfo next(long value) { 
         XrInstanceCreateInfo.nnext(address(), value);
+        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code createFlags} field. */
     public XrInstanceCreateInfo createFlags(long value) { 
         XrInstanceCreateInfo.ncreateFlags(address(), value);
+        this.checkSetCalled &= ~NOT_SET_CREATEFLAGS_MASK;
         return this;
     }
     /** Sets the specified value to the {@code applicationInfo} field. */
     public XrInstanceCreateInfo applicationInfo(XrApplicationInfo value) { 
         XrInstanceCreateInfo.napplicationInfo(address(), value);
+        this.checkSetCalled &= ~NOT_SET_APPLICATIONINFO_MASK;
         return this;
     }
     /** Sets the specified value to the {@code enabledApiLayerCount} field. */
     public XrInstanceCreateInfo enabledApiLayerCount(int value) { 
         XrInstanceCreateInfo.nenabledApiLayerCount(address(), value);
+        this.checkSetCalled &= ~NOT_SET_ENABLEDAPILAYERCOUNT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code enabledApiLayerNames} field. */
     public XrInstanceCreateInfo enabledApiLayerNames(long value) { 
         XrInstanceCreateInfo.nenabledApiLayerNames(address(), value);
+        this.checkSetCalled &= ~NOT_SET_ENABLEDAPILAYERNAMES_MASK;
         return this;
     }
     /** Sets the specified value to the {@code enabledExtensionCount} field. */
     public XrInstanceCreateInfo enabledExtensionCount(int value) { 
         XrInstanceCreateInfo.nenabledExtensionCount(address(), value);
+        this.checkSetCalled &= ~NOT_SET_ENABLEDEXTENSIONCOUNT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code enabledExtensionNames} field. */
     public XrInstanceCreateInfo enabledExtensionNames(long value) { 
         XrInstanceCreateInfo.nenabledExtensionNames(address(), value);
+        this.checkSetCalled &= ~NOT_SET_ENABLEDEXTENSIONNAMES_MASK;
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -243,11 +251,71 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_TYPE_MASK = 1 << 0;
+    private static final int NOT_SET_NEXT_MASK = 1 << 1;
+    private static final int NOT_SET_CREATEFLAGS_MASK = 1 << 2;
+    private static final int NOT_SET_APPLICATIONINFO_MASK = 1 << 3;
+    private static final int NOT_SET_ENABLEDAPILAYERCOUNT_MASK = 1 << 4;
+    private static final int NOT_SET_ENABLEDAPILAYERNAMES_MASK = 1 << 5;
+    private static final int NOT_SET_ENABLEDEXTENSIONCOUNT_MASK = 1 << 6;
+    private static final int NOT_SET_ENABLEDEXTENSIONNAMES_MASK = 1 << 7;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_CREATEFLAGS_MASK | NOT_SET_APPLICATIONINFO_MASK | NOT_SET_ENABLEDAPILAYERCOUNT_MASK | NOT_SET_ENABLEDAPILAYERNAMES_MASK | NOT_SET_ENABLEDEXTENSIONCOUNT_MASK | NOT_SET_ENABLEDEXTENSIONNAMES_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("type");
+        }
+        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("next");
+        }
+        if ((checkSetCalled & NOT_SET_CREATEFLAGS_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("createFlags");
+        }
+        if ((checkSetCalled & NOT_SET_APPLICATIONINFO_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("applicationInfo");
+        }
+        if ((checkSetCalled & NOT_SET_ENABLEDAPILAYERCOUNT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("enabledApiLayerCount");
+        }
+        if ((checkSetCalled & NOT_SET_ENABLEDAPILAYERNAMES_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("enabledApiLayerNames");
+        }
+        if ((checkSetCalled & NOT_SET_ENABLEDEXTENSIONCOUNT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("enabledExtensionCount");
+        }
+        if ((checkSetCalled & NOT_SET_ENABLEDEXTENSIONNAMES_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("enabledExtensionNames");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrInstanceCreateInfo has unset fields: " + missing.toString());
+        }
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrInstanceCreateInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrInstanceCreateInfo malloc() {
-        return new XrInstanceCreateInfo(nmemAllocChecked(SIZEOF), null);
+        XrInstanceCreateInfo instance = new XrInstanceCreateInfo(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrInstanceCreateInfo} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -320,7 +388,9 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
      * @param stack the stack from which to allocate
      */
     public static XrInstanceCreateInfo malloc(MemoryStack stack) {
-        return new XrInstanceCreateInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrInstanceCreateInfo instance = new XrInstanceCreateInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**

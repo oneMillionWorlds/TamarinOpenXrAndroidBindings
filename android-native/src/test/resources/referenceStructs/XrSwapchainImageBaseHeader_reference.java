@@ -90,11 +90,13 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
     /** Sets the specified value to the {@code type} field. */
     public XrSwapchainImageBaseHeader type(XrStructureType value) { 
         XrSwapchainImageBaseHeader.ntype(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrSwapchainImageBaseHeader next(long value) { 
         XrSwapchainImageBaseHeader.nnext(address(), value);
+        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
         return this;
     }
 
@@ -133,6 +135,34 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_TYPE_MASK = 1 << 0;
+    private static final int NOT_SET_NEXT_MASK = 1 << 1;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("type");
+        }
+        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("next");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrSwapchainImageBaseHeader has unset fields: " + missing.toString());
+        }
+    }
+
     /** Casts the specified {@link XrSwapchainImageBaseHeader} instance to the {@code XrSwapchainImageOpenGLESKHR} class. 
      * Note it is the callers responsibility to make sure it really is that type (check the type() method) 
      */
@@ -144,7 +174,9 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
 
     /** Returns a new {@code XrSwapchainImageBaseHeader} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrSwapchainImageBaseHeader malloc() {
-        return new XrSwapchainImageBaseHeader(nmemAllocChecked(SIZEOF), null);
+        XrSwapchainImageBaseHeader instance = new XrSwapchainImageBaseHeader(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrSwapchainImageBaseHeader} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -217,7 +249,9 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
      * @param stack the stack from which to allocate
      */
     public static XrSwapchainImageBaseHeader malloc(MemoryStack stack) {
-        return new XrSwapchainImageBaseHeader(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrSwapchainImageBaseHeader instance = new XrSwapchainImageBaseHeader(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**

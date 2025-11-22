@@ -295,6 +295,64 @@ public class StructGenerator extends FileGenerator {
         writer.append("        return sb.toString();\n");
         writer.append("    }\n\n");
 
+        // Add runtime field-initialization tracking: bitfield and masks for fields with setters
+        {
+            // Declare instance bitfield
+            writer.append("    // Runtime initialization tracking for malloc'ed instances\n");
+            writer.append("    private int checkSetCalled;\n\n");
+
+            // Generate per-field mask constants for fields that have public setters
+            int maskIndex = 0;
+            StringBuilder maskConstants = new StringBuilder();
+            StringBuilder allMaskExpr = new StringBuilder();
+            for (StructField field : struct.getFields()) {
+                boolean hasSetter = !(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer());
+                if (!hasSetter) {
+                    continue;
+                }
+                String fieldNameUpper = field.getName().toUpperCase();
+                String constName = "NOT_SET_" + fieldNameUpper + "_MASK";
+                maskConstants.append("    private static final int ").append(constName).append(" = 1 << ").append(maskIndex).append(";\n");
+                if (allMaskExpr.length() > 0) {
+                    allMaskExpr.append(" | ");
+                }
+                allMaskExpr.append(constName);
+                maskIndex++;
+            }
+            if (maskIndex == 0) {
+                writer.append("    private static final int ALL_REQUIRED_FIELDS_MASK = 0;\n\n");
+            } else {
+                writer.append(maskConstants.toString());
+                writer.append("\n");
+                writer.append("    private static final int ALL_REQUIRED_FIELDS_MASK = ").append(allMaskExpr.toString()).append(";\n\n");
+            }
+
+            // Generate the validation method
+            writer.append("    /**\n");
+            writer.append("     * Ensures that, for malloc'ed instances, all field setters have been called before use.\n");
+            writer.append("     * If this instance was created with calloc (or copied from another struct), this check is a no-op.\n");
+            writer.append("     */\n");
+            writer.append("    public void checkValidStateForUse() {\n");
+            writer.append("        if (checkSetCalled == 0) { return; }\n");
+            writer.append("        StringBuilder missing = new StringBuilder();\n");
+            for (StructField field : struct.getFields()) {
+                boolean hasSetter = !(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer());
+                if (!hasSetter) {
+                    continue;
+                }
+                String fieldNameUpper = field.getName().toUpperCase();
+                String constName = "NOT_SET_" + fieldNameUpper + "_MASK";
+                writer.append("        if ((checkSetCalled & ").append(constName).append(") != 0) {\n");
+                writer.append("            if (missing.length() > 0) missing.append(\", \");\n");
+                writer.append("            missing.append(\"").append(field.getName()).append("\");\n");
+                writer.append("        }\n");
+            }
+            writer.append("        if (missing.length() > 0) {\n");
+            writer.append("            throw new IllegalStateException(\"").append(struct.getName()).append(" has unset fields: \" + missing.toString());\n");
+            writer.append("        }\n");
+            writer.append("    }\n\n");
+        }
+
        struct.getBaseHeader().ifPresent(parent -> {
            writer.append("    /** Get a view of this struct as its parent (for use in methods that take the parent)*/\n");
            writer.append("    public " + parent + " asParent() {\n");
@@ -315,7 +373,9 @@ public class StructGenerator extends FileGenerator {
 
         writer.append("    /** Returns a new {@code " + struct.getName() + "} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */\n");
         writer.append("    public static " + struct.getName() + " malloc() {\n");
-        writer.append("        return new " + struct.getName() + "(nmemAllocChecked(SIZEOF), null);\n");
+        writer.append("        " + struct.getName() + " instance = new " + struct.getName() + "(nmemAllocChecked(SIZEOF), null);\n");
+        writer.append("        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;\n");
+        writer.append("        return instance;\n");
         writer.append("    }\n\n");
 
         writer.append("    /** Returns a new {@code " + struct.getName() + "} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */\n");
@@ -390,7 +450,9 @@ public class StructGenerator extends FileGenerator {
         writer.append("     * @param stack the stack from which to allocate\n");
         writer.append("     */\n");
         writer.append("    public static " + struct.getName() + " malloc(MemoryStack stack) {\n");
-        writer.append("        return new " + struct.getName() + "(stack.nmalloc(ALIGNOF, SIZEOF), null);\n");
+        writer.append("        " + struct.getName() + " instance = new " + struct.getName() + "(stack.nmalloc(ALIGNOF, SIZEOF), null);\n");
+        writer.append("        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;\n");
+        writer.append("        return instance;\n");
         writer.append("    }\n\n");
 
         writer.append("    /**\n");
@@ -717,7 +779,7 @@ public class StructGenerator extends FileGenerator {
         } else{
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value);\n");
         }
-
+        writer.append("        this.checkSetCalled &= ~NOT_SET_"+fieldNameUpper+"_MASK;\n");
         writer.append("        return this;\n");
         writer.append("    }\n");
 

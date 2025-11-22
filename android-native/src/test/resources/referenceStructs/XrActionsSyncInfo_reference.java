@@ -106,21 +106,25 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
     /** Sets the specified value to the {@code type} field. */
     public XrActionsSyncInfo type(XrStructureType value) { 
         XrActionsSyncInfo.ntype(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrActionsSyncInfo next(long value) { 
         XrActionsSyncInfo.nnext(address(), value);
+        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code countActiveActionSets} field. */
     public XrActionsSyncInfo countActiveActionSets(int value) { 
         XrActionsSyncInfo.ncountActiveActionSets(address(), value);
+        this.checkSetCalled &= ~NOT_SET_COUNTACTIVEACTIONSETS_MASK;
         return this;
     }
     /** Sets the specified value to the {@code activeActionSets} field. */
     public XrActionsSyncInfo activeActionSets(XrActiveActionSet.Buffer value) { 
         XrActionsSyncInfo.nactiveActionSets(address(), value);
+        this.checkSetCalled &= ~NOT_SET_ACTIVEACTIONSETS_MASK;
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -171,11 +175,51 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_TYPE_MASK = 1 << 0;
+    private static final int NOT_SET_NEXT_MASK = 1 << 1;
+    private static final int NOT_SET_COUNTACTIVEACTIONSETS_MASK = 1 << 2;
+    private static final int NOT_SET_ACTIVEACTIONSETS_MASK = 1 << 3;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_COUNTACTIVEACTIONSETS_MASK | NOT_SET_ACTIVEACTIONSETS_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("type");
+        }
+        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("next");
+        }
+        if ((checkSetCalled & NOT_SET_COUNTACTIVEACTIONSETS_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("countActiveActionSets");
+        }
+        if ((checkSetCalled & NOT_SET_ACTIVEACTIONSETS_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("activeActionSets");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrActionsSyncInfo has unset fields: " + missing.toString());
+        }
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrActionsSyncInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrActionsSyncInfo malloc() {
-        return new XrActionsSyncInfo(nmemAllocChecked(SIZEOF), null);
+        XrActionsSyncInfo instance = new XrActionsSyncInfo(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrActionsSyncInfo} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -248,7 +292,9 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
      * @param stack the stack from which to allocate
      */
     public static XrActionsSyncInfo malloc(MemoryStack stack) {
-        return new XrActionsSyncInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrActionsSyncInfo instance = new XrActionsSyncInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**

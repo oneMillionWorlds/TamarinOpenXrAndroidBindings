@@ -173,56 +173,67 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
     /** Sets the specified value to the {@code type} field. */
     public XrInteractionProfileDpadBindingEXT type(XrStructureType value) { 
         XrInteractionProfileDpadBindingEXT.ntype(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrInteractionProfileDpadBindingEXT next(long value) { 
         XrInteractionProfileDpadBindingEXT.nnext(address(), value);
+        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code binding} field. */
     public XrInteractionProfileDpadBindingEXT binding(long value) { 
         XrInteractionProfileDpadBindingEXT.nbinding(address(), value);
+        this.checkSetCalled &= ~NOT_SET_BINDING_MASK;
         return this;
     }
     /** Sets the specified value to the {@code actionSet} field. */
     public XrInteractionProfileDpadBindingEXT actionSet(XrActionSet value) { 
         XrInteractionProfileDpadBindingEXT.nactionSet(address(), value.getRawHandle());
+        this.checkSetCalled &= ~NOT_SET_ACTIONSET_MASK;
         return this;
     }
     /** Sets the specified value to the {@code forceThreshold} field. */
     public XrInteractionProfileDpadBindingEXT forceThreshold(float value) { 
         XrInteractionProfileDpadBindingEXT.nforceThreshold(address(), value);
+        this.checkSetCalled &= ~NOT_SET_FORCETHRESHOLD_MASK;
         return this;
     }
     /** Sets the specified value to the {@code forceThresholdReleased} field. */
     public XrInteractionProfileDpadBindingEXT forceThresholdReleased(float value) { 
         XrInteractionProfileDpadBindingEXT.nforceThresholdReleased(address(), value);
+        this.checkSetCalled &= ~NOT_SET_FORCETHRESHOLDRELEASED_MASK;
         return this;
     }
     /** Sets the specified value to the {@code centerRegion} field. */
     public XrInteractionProfileDpadBindingEXT centerRegion(float value) { 
         XrInteractionProfileDpadBindingEXT.ncenterRegion(address(), value);
+        this.checkSetCalled &= ~NOT_SET_CENTERREGION_MASK;
         return this;
     }
     /** Sets the specified value to the {@code wedgeAngle} field. */
     public XrInteractionProfileDpadBindingEXT wedgeAngle(float value) { 
         XrInteractionProfileDpadBindingEXT.nwedgeAngle(address(), value);
+        this.checkSetCalled &= ~NOT_SET_WEDGEANGLE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code isSticky} field. */
     public XrInteractionProfileDpadBindingEXT isSticky(int value) { 
         XrInteractionProfileDpadBindingEXT.nisSticky(address(), value);
+        this.checkSetCalled &= ~NOT_SET_ISSTICKY_MASK;
         return this;
     }
     /** Sets the specified value to the {@code onHaptic} field. */
     public XrInteractionProfileDpadBindingEXT onHaptic(XrHapticBaseHeader value) { 
         XrInteractionProfileDpadBindingEXT.nonHaptic(address(), value);
+        this.checkSetCalled &= ~NOT_SET_ONHAPTIC_MASK;
         return this;
     }
     /** Sets the specified value to the {@code offHaptic} field. */
     public XrInteractionProfileDpadBindingEXT offHaptic(XrHapticBaseHeader value) { 
         XrInteractionProfileDpadBindingEXT.noffHaptic(address(), value);
+        this.checkSetCalled &= ~NOT_SET_OFFHAPTIC_MASK;
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -308,6 +319,79 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_TYPE_MASK = 1 << 0;
+    private static final int NOT_SET_NEXT_MASK = 1 << 1;
+    private static final int NOT_SET_BINDING_MASK = 1 << 2;
+    private static final int NOT_SET_ACTIONSET_MASK = 1 << 3;
+    private static final int NOT_SET_FORCETHRESHOLD_MASK = 1 << 4;
+    private static final int NOT_SET_FORCETHRESHOLDRELEASED_MASK = 1 << 5;
+    private static final int NOT_SET_CENTERREGION_MASK = 1 << 6;
+    private static final int NOT_SET_WEDGEANGLE_MASK = 1 << 7;
+    private static final int NOT_SET_ISSTICKY_MASK = 1 << 8;
+    private static final int NOT_SET_ONHAPTIC_MASK = 1 << 9;
+    private static final int NOT_SET_OFFHAPTIC_MASK = 1 << 10;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_BINDING_MASK | NOT_SET_ACTIONSET_MASK | NOT_SET_FORCETHRESHOLD_MASK | NOT_SET_FORCETHRESHOLDRELEASED_MASK | NOT_SET_CENTERREGION_MASK | NOT_SET_WEDGEANGLE_MASK | NOT_SET_ISSTICKY_MASK | NOT_SET_ONHAPTIC_MASK | NOT_SET_OFFHAPTIC_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("type");
+        }
+        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("next");
+        }
+        if ((checkSetCalled & NOT_SET_BINDING_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("binding");
+        }
+        if ((checkSetCalled & NOT_SET_ACTIONSET_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("actionSet");
+        }
+        if ((checkSetCalled & NOT_SET_FORCETHRESHOLD_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("forceThreshold");
+        }
+        if ((checkSetCalled & NOT_SET_FORCETHRESHOLDRELEASED_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("forceThresholdReleased");
+        }
+        if ((checkSetCalled & NOT_SET_CENTERREGION_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("centerRegion");
+        }
+        if ((checkSetCalled & NOT_SET_WEDGEANGLE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("wedgeAngle");
+        }
+        if ((checkSetCalled & NOT_SET_ISSTICKY_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("isSticky");
+        }
+        if ((checkSetCalled & NOT_SET_ONHAPTIC_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("onHaptic");
+        }
+        if ((checkSetCalled & NOT_SET_OFFHAPTIC_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("offHaptic");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrInteractionProfileDpadBindingEXT has unset fields: " + missing.toString());
+        }
+    }
+
     /** Get a view of this struct as its parent (for use in methods that take the parent)*/
     public XrBindingModificationBaseHeaderKHR asParent() {
         return new XrBindingModificationBaseHeaderKHR(address(), container());
@@ -317,7 +401,9 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
 
     /** Returns a new {@code XrInteractionProfileDpadBindingEXT} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrInteractionProfileDpadBindingEXT malloc() {
-        return new XrInteractionProfileDpadBindingEXT(nmemAllocChecked(SIZEOF), null);
+        XrInteractionProfileDpadBindingEXT instance = new XrInteractionProfileDpadBindingEXT(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrInteractionProfileDpadBindingEXT} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -390,7 +476,9 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
      * @param stack the stack from which to allocate
      */
     public static XrInteractionProfileDpadBindingEXT malloc(MemoryStack stack) {
-        return new XrInteractionProfileDpadBindingEXT(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrInteractionProfileDpadBindingEXT instance = new XrInteractionProfileDpadBindingEXT(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**

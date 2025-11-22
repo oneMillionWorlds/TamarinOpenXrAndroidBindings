@@ -106,21 +106,25 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     /** Sets the specified value to the {@code type} field. */
     public XrSessionActionSetsAttachInfo type(XrStructureType value) { 
         XrSessionActionSetsAttachInfo.ntype(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrSessionActionSetsAttachInfo next(long value) { 
         XrSessionActionSetsAttachInfo.nnext(address(), value);
+        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code countActionSets} field. */
     public XrSessionActionSetsAttachInfo countActionSets(int value) { 
         XrSessionActionSetsAttachInfo.ncountActionSets(address(), value);
+        this.checkSetCalled &= ~NOT_SET_COUNTACTIONSETS_MASK;
         return this;
     }
     /** Sets the specified value to the {@code actionSets} field. */
     public XrSessionActionSetsAttachInfo actionSets(XrActionSet.HandleBuffer value) { 
         XrSessionActionSetsAttachInfo.nactionSets(address(), value);
+        this.checkSetCalled &= ~NOT_SET_ACTIONSETS_MASK;
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -171,11 +175,51 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_TYPE_MASK = 1 << 0;
+    private static final int NOT_SET_NEXT_MASK = 1 << 1;
+    private static final int NOT_SET_COUNTACTIONSETS_MASK = 1 << 2;
+    private static final int NOT_SET_ACTIONSETS_MASK = 1 << 3;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_COUNTACTIONSETS_MASK | NOT_SET_ACTIONSETS_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("type");
+        }
+        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("next");
+        }
+        if ((checkSetCalled & NOT_SET_COUNTACTIONSETS_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("countActionSets");
+        }
+        if ((checkSetCalled & NOT_SET_ACTIONSETS_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("actionSets");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrSessionActionSetsAttachInfo has unset fields: " + missing.toString());
+        }
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrSessionActionSetsAttachInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrSessionActionSetsAttachInfo malloc() {
-        return new XrSessionActionSetsAttachInfo(nmemAllocChecked(SIZEOF), null);
+        XrSessionActionSetsAttachInfo instance = new XrSessionActionSetsAttachInfo(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrSessionActionSetsAttachInfo} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -248,7 +292,9 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
      * @param stack the stack from which to allocate
      */
     public static XrSessionActionSetsAttachInfo malloc(MemoryStack stack) {
-        return new XrSessionActionSetsAttachInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrSessionActionSetsAttachInfo instance = new XrSessionActionSetsAttachInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**

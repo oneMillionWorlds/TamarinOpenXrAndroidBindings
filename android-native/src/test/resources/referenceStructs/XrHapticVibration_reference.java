@@ -125,26 +125,31 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
     /** Sets the specified value to the {@code type} field. */
     public XrHapticVibration type(XrStructureType value) { 
         XrHapticVibration.ntype(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrHapticVibration next(long value) { 
         XrHapticVibration.nnext(address(), value);
+        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code duration} field. */
     public XrHapticVibration duration(long value) { 
         XrHapticVibration.nduration(address(), value);
+        this.checkSetCalled &= ~NOT_SET_DURATION_MASK;
         return this;
     }
     /** Sets the specified value to the {@code frequency} field. */
     public XrHapticVibration frequency(float value) { 
         XrHapticVibration.nfrequency(address(), value);
+        this.checkSetCalled &= ~NOT_SET_FREQUENCY_MASK;
         return this;
     }
     /** Sets the specified value to the {@code amplitude} field. */
     public XrHapticVibration amplitude(float value) { 
         XrHapticVibration.namplitude(address(), value);
+        this.checkSetCalled &= ~NOT_SET_AMPLITUDE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -200,6 +205,49 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_TYPE_MASK = 1 << 0;
+    private static final int NOT_SET_NEXT_MASK = 1 << 1;
+    private static final int NOT_SET_DURATION_MASK = 1 << 2;
+    private static final int NOT_SET_FREQUENCY_MASK = 1 << 3;
+    private static final int NOT_SET_AMPLITUDE_MASK = 1 << 4;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_DURATION_MASK | NOT_SET_FREQUENCY_MASK | NOT_SET_AMPLITUDE_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("type");
+        }
+        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("next");
+        }
+        if ((checkSetCalled & NOT_SET_DURATION_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("duration");
+        }
+        if ((checkSetCalled & NOT_SET_FREQUENCY_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("frequency");
+        }
+        if ((checkSetCalled & NOT_SET_AMPLITUDE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("amplitude");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrHapticVibration has unset fields: " + missing.toString());
+        }
+    }
+
     /** Get a view of this struct as its parent (for use in methods that take the parent)*/
     public XrHapticBaseHeader asParent() {
         return new XrHapticBaseHeader(address(), container());
@@ -209,7 +257,9 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
 
     /** Returns a new {@code XrHapticVibration} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrHapticVibration malloc() {
-        return new XrHapticVibration(nmemAllocChecked(SIZEOF), null);
+        XrHapticVibration instance = new XrHapticVibration(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrHapticVibration} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -282,7 +332,9 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
      * @param stack the stack from which to allocate
      */
     public static XrHapticVibration malloc(MemoryStack stack) {
-        return new XrHapticVibration(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrHapticVibration instance = new XrHapticVibration(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**

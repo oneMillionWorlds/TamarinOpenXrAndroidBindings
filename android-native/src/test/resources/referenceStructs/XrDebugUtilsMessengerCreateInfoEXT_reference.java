@@ -122,31 +122,37 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
     /** Sets the specified value to the {@code type} field. */
     public XrDebugUtilsMessengerCreateInfoEXT type(XrStructureType value) { 
         XrDebugUtilsMessengerCreateInfoEXT.ntype(address(), value.getValue());
+        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrDebugUtilsMessengerCreateInfoEXT next(long value) { 
         XrDebugUtilsMessengerCreateInfoEXT.nnext(address(), value);
+        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
         return this;
     }
     /** Sets the specified value to the {@code messageSeverities} field. */
     public XrDebugUtilsMessengerCreateInfoEXT messageSeverities(long value) { 
         XrDebugUtilsMessengerCreateInfoEXT.nmessageSeverities(address(), value);
+        this.checkSetCalled &= ~NOT_SET_MESSAGESEVERITIES_MASK;
         return this;
     }
     /** Sets the specified value to the {@code messageTypes} field. */
     public XrDebugUtilsMessengerCreateInfoEXT messageTypes(long value) { 
         XrDebugUtilsMessengerCreateInfoEXT.nmessageTypes(address(), value);
+        this.checkSetCalled &= ~NOT_SET_MESSAGETYPES_MASK;
         return this;
     }
     /** Sets the specified value to the {@code userCallback} field. */
     public XrDebugUtilsMessengerCreateInfoEXT userCallback(long value) { 
         XrDebugUtilsMessengerCreateInfoEXT.nuserCallback(address(), value);
+        this.checkSetCalled &= ~NOT_SET_USERCALLBACK_MASK;
         return this;
     }
     /** Sets the specified value to the {@code userData} field. */
     public XrDebugUtilsMessengerCreateInfoEXT userData(long value) { 
         XrDebugUtilsMessengerCreateInfoEXT.nuserData(address(), value);
+        this.checkSetCalled &= ~NOT_SET_USERDATA_MASK;
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -207,11 +213,61 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
         return sb.toString();
     }
 
+    // Runtime initialization tracking for malloc'ed instances
+    private int checkSetCalled;
+
+    private static final int NOT_SET_TYPE_MASK = 1 << 0;
+    private static final int NOT_SET_NEXT_MASK = 1 << 1;
+    private static final int NOT_SET_MESSAGESEVERITIES_MASK = 1 << 2;
+    private static final int NOT_SET_MESSAGETYPES_MASK = 1 << 3;
+    private static final int NOT_SET_USERCALLBACK_MASK = 1 << 4;
+    private static final int NOT_SET_USERDATA_MASK = 1 << 5;
+
+    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_MESSAGESEVERITIES_MASK | NOT_SET_MESSAGETYPES_MASK | NOT_SET_USERCALLBACK_MASK | NOT_SET_USERDATA_MASK;
+
+    /**
+     * Ensures that, for malloc'ed instances, all field setters have been called before use.
+     * If this instance was created with calloc (or copied from another struct), this check is a no-op.
+     */
+    public void checkValidStateForUse() {
+        if (checkSetCalled == 0) { return; }
+        StringBuilder missing = new StringBuilder();
+        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("type");
+        }
+        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("next");
+        }
+        if ((checkSetCalled & NOT_SET_MESSAGESEVERITIES_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("messageSeverities");
+        }
+        if ((checkSetCalled & NOT_SET_MESSAGETYPES_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("messageTypes");
+        }
+        if ((checkSetCalled & NOT_SET_USERCALLBACK_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("userCallback");
+        }
+        if ((checkSetCalled & NOT_SET_USERDATA_MASK) != 0) {
+            if (missing.length() > 0) missing.append(", ");
+            missing.append("userData");
+        }
+        if (missing.length() > 0) {
+            throw new IllegalStateException("XrDebugUtilsMessengerCreateInfoEXT has unset fields: " + missing.toString());
+        }
+    }
+
     // -----------------------------------
 
     /** Returns a new {@code XrDebugUtilsMessengerCreateInfoEXT} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrDebugUtilsMessengerCreateInfoEXT malloc() {
-        return new XrDebugUtilsMessengerCreateInfoEXT(nmemAllocChecked(SIZEOF), null);
+        XrDebugUtilsMessengerCreateInfoEXT instance = new XrDebugUtilsMessengerCreateInfoEXT(nmemAllocChecked(SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /** Returns a new {@code XrDebugUtilsMessengerCreateInfoEXT} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
@@ -284,7 +340,9 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
      * @param stack the stack from which to allocate
      */
     public static XrDebugUtilsMessengerCreateInfoEXT malloc(MemoryStack stack) {
-        return new XrDebugUtilsMessengerCreateInfoEXT(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        XrDebugUtilsMessengerCreateInfoEXT instance = new XrDebugUtilsMessengerCreateInfoEXT(stack.nmalloc(ALIGNOF, SIZEOF), null);
+        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        return instance;
     }
 
     /**
