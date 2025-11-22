@@ -38,6 +38,9 @@ public class MemoryStack implements AutoCloseable {
     private final ByteBuffer bulkMemory;
 
     private int pointer;
+
+    private int biggestEverUsedAnnounced = 0;
+
     private final long bulkMemoryAddress;
     private final LinkedList<Integer> framePointers = new LinkedList<>();
 
@@ -46,6 +49,10 @@ public class MemoryStack implements AutoCloseable {
         bulkMemoryAddress = MemoryUtil.memAddress(bulkMemory);
 
         pointer = capacity; // we start at the end of the memory and work backwards allocating bits of stack
+    }
+
+    private int calculateCurrentUsedMemory(){
+        return capacity - pointer;
     }
 
     /**
@@ -80,10 +87,21 @@ public class MemoryStack implements AutoCloseable {
      */
     public long nmalloc(int alignment, int size) {
 
+        if (alignment <= 0 || (alignment & (alignment - 1)) != 0) {
+            throw new IllegalArgumentException("alignment must be a power of two, got " + alignment);
+        }
+
         long rawAddress = this.bulkMemoryAddress + pointer - size;
         long alignedAddress = alignDown(rawAddress, alignment);
 
         pointer = (int) (alignedAddress - this.bulkMemoryAddress);
+
+        int usedMemory = calculateCurrentUsedMemory();
+
+        if(usedMemory-biggestEverUsedAnnounced>1024){
+            biggestEverUsedAnnounced = usedMemory;
+            System.out.println("Stack Memory used: " + usedMemory / 1024 + " KB of " + capacity / 1024 + " KB");
+        }
 
         if(pointer<0){
             throw new IllegalStateException("Out of stack memory");
@@ -101,6 +119,10 @@ public class MemoryStack implements AutoCloseable {
      * @return the memory address
      */
     public long ncalloc(int alignment, int num, int size) {
+        if (alignment <= 0 || (alignment & (alignment - 1)) != 0) {
+            throw new IllegalArgumentException("alignment must be a power of two, got " + alignment);
+        }
+
         int bytes = num * size;
         long address = nmalloc(alignment, bytes);
         // Zero the memory
