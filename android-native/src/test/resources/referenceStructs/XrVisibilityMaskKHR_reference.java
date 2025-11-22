@@ -14,6 +14,8 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView
 
 import java.nio.ByteBuffer;
 
+import java.util.Map;
+import java.util.function.Function;
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
 import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
@@ -44,6 +46,8 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     /** The struct alignment in bytes. */
     public static final int ALIGNOF;
 
+    /** Runtime validation bit masks for field setters. */
+    private static final Map<String, Integer> FIELD_BIT_MASKS;
     /** The struct member offsets. */
     public static final int
         TYPE,
@@ -78,10 +82,12 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
         INDEXCAPACITYINPUT = layout.offsetof(5);
         INDEXCOUNTOUTPUT = layout.offsetof(6);
         INDICES = layout.offsetof(7);
+        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("type", "next", "vertexCapacityInput", "vertexCountOutput", "vertices", "indexCapacityInput", "indexCountOutput", "indices");
     }
 
     protected XrVisibilityMaskKHR(long address, ByteBuffer container) {
         super(address, container);
+        this.setterValidation = new StructSetterValidationObject("XrVisibilityMaskKHR", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -97,6 +103,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
      */
     public XrVisibilityMaskKHR(ByteBuffer container) {
         super(memAddress(container), __checkContainer(container, SIZEOF));
+        this.setterValidation = new StructSetterValidationObject("XrVisibilityMaskKHR", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -138,49 +145,49 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     /** Sets the specified value to the {@code type} field. */
     public XrVisibilityMaskKHR type(XrStructureType value) { 
         XrVisibilityMaskKHR.ntype(address(), value.getValue());
-        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
+        this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrVisibilityMaskKHR next(long value) { 
         XrVisibilityMaskKHR.nnext(address(), value);
-        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
+        this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code vertexCapacityInput} field. */
     public XrVisibilityMaskKHR vertexCapacityInput(int value) { 
         XrVisibilityMaskKHR.nvertexCapacityInput(address(), value);
-        this.checkSetCalled &= ~NOT_SET_VERTEXCAPACITYINPUT_MASK;
+        this.setterValidation.setFieldCalled("vertexCapacityInput");
         return this;
     }
     /** Sets the specified value to the {@code vertexCountOutput} field. */
     public XrVisibilityMaskKHR vertexCountOutput(int value) { 
         XrVisibilityMaskKHR.nvertexCountOutput(address(), value);
-        this.checkSetCalled &= ~NOT_SET_VERTEXCOUNTOUTPUT_MASK;
+        this.setterValidation.setFieldCalled("vertexCountOutput");
         return this;
     }
     /** Sets the specified value to the {@code vertices} field. */
     public XrVisibilityMaskKHR vertices(XrVector2f.Buffer value) { 
         XrVisibilityMaskKHR.nvertices(address(), value);
-        this.checkSetCalled &= ~NOT_SET_VERTICES_MASK;
+        this.setterValidation.setFieldCalled("vertices");
         return this;
     }
     /** Sets the specified value to the {@code indexCapacityInput} field. */
     public XrVisibilityMaskKHR indexCapacityInput(int value) { 
         XrVisibilityMaskKHR.nindexCapacityInput(address(), value);
-        this.checkSetCalled &= ~NOT_SET_INDEXCAPACITYINPUT_MASK;
+        this.setterValidation.setFieldCalled("indexCapacityInput");
         return this;
     }
     /** Sets the specified value to the {@code indexCountOutput} field. */
     public XrVisibilityMaskKHR indexCountOutput(int value) { 
         XrVisibilityMaskKHR.nindexCountOutput(address(), value);
-        this.checkSetCalled &= ~NOT_SET_INDEXCOUNTOUTPUT_MASK;
+        this.setterValidation.setFieldCalled("indexCountOutput");
         return this;
     }
     /** Sets the specified value to the {@code indices} field. */
     public XrVisibilityMaskKHR indices(long value) { 
         XrVisibilityMaskKHR.nindices(address(), value);
-        this.checkSetCalled &= ~NOT_SET_INDICES_MASK;
+        this.setterValidation.setFieldCalled("indices");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -251,62 +258,21 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
         return sb.toString();
     }
 
-    // Runtime initialization tracking for malloc'ed instances
-    private int checkSetCalled;
-
-    private static final int NOT_SET_TYPE_MASK = 1 << 0;
-    private static final int NOT_SET_NEXT_MASK = 1 << 1;
-    private static final int NOT_SET_VERTEXCAPACITYINPUT_MASK = 1 << 2;
-    private static final int NOT_SET_VERTEXCOUNTOUTPUT_MASK = 1 << 3;
-    private static final int NOT_SET_VERTICES_MASK = 1 << 4;
-    private static final int NOT_SET_INDEXCAPACITYINPUT_MASK = 1 << 5;
-    private static final int NOT_SET_INDEXCOUNTOUTPUT_MASK = 1 << 6;
-    private static final int NOT_SET_INDICES_MASK = 1 << 7;
-
-    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_VERTEXCAPACITYINPUT_MASK | NOT_SET_VERTEXCOUNTOUTPUT_MASK | NOT_SET_VERTICES_MASK | NOT_SET_INDEXCAPACITYINPUT_MASK | NOT_SET_INDEXCOUNTOUTPUT_MASK | NOT_SET_INDICES_MASK;
+    private final StructSetterValidationObject setterValidation;
 
     /**
      * Ensures that, for malloc'ed instances, all field setters have been called before use.
      * If this instance was created with calloc (or copied from another struct), this check is a no-op.
      */
     public void checkValidStateForUse() {
-        if (checkSetCalled == 0) { return; }
-        StringBuilder missing = new StringBuilder();
-        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("type");
-        }
-        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("next");
-        }
-        if ((checkSetCalled & NOT_SET_VERTEXCAPACITYINPUT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("vertexCapacityInput");
-        }
-        if ((checkSetCalled & NOT_SET_VERTEXCOUNTOUTPUT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("vertexCountOutput");
-        }
-        if ((checkSetCalled & NOT_SET_VERTICES_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("vertices");
-        }
-        if ((checkSetCalled & NOT_SET_INDEXCAPACITYINPUT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("indexCapacityInput");
-        }
-        if ((checkSetCalled & NOT_SET_INDEXCOUNTOUTPUT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("indexCountOutput");
-        }
-        if ((checkSetCalled & NOT_SET_INDICES_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("indices");
-        }
-        if (missing.length() > 0) {
-            throw new IllegalStateException("XrVisibilityMaskKHR has unset fields: " + missing.toString());
-        }
+        setterValidation.checkValidStateForUse();
+    }
+
+    /**
+     * Informs this struct that it has been malloced and so must have setter validation carried out
+     */
+    public void setNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNeedsToValidateAllMethodsCalled();
     }
 
     // -----------------------------------
@@ -314,7 +280,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     /** Returns a new {@code XrVisibilityMaskKHR} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrVisibilityMaskKHR malloc() {
         XrVisibilityMaskKHR instance = new XrVisibilityMaskKHR(nmemAllocChecked(SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -345,7 +311,9 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity) {
-        return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        Buffer buf = new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -389,7 +357,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
      */
     public static XrVisibilityMaskKHR malloc(MemoryStack stack) {
         XrVisibilityMaskKHR instance = new XrVisibilityMaskKHR(stack.nmalloc(ALIGNOF, SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -409,7 +377,9 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity, MemoryStack stack) {
-        return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        Buffer buf = new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -485,7 +455,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     /** An array of {@link XrVisibilityMaskKHR} structs. */
     public static class Buffer extends StructBuffer<XrVisibilityMaskKHR, Buffer> {
 
-        private static final XrVisibilityMaskKHR ELEMENT_FACTORY = XrVisibilityMaskKHR.create(-1L);
+        private static final Function<Long,XrVisibilityMaskKHR> ELEMENT_FACTORY = address ->XrVisibilityMaskKHR.create(address);
 
         /**
          * Creates a new {@code XrVisibilityMaskKHR.Buffer} instance backed by the specified container.
@@ -497,25 +467,15 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
          * <p>The created buffer instance holds a strong reference to the container object.</p>
          */
         public Buffer(ByteBuffer container) {
-            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);
+            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF, SIZEOF);
         }
 
         public Buffer(long address, int cap) {
-            super(address, null, -1, 0, cap, cap);
-        }
-
-        @Override
-        public XrVisibilityMaskKHR get(int index) {
-            return XrVisibilityMaskKHR.create(address + index * SIZEOF);
-        }
-
-        @Override
-        public Buffer slice() {
-            return slice(0, remaining());
+            super(address, null, -1, 0, cap, cap, SIZEOF);
         }
 
         Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {
-            super(address, container, mark, pos, lim, cap);
+            super(address, container, mark, pos, lim, cap, SIZEOF);
         }
 
         @Override
@@ -529,7 +489,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
         }
 
         @Override
-        protected XrVisibilityMaskKHR getElementFactory() {
+        protected Function<Long,XrVisibilityMaskKHR> getElementFactory() {
             return ELEMENT_FACTORY;
         }
 

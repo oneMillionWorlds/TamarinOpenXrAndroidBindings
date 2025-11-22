@@ -14,6 +14,8 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView
 
 import java.nio.ByteBuffer;
 
+import java.util.Map;
+import java.util.function.Function;
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
 import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
@@ -41,6 +43,8 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
     /** The struct alignment in bytes. */
     public static final int ALIGNOF;
 
+    /** Runtime validation bit masks for field setters. */
+    private static final Map<String, Integer> FIELD_BIT_MASKS;
     /** The struct member offsets. */
     public static final int
         TYPE,
@@ -66,10 +70,12 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
         DURATION = layout.offsetof(2);
         FREQUENCY = layout.offsetof(3);
         AMPLITUDE = layout.offsetof(4);
+        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("type", "next", "duration", "frequency", "amplitude");
     }
 
     protected XrHapticVibration(long address, ByteBuffer container) {
         super(address, container);
+        this.setterValidation = new StructSetterValidationObject("XrHapticVibration", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -96,6 +102,7 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
      */
     public XrHapticVibration(ByteBuffer container) {
         super(memAddress(container), __checkContainer(container, SIZEOF));
+        this.setterValidation = new StructSetterValidationObject("XrHapticVibration", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -125,31 +132,31 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
     /** Sets the specified value to the {@code type} field. */
     public XrHapticVibration type(XrStructureType value) { 
         XrHapticVibration.ntype(address(), value.getValue());
-        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
+        this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrHapticVibration next(long value) { 
         XrHapticVibration.nnext(address(), value);
-        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
+        this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code duration} field. */
     public XrHapticVibration duration(long value) { 
         XrHapticVibration.nduration(address(), value);
-        this.checkSetCalled &= ~NOT_SET_DURATION_MASK;
+        this.setterValidation.setFieldCalled("duration");
         return this;
     }
     /** Sets the specified value to the {@code frequency} field. */
     public XrHapticVibration frequency(float value) { 
         XrHapticVibration.nfrequency(address(), value);
-        this.checkSetCalled &= ~NOT_SET_FREQUENCY_MASK;
+        this.setterValidation.setFieldCalled("frequency");
         return this;
     }
     /** Sets the specified value to the {@code amplitude} field. */
     public XrHapticVibration amplitude(float value) { 
         XrHapticVibration.namplitude(address(), value);
-        this.checkSetCalled &= ~NOT_SET_AMPLITUDE_MASK;
+        this.setterValidation.setFieldCalled("amplitude");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -205,47 +212,21 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
         return sb.toString();
     }
 
-    // Runtime initialization tracking for malloc'ed instances
-    private int checkSetCalled;
-
-    private static final int NOT_SET_TYPE_MASK = 1 << 0;
-    private static final int NOT_SET_NEXT_MASK = 1 << 1;
-    private static final int NOT_SET_DURATION_MASK = 1 << 2;
-    private static final int NOT_SET_FREQUENCY_MASK = 1 << 3;
-    private static final int NOT_SET_AMPLITUDE_MASK = 1 << 4;
-
-    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_DURATION_MASK | NOT_SET_FREQUENCY_MASK | NOT_SET_AMPLITUDE_MASK;
+    private final StructSetterValidationObject setterValidation;
 
     /**
      * Ensures that, for malloc'ed instances, all field setters have been called before use.
      * If this instance was created with calloc (or copied from another struct), this check is a no-op.
      */
     public void checkValidStateForUse() {
-        if (checkSetCalled == 0) { return; }
-        StringBuilder missing = new StringBuilder();
-        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("type");
-        }
-        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("next");
-        }
-        if ((checkSetCalled & NOT_SET_DURATION_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("duration");
-        }
-        if ((checkSetCalled & NOT_SET_FREQUENCY_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("frequency");
-        }
-        if ((checkSetCalled & NOT_SET_AMPLITUDE_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("amplitude");
-        }
-        if (missing.length() > 0) {
-            throw new IllegalStateException("XrHapticVibration has unset fields: " + missing.toString());
-        }
+        setterValidation.checkValidStateForUse();
+    }
+
+    /**
+     * Informs this struct that it has been malloced and so must have setter validation carried out
+     */
+    public void setNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNeedsToValidateAllMethodsCalled();
     }
 
     /** Get a view of this struct as its parent (for use in methods that take the parent)*/
@@ -258,7 +239,7 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
     /** Returns a new {@code XrHapticVibration} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrHapticVibration malloc() {
         XrHapticVibration instance = new XrHapticVibration(nmemAllocChecked(SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -289,7 +270,9 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity) {
-        return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        Buffer buf = new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -333,7 +316,7 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
      */
     public static XrHapticVibration malloc(MemoryStack stack) {
         XrHapticVibration instance = new XrHapticVibration(stack.nmalloc(ALIGNOF, SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -353,7 +336,9 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity, MemoryStack stack) {
-        return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        Buffer buf = new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -411,7 +396,7 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
     /** An array of {@link XrHapticVibration} structs. */
     public static class Buffer extends StructBuffer<XrHapticVibration, Buffer> {
 
-        private static final XrHapticVibration ELEMENT_FACTORY = XrHapticVibration.create(-1L);
+        private static final Function<Long,XrHapticVibration> ELEMENT_FACTORY = address ->XrHapticVibration.create(address);
 
         /**
          * Creates a new {@code XrHapticVibration.Buffer} instance backed by the specified container.
@@ -423,25 +408,15 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
          * <p>The created buffer instance holds a strong reference to the container object.</p>
          */
         public Buffer(ByteBuffer container) {
-            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);
+            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF, SIZEOF);
         }
 
         public Buffer(long address, int cap) {
-            super(address, null, -1, 0, cap, cap);
-        }
-
-        @Override
-        public XrHapticVibration get(int index) {
-            return XrHapticVibration.create(address + index * SIZEOF);
-        }
-
-        @Override
-        public Buffer slice() {
-            return slice(0, remaining());
+            super(address, null, -1, 0, cap, cap, SIZEOF);
         }
 
         Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {
-            super(address, container, mark, pos, lim, cap);
+            super(address, container, mark, pos, lim, cap, SIZEOF);
         }
 
         @Override
@@ -455,7 +430,7 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
         }
 
         @Override
-        protected XrHapticVibration getElementFactory() {
+        protected Function<Long,XrHapticVibration> getElementFactory() {
             return ELEMENT_FACTORY;
         }
 

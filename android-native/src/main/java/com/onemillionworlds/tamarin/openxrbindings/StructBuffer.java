@@ -6,19 +6,24 @@ package com.onemillionworlds.tamarin.openxrbindings;
 import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
 
 import java.nio.ByteBuffer;
+import java.util.function.Function;
 
 public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T, B>> implements NativeResource {
     protected long address;
     protected ByteBuffer container;
-    protected int mark, position, limit, capacity;
+    protected int mark, position, limit, capacity, sizeOf;
 
-    protected StructBuffer(long address, ByteBuffer container, int mark, int position, int limit, int capacity) {
+    Object[] cachedElements;
+
+    protected StructBuffer(long address, ByteBuffer container, int mark, int position, int limit, int capacity, int sizeOf) {
         this.address = address;
         this.container = container;
         this.mark = mark;
         this.position = position;
         this.limit = limit;
         this.capacity = capacity;
+        this.sizeOf = sizeOf;
+        this.cachedElements = new Object[capacity];
     }
 
     /**
@@ -38,6 +43,12 @@ public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T
         if (address != 0) {
             MemoryUtil.nmemFree(address);
             address = 0;
+        }
+    }
+
+    public void markAllAsNeedsValidation(){
+        for(int i = 0; i < capacity; i++){
+            get(i).setNeedsToValidateAllMethodsCalled();
         }
     }
 
@@ -100,17 +111,20 @@ public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T
         return limit - position;
     }
 
-    /**
-     * Returns the size in bytes of a single element in this buffer.
-     */
-    public int sizeof() {
-        return getElementFactory().sizeof();
-    }
 
     /**
      * Returns the element at the specified index.
      */
-    public abstract T get(int index);
+    @SuppressWarnings("unchecked")
+    public final T get(int index){
+        if (index < 0 || index >= capacity) {
+            throw new IndexOutOfBoundsException("Invalid index: " + index);
+        }
+        if(cachedElements[index] == null){
+            cachedElements[index] = getElementFactory().apply(address + (long) index * sizeOf);
+        }
+        return (T)cachedElements[index];
+    }
 
     /**
      * Returns the element at the current position and increments the position.
@@ -122,25 +136,9 @@ public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T
     }
 
     /**
-     * Returns a slice of this buffer.
-     */
-    public abstract B slice();
-
-    /**
-     * Returns a slice of this buffer with the specified position and limit.
-     */
-    public B slice(int position, int limit) {
-        if (position < 0 || position > limit || limit > capacity) {
-            throw new IllegalArgumentException("Invalid position/limit: " + position + "/" + limit);
-        }
-        return create(address + position * getElementFactory().sizeof(), container, -1, 0, limit - position, limit - position);
-    }
-
-
-    /**
      * Returns a factory for creating elements of this buffer.
      */
-    protected abstract T getElementFactory();
+    protected abstract Function<Long,T> getElementFactory();
 
     /**
      * Returns this buffer.
@@ -155,18 +153,9 @@ public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T
     @Override
     public String toString() {
         String structName;
-        T factory = null;
-        try {
-            factory = getElementFactory();
-        } catch (Throwable t) {
-            // ignore, fallback if factory retrieval fails
-        }
-        if (factory != null) {
-            String simple = factory.getClass().getSimpleName();
-            structName = (simple != null && !simple.isEmpty()) ? simple : factory.getClass().getName();
-        } else {
-            structName = "Struct";
-        }
+        T representative = get(0);
+
+        structName = representative.getClass().getSimpleName();
         String bufferName = structName + ".Buffer";
 
         StringBuilder sb = new StringBuilder(bufferName).append('{');
@@ -175,11 +164,6 @@ public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T
         sb.append(", position=").append(position);
         sb.append(", limit=").append(limit);
         sb.append(", capacity=").append(capacity);
-        try {
-            sb.append(", sizeof=").append(sizeof());
-        } catch (Throwable t) {
-            sb.append("<error:").append(t.getClass().getSimpleName()).append(">");
-        }
         sb.append(", elements=[");
         int count = limit;
         for (int i = 0; i < count; i++) {

@@ -14,6 +14,8 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView
 
 import java.nio.ByteBuffer;
 
+import java.util.Map;
+import java.util.function.Function;
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
 import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
@@ -42,6 +44,8 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
     /** The struct alignment in bytes. */
     public static final int ALIGNOF;
 
+    /** Runtime validation bit masks for field setters. */
+    private static final Map<String, Integer> FIELD_BIT_MASKS;
     /** The struct member offsets. */
     public static final int
         TYPE,
@@ -70,10 +74,12 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
         MESSAGETYPES = layout.offsetof(3);
         USERCALLBACK = layout.offsetof(4);
         USERDATA = layout.offsetof(5);
+        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("type", "next", "messageSeverities", "messageTypes", "userCallback", "userData");
     }
 
     protected XrDebugUtilsMessengerCreateInfoEXT(long address, ByteBuffer container) {
         super(address, container);
+        this.setterValidation = new StructSetterValidationObject("XrDebugUtilsMessengerCreateInfoEXT", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -89,6 +95,7 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
      */
     public XrDebugUtilsMessengerCreateInfoEXT(ByteBuffer container) {
         super(memAddress(container), __checkContainer(container, SIZEOF));
+        this.setterValidation = new StructSetterValidationObject("XrDebugUtilsMessengerCreateInfoEXT", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -122,37 +129,37 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
     /** Sets the specified value to the {@code type} field. */
     public XrDebugUtilsMessengerCreateInfoEXT type(XrStructureType value) { 
         XrDebugUtilsMessengerCreateInfoEXT.ntype(address(), value.getValue());
-        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
+        this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrDebugUtilsMessengerCreateInfoEXT next(long value) { 
         XrDebugUtilsMessengerCreateInfoEXT.nnext(address(), value);
-        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
+        this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code messageSeverities} field. */
     public XrDebugUtilsMessengerCreateInfoEXT messageSeverities(long value) { 
         XrDebugUtilsMessengerCreateInfoEXT.nmessageSeverities(address(), value);
-        this.checkSetCalled &= ~NOT_SET_MESSAGESEVERITIES_MASK;
+        this.setterValidation.setFieldCalled("messageSeverities");
         return this;
     }
     /** Sets the specified value to the {@code messageTypes} field. */
     public XrDebugUtilsMessengerCreateInfoEXT messageTypes(long value) { 
         XrDebugUtilsMessengerCreateInfoEXT.nmessageTypes(address(), value);
-        this.checkSetCalled &= ~NOT_SET_MESSAGETYPES_MASK;
+        this.setterValidation.setFieldCalled("messageTypes");
         return this;
     }
     /** Sets the specified value to the {@code userCallback} field. */
     public XrDebugUtilsMessengerCreateInfoEXT userCallback(long value) { 
         XrDebugUtilsMessengerCreateInfoEXT.nuserCallback(address(), value);
-        this.checkSetCalled &= ~NOT_SET_USERCALLBACK_MASK;
+        this.setterValidation.setFieldCalled("userCallback");
         return this;
     }
     /** Sets the specified value to the {@code userData} field. */
     public XrDebugUtilsMessengerCreateInfoEXT userData(long value) { 
         XrDebugUtilsMessengerCreateInfoEXT.nuserData(address(), value);
-        this.checkSetCalled &= ~NOT_SET_USERDATA_MASK;
+        this.setterValidation.setFieldCalled("userData");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -213,52 +220,21 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
         return sb.toString();
     }
 
-    // Runtime initialization tracking for malloc'ed instances
-    private int checkSetCalled;
-
-    private static final int NOT_SET_TYPE_MASK = 1 << 0;
-    private static final int NOT_SET_NEXT_MASK = 1 << 1;
-    private static final int NOT_SET_MESSAGESEVERITIES_MASK = 1 << 2;
-    private static final int NOT_SET_MESSAGETYPES_MASK = 1 << 3;
-    private static final int NOT_SET_USERCALLBACK_MASK = 1 << 4;
-    private static final int NOT_SET_USERDATA_MASK = 1 << 5;
-
-    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_MESSAGESEVERITIES_MASK | NOT_SET_MESSAGETYPES_MASK | NOT_SET_USERCALLBACK_MASK | NOT_SET_USERDATA_MASK;
+    private final StructSetterValidationObject setterValidation;
 
     /**
      * Ensures that, for malloc'ed instances, all field setters have been called before use.
      * If this instance was created with calloc (or copied from another struct), this check is a no-op.
      */
     public void checkValidStateForUse() {
-        if (checkSetCalled == 0) { return; }
-        StringBuilder missing = new StringBuilder();
-        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("type");
-        }
-        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("next");
-        }
-        if ((checkSetCalled & NOT_SET_MESSAGESEVERITIES_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("messageSeverities");
-        }
-        if ((checkSetCalled & NOT_SET_MESSAGETYPES_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("messageTypes");
-        }
-        if ((checkSetCalled & NOT_SET_USERCALLBACK_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("userCallback");
-        }
-        if ((checkSetCalled & NOT_SET_USERDATA_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("userData");
-        }
-        if (missing.length() > 0) {
-            throw new IllegalStateException("XrDebugUtilsMessengerCreateInfoEXT has unset fields: " + missing.toString());
-        }
+        setterValidation.checkValidStateForUse();
+    }
+
+    /**
+     * Informs this struct that it has been malloced and so must have setter validation carried out
+     */
+    public void setNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNeedsToValidateAllMethodsCalled();
     }
 
     // -----------------------------------
@@ -266,7 +242,7 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
     /** Returns a new {@code XrDebugUtilsMessengerCreateInfoEXT} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrDebugUtilsMessengerCreateInfoEXT malloc() {
         XrDebugUtilsMessengerCreateInfoEXT instance = new XrDebugUtilsMessengerCreateInfoEXT(nmemAllocChecked(SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -297,7 +273,9 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity) {
-        return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        Buffer buf = new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -341,7 +319,7 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
      */
     public static XrDebugUtilsMessengerCreateInfoEXT malloc(MemoryStack stack) {
         XrDebugUtilsMessengerCreateInfoEXT instance = new XrDebugUtilsMessengerCreateInfoEXT(stack.nmalloc(ALIGNOF, SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -361,7 +339,9 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity, MemoryStack stack) {
-        return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        Buffer buf = new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -422,7 +402,7 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
     /** An array of {@link XrDebugUtilsMessengerCreateInfoEXT} structs. */
     public static class Buffer extends StructBuffer<XrDebugUtilsMessengerCreateInfoEXT, Buffer> {
 
-        private static final XrDebugUtilsMessengerCreateInfoEXT ELEMENT_FACTORY = XrDebugUtilsMessengerCreateInfoEXT.create(-1L);
+        private static final Function<Long,XrDebugUtilsMessengerCreateInfoEXT> ELEMENT_FACTORY = address ->XrDebugUtilsMessengerCreateInfoEXT.create(address);
 
         /**
          * Creates a new {@code XrDebugUtilsMessengerCreateInfoEXT.Buffer} instance backed by the specified container.
@@ -434,25 +414,15 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
          * <p>The created buffer instance holds a strong reference to the container object.</p>
          */
         public Buffer(ByteBuffer container) {
-            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);
+            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF, SIZEOF);
         }
 
         public Buffer(long address, int cap) {
-            super(address, null, -1, 0, cap, cap);
-        }
-
-        @Override
-        public XrDebugUtilsMessengerCreateInfoEXT get(int index) {
-            return XrDebugUtilsMessengerCreateInfoEXT.create(address + index * SIZEOF);
-        }
-
-        @Override
-        public Buffer slice() {
-            return slice(0, remaining());
+            super(address, null, -1, 0, cap, cap, SIZEOF);
         }
 
         Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {
-            super(address, container, mark, pos, lim, cap);
+            super(address, container, mark, pos, lim, cap, SIZEOF);
         }
 
         @Override
@@ -466,7 +436,7 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
         }
 
         @Override
-        protected XrDebugUtilsMessengerCreateInfoEXT getElementFactory() {
+        protected Function<Long,XrDebugUtilsMessengerCreateInfoEXT> getElementFactory() {
             return ELEMENT_FACTORY;
         }
 

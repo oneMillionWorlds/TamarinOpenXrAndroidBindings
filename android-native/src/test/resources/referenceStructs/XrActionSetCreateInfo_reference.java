@@ -14,6 +14,8 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView
 
 import java.nio.ByteBuffer;
 
+import java.util.Map;
+import java.util.function.Function;
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
 import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
@@ -41,6 +43,8 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
     /** The struct alignment in bytes. */
     public static final int ALIGNOF;
 
+    /** Runtime validation bit masks for field setters. */
+    private static final Map<String, Integer> FIELD_BIT_MASKS;
     /** The struct member offsets. */
     public static final int
         TYPE,
@@ -66,10 +70,12 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         ACTIONSETNAME = layout.offsetof(2);
         LOCALIZEDACTIONSETNAME = layout.offsetof(3);
         PRIORITY = layout.offsetof(4);
+        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("type", "next", "actionSetName", "localizedActionSetName", "priority");
     }
 
     protected XrActionSetCreateInfo(long address, ByteBuffer container) {
         super(address, container);
+        this.setterValidation = new StructSetterValidationObject("XrActionSetCreateInfo", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -85,6 +91,7 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
      */
     public XrActionSetCreateInfo(ByteBuffer container) {
         super(memAddress(container), __checkContainer(container, SIZEOF));
+        this.setterValidation = new StructSetterValidationObject("XrActionSetCreateInfo", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -122,31 +129,31 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
     /** Sets the specified value to the {@code type} field. */
     public XrActionSetCreateInfo type(XrStructureType value) { 
         XrActionSetCreateInfo.ntype(address(), value.getValue());
-        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
+        this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrActionSetCreateInfo next(long value) { 
         XrActionSetCreateInfo.nnext(address(), value);
-        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
+        this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code actionSetName} field. */
     public XrActionSetCreateInfo actionSetName(ByteBufferView value) { 
         XrActionSetCreateInfo.nactionSetName(address(), value);
-        this.checkSetCalled &= ~NOT_SET_ACTIONSETNAME_MASK;
+        this.setterValidation.setFieldCalled("actionSetName");
         return this;
     }
     /** Sets the specified value to the {@code localizedActionSetName} field. */
     public XrActionSetCreateInfo localizedActionSetName(ByteBufferView value) { 
         XrActionSetCreateInfo.nlocalizedActionSetName(address(), value);
-        this.checkSetCalled &= ~NOT_SET_LOCALIZEDACTIONSETNAME_MASK;
+        this.setterValidation.setFieldCalled("localizedActionSetName");
         return this;
     }
     /** Sets the specified value to the {@code priority} field. */
     public XrActionSetCreateInfo priority(int value) { 
         XrActionSetCreateInfo.npriority(address(), value);
-        this.checkSetCalled &= ~NOT_SET_PRIORITY_MASK;
+        this.setterValidation.setFieldCalled("priority");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -202,47 +209,21 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         return sb.toString();
     }
 
-    // Runtime initialization tracking for malloc'ed instances
-    private int checkSetCalled;
-
-    private static final int NOT_SET_TYPE_MASK = 1 << 0;
-    private static final int NOT_SET_NEXT_MASK = 1 << 1;
-    private static final int NOT_SET_ACTIONSETNAME_MASK = 1 << 2;
-    private static final int NOT_SET_LOCALIZEDACTIONSETNAME_MASK = 1 << 3;
-    private static final int NOT_SET_PRIORITY_MASK = 1 << 4;
-
-    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_ACTIONSETNAME_MASK | NOT_SET_LOCALIZEDACTIONSETNAME_MASK | NOT_SET_PRIORITY_MASK;
+    private final StructSetterValidationObject setterValidation;
 
     /**
      * Ensures that, for malloc'ed instances, all field setters have been called before use.
      * If this instance was created with calloc (or copied from another struct), this check is a no-op.
      */
     public void checkValidStateForUse() {
-        if (checkSetCalled == 0) { return; }
-        StringBuilder missing = new StringBuilder();
-        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("type");
-        }
-        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("next");
-        }
-        if ((checkSetCalled & NOT_SET_ACTIONSETNAME_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("actionSetName");
-        }
-        if ((checkSetCalled & NOT_SET_LOCALIZEDACTIONSETNAME_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("localizedActionSetName");
-        }
-        if ((checkSetCalled & NOT_SET_PRIORITY_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("priority");
-        }
-        if (missing.length() > 0) {
-            throw new IllegalStateException("XrActionSetCreateInfo has unset fields: " + missing.toString());
-        }
+        setterValidation.checkValidStateForUse();
+    }
+
+    /**
+     * Informs this struct that it has been malloced and so must have setter validation carried out
+     */
+    public void setNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNeedsToValidateAllMethodsCalled();
     }
 
     // -----------------------------------
@@ -250,7 +231,7 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
     /** Returns a new {@code XrActionSetCreateInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrActionSetCreateInfo malloc() {
         XrActionSetCreateInfo instance = new XrActionSetCreateInfo(nmemAllocChecked(SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -281,7 +262,9 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity) {
-        return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        Buffer buf = new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -325,7 +308,7 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
      */
     public static XrActionSetCreateInfo malloc(MemoryStack stack) {
         XrActionSetCreateInfo instance = new XrActionSetCreateInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -345,7 +328,9 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity, MemoryStack stack) {
-        return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        Buffer buf = new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -423,7 +408,7 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
     /** An array of {@link XrActionSetCreateInfo} structs. */
     public static class Buffer extends StructBuffer<XrActionSetCreateInfo, Buffer> {
 
-        private static final XrActionSetCreateInfo ELEMENT_FACTORY = XrActionSetCreateInfo.create(-1L);
+        private static final Function<Long,XrActionSetCreateInfo> ELEMENT_FACTORY = address ->XrActionSetCreateInfo.create(address);
 
         /**
          * Creates a new {@code XrActionSetCreateInfo.Buffer} instance backed by the specified container.
@@ -435,25 +420,15 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
          * <p>The created buffer instance holds a strong reference to the container object.</p>
          */
         public Buffer(ByteBuffer container) {
-            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);
+            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF, SIZEOF);
         }
 
         public Buffer(long address, int cap) {
-            super(address, null, -1, 0, cap, cap);
-        }
-
-        @Override
-        public XrActionSetCreateInfo get(int index) {
-            return XrActionSetCreateInfo.create(address + index * SIZEOF);
-        }
-
-        @Override
-        public Buffer slice() {
-            return slice(0, remaining());
+            super(address, null, -1, 0, cap, cap, SIZEOF);
         }
 
         Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {
-            super(address, container, mark, pos, lim, cap);
+            super(address, container, mark, pos, lim, cap, SIZEOF);
         }
 
         @Override
@@ -467,7 +442,7 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
         }
 
         @Override
-        protected XrActionSetCreateInfo getElementFactory() {
+        protected Function<Long,XrActionSetCreateInfo> getElementFactory() {
             return ELEMENT_FACTORY;
         }
 

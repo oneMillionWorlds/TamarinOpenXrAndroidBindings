@@ -14,6 +14,8 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView
 
 import java.nio.ByteBuffer;
 
+import java.util.Map;
+import java.util.function.Function;
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
 import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
@@ -44,6 +46,8 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
     /** The struct alignment in bytes. */
     public static final int ALIGNOF;
 
+    /** Runtime validation bit masks for field setters. */
+    private static final Map<String, Integer> FIELD_BIT_MASKS;
     /** The struct member offsets. */
     public static final int
         TYPE,
@@ -78,10 +82,12 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
         ENABLEDAPILAYERNAMES = layout.offsetof(5);
         ENABLEDEXTENSIONCOUNT = layout.offsetof(6);
         ENABLEDEXTENSIONNAMES = layout.offsetof(7);
+        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("type", "next", "createFlags", "applicationInfo", "enabledApiLayerCount", "enabledApiLayerNames", "enabledExtensionCount", "enabledExtensionNames");
     }
 
     protected XrInstanceCreateInfo(long address, ByteBuffer container) {
         super(address, container);
+        this.setterValidation = new StructSetterValidationObject("XrInstanceCreateInfo", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -97,6 +103,7 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
      */
     public XrInstanceCreateInfo(ByteBuffer container) {
         super(memAddress(container), __checkContainer(container, SIZEOF));
+        this.setterValidation = new StructSetterValidationObject("XrInstanceCreateInfo", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -138,49 +145,49 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
     /** Sets the specified value to the {@code type} field. */
     public XrInstanceCreateInfo type(XrStructureType value) { 
         XrInstanceCreateInfo.ntype(address(), value.getValue());
-        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
+        this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrInstanceCreateInfo next(long value) { 
         XrInstanceCreateInfo.nnext(address(), value);
-        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
+        this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code createFlags} field. */
     public XrInstanceCreateInfo createFlags(long value) { 
         XrInstanceCreateInfo.ncreateFlags(address(), value);
-        this.checkSetCalled &= ~NOT_SET_CREATEFLAGS_MASK;
+        this.setterValidation.setFieldCalled("createFlags");
         return this;
     }
     /** Sets the specified value to the {@code applicationInfo} field. */
     public XrInstanceCreateInfo applicationInfo(XrApplicationInfo value) { 
         XrInstanceCreateInfo.napplicationInfo(address(), value);
-        this.checkSetCalled &= ~NOT_SET_APPLICATIONINFO_MASK;
+        this.setterValidation.setFieldCalled("applicationInfo");
         return this;
     }
     /** Sets the specified value to the {@code enabledApiLayerCount} field. */
     public XrInstanceCreateInfo enabledApiLayerCount(int value) { 
         XrInstanceCreateInfo.nenabledApiLayerCount(address(), value);
-        this.checkSetCalled &= ~NOT_SET_ENABLEDAPILAYERCOUNT_MASK;
+        this.setterValidation.setFieldCalled("enabledApiLayerCount");
         return this;
     }
     /** Sets the specified value to the {@code enabledApiLayerNames} field. */
     public XrInstanceCreateInfo enabledApiLayerNames(long value) { 
         XrInstanceCreateInfo.nenabledApiLayerNames(address(), value);
-        this.checkSetCalled &= ~NOT_SET_ENABLEDAPILAYERNAMES_MASK;
+        this.setterValidation.setFieldCalled("enabledApiLayerNames");
         return this;
     }
     /** Sets the specified value to the {@code enabledExtensionCount} field. */
     public XrInstanceCreateInfo enabledExtensionCount(int value) { 
         XrInstanceCreateInfo.nenabledExtensionCount(address(), value);
-        this.checkSetCalled &= ~NOT_SET_ENABLEDEXTENSIONCOUNT_MASK;
+        this.setterValidation.setFieldCalled("enabledExtensionCount");
         return this;
     }
     /** Sets the specified value to the {@code enabledExtensionNames} field. */
     public XrInstanceCreateInfo enabledExtensionNames(long value) { 
         XrInstanceCreateInfo.nenabledExtensionNames(address(), value);
-        this.checkSetCalled &= ~NOT_SET_ENABLEDEXTENSIONNAMES_MASK;
+        this.setterValidation.setFieldCalled("enabledExtensionNames");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -251,62 +258,21 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
         return sb.toString();
     }
 
-    // Runtime initialization tracking for malloc'ed instances
-    private int checkSetCalled;
-
-    private static final int NOT_SET_TYPE_MASK = 1 << 0;
-    private static final int NOT_SET_NEXT_MASK = 1 << 1;
-    private static final int NOT_SET_CREATEFLAGS_MASK = 1 << 2;
-    private static final int NOT_SET_APPLICATIONINFO_MASK = 1 << 3;
-    private static final int NOT_SET_ENABLEDAPILAYERCOUNT_MASK = 1 << 4;
-    private static final int NOT_SET_ENABLEDAPILAYERNAMES_MASK = 1 << 5;
-    private static final int NOT_SET_ENABLEDEXTENSIONCOUNT_MASK = 1 << 6;
-    private static final int NOT_SET_ENABLEDEXTENSIONNAMES_MASK = 1 << 7;
-
-    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_CREATEFLAGS_MASK | NOT_SET_APPLICATIONINFO_MASK | NOT_SET_ENABLEDAPILAYERCOUNT_MASK | NOT_SET_ENABLEDAPILAYERNAMES_MASK | NOT_SET_ENABLEDEXTENSIONCOUNT_MASK | NOT_SET_ENABLEDEXTENSIONNAMES_MASK;
+    private final StructSetterValidationObject setterValidation;
 
     /**
      * Ensures that, for malloc'ed instances, all field setters have been called before use.
      * If this instance was created with calloc (or copied from another struct), this check is a no-op.
      */
     public void checkValidStateForUse() {
-        if (checkSetCalled == 0) { return; }
-        StringBuilder missing = new StringBuilder();
-        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("type");
-        }
-        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("next");
-        }
-        if ((checkSetCalled & NOT_SET_CREATEFLAGS_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("createFlags");
-        }
-        if ((checkSetCalled & NOT_SET_APPLICATIONINFO_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("applicationInfo");
-        }
-        if ((checkSetCalled & NOT_SET_ENABLEDAPILAYERCOUNT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("enabledApiLayerCount");
-        }
-        if ((checkSetCalled & NOT_SET_ENABLEDAPILAYERNAMES_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("enabledApiLayerNames");
-        }
-        if ((checkSetCalled & NOT_SET_ENABLEDEXTENSIONCOUNT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("enabledExtensionCount");
-        }
-        if ((checkSetCalled & NOT_SET_ENABLEDEXTENSIONNAMES_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("enabledExtensionNames");
-        }
-        if (missing.length() > 0) {
-            throw new IllegalStateException("XrInstanceCreateInfo has unset fields: " + missing.toString());
-        }
+        setterValidation.checkValidStateForUse();
+    }
+
+    /**
+     * Informs this struct that it has been malloced and so must have setter validation carried out
+     */
+    public void setNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNeedsToValidateAllMethodsCalled();
     }
 
     // -----------------------------------
@@ -314,7 +280,7 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
     /** Returns a new {@code XrInstanceCreateInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrInstanceCreateInfo malloc() {
         XrInstanceCreateInfo instance = new XrInstanceCreateInfo(nmemAllocChecked(SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -345,7 +311,9 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity) {
-        return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        Buffer buf = new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -389,7 +357,7 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
      */
     public static XrInstanceCreateInfo malloc(MemoryStack stack) {
         XrInstanceCreateInfo instance = new XrInstanceCreateInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -409,7 +377,9 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity, MemoryStack stack) {
-        return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        Buffer buf = new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -476,7 +446,7 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
     /** An array of {@link XrInstanceCreateInfo} structs. */
     public static class Buffer extends StructBuffer<XrInstanceCreateInfo, Buffer> {
 
-        private static final XrInstanceCreateInfo ELEMENT_FACTORY = XrInstanceCreateInfo.create(-1L);
+        private static final Function<Long,XrInstanceCreateInfo> ELEMENT_FACTORY = address ->XrInstanceCreateInfo.create(address);
 
         /**
          * Creates a new {@code XrInstanceCreateInfo.Buffer} instance backed by the specified container.
@@ -488,25 +458,15 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
          * <p>The created buffer instance holds a strong reference to the container object.</p>
          */
         public Buffer(ByteBuffer container) {
-            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);
+            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF, SIZEOF);
         }
 
         public Buffer(long address, int cap) {
-            super(address, null, -1, 0, cap, cap);
-        }
-
-        @Override
-        public XrInstanceCreateInfo get(int index) {
-            return XrInstanceCreateInfo.create(address + index * SIZEOF);
-        }
-
-        @Override
-        public Buffer slice() {
-            return slice(0, remaining());
+            super(address, null, -1, 0, cap, cap, SIZEOF);
         }
 
         Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {
-            super(address, container, mark, pos, lim, cap);
+            super(address, container, mark, pos, lim, cap, SIZEOF);
         }
 
         @Override
@@ -520,7 +480,7 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
         }
 
         @Override
-        protected XrInstanceCreateInfo getElementFactory() {
+        protected Function<Long,XrInstanceCreateInfo> getElementFactory() {
             return ELEMENT_FACTORY;
         }
 

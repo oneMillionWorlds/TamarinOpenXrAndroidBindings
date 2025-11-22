@@ -14,6 +14,8 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView
 
 import java.nio.ByteBuffer;
 
+import java.util.Map;
+import java.util.function.Function;
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
 import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
@@ -39,6 +41,8 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
     /** The struct alignment in bytes. */
     public static final int ALIGNOF;
 
+    /** Runtime validation bit masks for field setters. */
+    private static final Map<String, Integer> FIELD_BIT_MASKS;
     /** The struct member offsets. */
     public static final int
         POINTS,
@@ -58,10 +62,12 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
         POINTS = layout.offsetof(0);
         RADIUS = layout.offsetof(1);
         JOINT = layout.offsetof(2);
+        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("radius", "joint");
     }
 
     protected XrHandCapsuleFB(long address, ByteBuffer container) {
         super(address, container);
+        this.setterValidation = new StructSetterValidationObject("XrHandCapsuleFB", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -77,6 +83,7 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
      */
     public XrHandCapsuleFB(ByteBuffer container) {
         super(memAddress(container), __checkContainer(container, SIZEOF));
+        this.setterValidation = new StructSetterValidationObject("XrHandCapsuleFB", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -100,13 +107,13 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
     /** Sets the specified value to the {@code radius} field. */
     public XrHandCapsuleFB radius(float value) { 
         XrHandCapsuleFB.nradius(address(), value);
-        this.checkSetCalled &= ~NOT_SET_RADIUS_MASK;
+        this.setterValidation.setFieldCalled("radius");
         return this;
     }
     /** Sets the specified value to the {@code joint} field. */
     public XrHandCapsuleFB joint(XrHandJointEXT value) { 
         XrHandCapsuleFB.njoint(address(), value.getValue());
-        this.checkSetCalled &= ~NOT_SET_JOINT_MASK;
+        this.setterValidation.setFieldCalled("joint");
         return this;
     }
 
@@ -142,32 +149,21 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
         return sb.toString();
     }
 
-    // Runtime initialization tracking for malloc'ed instances
-    private int checkSetCalled;
-
-    private static final int NOT_SET_RADIUS_MASK = 1 << 0;
-    private static final int NOT_SET_JOINT_MASK = 1 << 1;
-
-    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_RADIUS_MASK | NOT_SET_JOINT_MASK;
+    private final StructSetterValidationObject setterValidation;
 
     /**
      * Ensures that, for malloc'ed instances, all field setters have been called before use.
      * If this instance was created with calloc (or copied from another struct), this check is a no-op.
      */
     public void checkValidStateForUse() {
-        if (checkSetCalled == 0) { return; }
-        StringBuilder missing = new StringBuilder();
-        if ((checkSetCalled & NOT_SET_RADIUS_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("radius");
-        }
-        if ((checkSetCalled & NOT_SET_JOINT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("joint");
-        }
-        if (missing.length() > 0) {
-            throw new IllegalStateException("XrHandCapsuleFB has unset fields: " + missing.toString());
-        }
+        setterValidation.checkValidStateForUse();
+    }
+
+    /**
+     * Informs this struct that it has been malloced and so must have setter validation carried out
+     */
+    public void setNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNeedsToValidateAllMethodsCalled();
     }
 
     // -----------------------------------
@@ -175,7 +171,7 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
     /** Returns a new {@code XrHandCapsuleFB} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrHandCapsuleFB malloc() {
         XrHandCapsuleFB instance = new XrHandCapsuleFB(nmemAllocChecked(SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -206,7 +202,9 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity) {
-        return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        Buffer buf = new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -250,7 +248,7 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
      */
     public static XrHandCapsuleFB malloc(MemoryStack stack) {
         XrHandCapsuleFB instance = new XrHandCapsuleFB(stack.nmalloc(ALIGNOF, SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -270,7 +268,9 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity, MemoryStack stack) {
-        return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        Buffer buf = new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -325,7 +325,7 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
     /** An array of {@link XrHandCapsuleFB} structs. */
     public static class Buffer extends StructBuffer<XrHandCapsuleFB, Buffer> {
 
-        private static final XrHandCapsuleFB ELEMENT_FACTORY = XrHandCapsuleFB.create(-1L);
+        private static final Function<Long,XrHandCapsuleFB> ELEMENT_FACTORY = address ->XrHandCapsuleFB.create(address);
 
         /**
          * Creates a new {@code XrHandCapsuleFB.Buffer} instance backed by the specified container.
@@ -337,25 +337,15 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
          * <p>The created buffer instance holds a strong reference to the container object.</p>
          */
         public Buffer(ByteBuffer container) {
-            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);
+            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF, SIZEOF);
         }
 
         public Buffer(long address, int cap) {
-            super(address, null, -1, 0, cap, cap);
-        }
-
-        @Override
-        public XrHandCapsuleFB get(int index) {
-            return XrHandCapsuleFB.create(address + index * SIZEOF);
-        }
-
-        @Override
-        public Buffer slice() {
-            return slice(0, remaining());
+            super(address, null, -1, 0, cap, cap, SIZEOF);
         }
 
         Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {
-            super(address, container, mark, pos, lim, cap);
+            super(address, container, mark, pos, lim, cap, SIZEOF);
         }
 
         @Override
@@ -369,7 +359,7 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
         }
 
         @Override
-        protected XrHandCapsuleFB getElementFactory() {
+        protected Function<Long,XrHandCapsuleFB> getElementFactory() {
             return ELEMENT_FACTORY;
         }
 

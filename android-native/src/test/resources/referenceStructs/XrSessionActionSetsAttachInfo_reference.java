@@ -14,6 +14,8 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView
 
 import java.nio.ByteBuffer;
 
+import java.util.Map;
+import java.util.function.Function;
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
 import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
@@ -40,6 +42,8 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     /** The struct alignment in bytes. */
     public static final int ALIGNOF;
 
+    /** Runtime validation bit masks for field setters. */
+    private static final Map<String, Integer> FIELD_BIT_MASKS;
     /** The struct member offsets. */
     public static final int
         TYPE,
@@ -62,10 +66,12 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         NEXT = layout.offsetof(1);
         COUNTACTIONSETS = layout.offsetof(2);
         ACTIONSETS = layout.offsetof(3);
+        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("type", "next", "countActionSets", "actionSets");
     }
 
     protected XrSessionActionSetsAttachInfo(long address, ByteBuffer container) {
         super(address, container);
+        this.setterValidation = new StructSetterValidationObject("XrSessionActionSetsAttachInfo", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -81,6 +87,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
      */
     public XrSessionActionSetsAttachInfo(ByteBuffer container) {
         super(memAddress(container), __checkContainer(container, SIZEOF));
+        this.setterValidation = new StructSetterValidationObject("XrSessionActionSetsAttachInfo", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -106,25 +113,25 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     /** Sets the specified value to the {@code type} field. */
     public XrSessionActionSetsAttachInfo type(XrStructureType value) { 
         XrSessionActionSetsAttachInfo.ntype(address(), value.getValue());
-        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
+        this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrSessionActionSetsAttachInfo next(long value) { 
         XrSessionActionSetsAttachInfo.nnext(address(), value);
-        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
+        this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code countActionSets} field. */
     public XrSessionActionSetsAttachInfo countActionSets(int value) { 
         XrSessionActionSetsAttachInfo.ncountActionSets(address(), value);
-        this.checkSetCalled &= ~NOT_SET_COUNTACTIONSETS_MASK;
+        this.setterValidation.setFieldCalled("countActionSets");
         return this;
     }
     /** Sets the specified value to the {@code actionSets} field. */
     public XrSessionActionSetsAttachInfo actionSets(XrActionSet.HandleBuffer value) { 
         XrSessionActionSetsAttachInfo.nactionSets(address(), value);
-        this.checkSetCalled &= ~NOT_SET_ACTIONSETS_MASK;
+        this.setterValidation.setFieldCalled("actionSets");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -175,42 +182,21 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         return sb.toString();
     }
 
-    // Runtime initialization tracking for malloc'ed instances
-    private int checkSetCalled;
-
-    private static final int NOT_SET_TYPE_MASK = 1 << 0;
-    private static final int NOT_SET_NEXT_MASK = 1 << 1;
-    private static final int NOT_SET_COUNTACTIONSETS_MASK = 1 << 2;
-    private static final int NOT_SET_ACTIONSETS_MASK = 1 << 3;
-
-    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_COUNTACTIONSETS_MASK | NOT_SET_ACTIONSETS_MASK;
+    private final StructSetterValidationObject setterValidation;
 
     /**
      * Ensures that, for malloc'ed instances, all field setters have been called before use.
      * If this instance was created with calloc (or copied from another struct), this check is a no-op.
      */
     public void checkValidStateForUse() {
-        if (checkSetCalled == 0) { return; }
-        StringBuilder missing = new StringBuilder();
-        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("type");
-        }
-        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("next");
-        }
-        if ((checkSetCalled & NOT_SET_COUNTACTIONSETS_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("countActionSets");
-        }
-        if ((checkSetCalled & NOT_SET_ACTIONSETS_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("actionSets");
-        }
-        if (missing.length() > 0) {
-            throw new IllegalStateException("XrSessionActionSetsAttachInfo has unset fields: " + missing.toString());
-        }
+        setterValidation.checkValidStateForUse();
+    }
+
+    /**
+     * Informs this struct that it has been malloced and so must have setter validation carried out
+     */
+    public void setNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNeedsToValidateAllMethodsCalled();
     }
 
     // -----------------------------------
@@ -218,7 +204,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     /** Returns a new {@code XrSessionActionSetsAttachInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrSessionActionSetsAttachInfo malloc() {
         XrSessionActionSetsAttachInfo instance = new XrSessionActionSetsAttachInfo(nmemAllocChecked(SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -249,7 +235,9 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity) {
-        return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        Buffer buf = new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -293,7 +281,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
      */
     public static XrSessionActionSetsAttachInfo malloc(MemoryStack stack) {
         XrSessionActionSetsAttachInfo instance = new XrSessionActionSetsAttachInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -313,7 +301,9 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity, MemoryStack stack) {
-        return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        Buffer buf = new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -376,7 +366,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     /** An array of {@link XrSessionActionSetsAttachInfo} structs. */
     public static class Buffer extends StructBuffer<XrSessionActionSetsAttachInfo, Buffer> {
 
-        private static final XrSessionActionSetsAttachInfo ELEMENT_FACTORY = XrSessionActionSetsAttachInfo.create(-1L);
+        private static final Function<Long,XrSessionActionSetsAttachInfo> ELEMENT_FACTORY = address ->XrSessionActionSetsAttachInfo.create(address);
 
         /**
          * Creates a new {@code XrSessionActionSetsAttachInfo.Buffer} instance backed by the specified container.
@@ -388,25 +378,15 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
          * <p>The created buffer instance holds a strong reference to the container object.</p>
          */
         public Buffer(ByteBuffer container) {
-            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);
+            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF, SIZEOF);
         }
 
         public Buffer(long address, int cap) {
-            super(address, null, -1, 0, cap, cap);
-        }
-
-        @Override
-        public XrSessionActionSetsAttachInfo get(int index) {
-            return XrSessionActionSetsAttachInfo.create(address + index * SIZEOF);
-        }
-
-        @Override
-        public Buffer slice() {
-            return slice(0, remaining());
+            super(address, null, -1, 0, cap, cap, SIZEOF);
         }
 
         Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {
-            super(address, container, mark, pos, lim, cap);
+            super(address, container, mark, pos, lim, cap, SIZEOF);
         }
 
         @Override
@@ -420,7 +400,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         }
 
         @Override
-        protected XrSessionActionSetsAttachInfo getElementFactory() {
+        protected Function<Long,XrSessionActionSetsAttachInfo> getElementFactory() {
             return ELEMENT_FACTORY;
         }
 

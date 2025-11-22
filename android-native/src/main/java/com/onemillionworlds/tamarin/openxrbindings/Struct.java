@@ -27,6 +27,15 @@ public abstract class Struct<T extends Struct<T>> implements NativeResource {
 
     abstract void checkValidStateForUse();
 
+    /**
+     * If called this sets the object to track that the setters have all been called and if the struct is
+     * used without all of the setters being called, an exception will be thrown.
+     * <p>
+     *     This is used when the object has been malloc created and so may contain garbage data on construction
+     * </p>
+     */
+    abstract void setNeedsToValidateAllMethodsCalled();
+
     public ByteBuffer container() {
         return container;
     }

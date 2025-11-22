@@ -53,9 +53,13 @@ public class StructGenerator extends FileGenerator {
 
 
         writer.append("\nimport java.nio.ByteBuffer;\n\n");
+        writer.append("import java.util.Map;\n");
+        writer.append("import java.util.function.Function;\n");
+
         writer.append("import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;\n");
         writer.append("import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;\n");
         writer.append("import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;\n");
+
 
         writer.append("\n");
         writer.append("/**\n");
@@ -103,6 +107,10 @@ public class StructGenerator extends FileGenerator {
         writer.append("    public static final int SIZEOF;\n\n");
         writer.append("    /** The struct alignment in bytes. */\n");
         writer.append("    public static final int ALIGNOF;\n\n");
+
+        // Validation bit masks map declaration
+        writer.append("    /** Runtime validation bit masks for field setters. */\n");
+        writer.append("    private static final Map<String, Integer> FIELD_BIT_MASKS;\n");
 
         // Write field offsets
         writer.append("    /** The struct member offsets. */\n");
@@ -168,11 +176,25 @@ public class StructGenerator extends FileGenerator {
             String fieldName = field.getName().toUpperCase();
             writer.append("        " + fieldName + " = layout.offsetof(" + i + ");\n");
         }
+
+        // Initialize validation bit masks map and combined mask
+        StringBuilder fieldNamesForMask = new StringBuilder();
+        int __maskFieldCount = 0;
+        for (StructField f : struct.getFields()) {
+            boolean hasSetterF = !(f.getArraySizeConstant() != null && f.isStruct() && !f.isPointer());
+            if (!hasSetterF) { continue; }
+            if (__maskFieldCount++ > 0) { fieldNamesForMask.append(", "); }
+            fieldNamesForMask.append("\"").append(f.getName()).append("\"");
+        }
+        writer.append("        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks(")
+              .append(fieldNamesForMask)
+              .append(");\n");
         writer.append("    }\n\n");
 
         // Write constructors and methods
         writer.append("    protected " + struct.getName() + "(long address, ByteBuffer container) {\n");
         writer.append("        super(address, container);\n");
+        writer.append("        this.setterValidation = new StructSetterValidationObject(\"").append(struct.getName()).append("\", FIELD_BIT_MASKS);\n");
         writer.append("    }\n\n");
 
         writer.append("    @Override\n");
@@ -204,6 +226,7 @@ public class StructGenerator extends FileGenerator {
         writer.append("     */\n");
         writer.append("    public " + struct.getName() + "(ByteBuffer container) {\n");
         writer.append("        super(memAddress(container), __checkContainer(container, SIZEOF));\n");
+        writer.append("        this.setterValidation = new StructSetterValidationObject(\"").append(struct.getName()).append("\", FIELD_BIT_MASKS);\n");
         writer.append("    }\n\n");
 
         writer.append("    @Override\n");
@@ -295,63 +318,24 @@ public class StructGenerator extends FileGenerator {
         writer.append("        return sb.toString();\n");
         writer.append("    }\n\n");
 
-        // Add runtime field-initialization tracking: bitfield and masks for fields with setters
-        {
-            // Declare instance bitfield
-            writer.append("    // Runtime initialization tracking for malloc'ed instances\n");
-            writer.append("    private int checkSetCalled;\n\n");
+        // Runtime validation support using StructSetterValidationObject
+        writer.append("    private final StructSetterValidationObject setterValidation;\n\n");
 
-            // Generate per-field mask constants for fields that have public setters
-            int maskIndex = 0;
-            StringBuilder maskConstants = new StringBuilder();
-            StringBuilder allMaskExpr = new StringBuilder();
-            for (StructField field : struct.getFields()) {
-                boolean hasSetter = !(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer());
-                if (!hasSetter) {
-                    continue;
-                }
-                String fieldNameUpper = field.getName().toUpperCase();
-                String constName = "NOT_SET_" + fieldNameUpper + "_MASK";
-                maskConstants.append("    private static final int ").append(constName).append(" = 1 << ").append(maskIndex).append(";\n");
-                if (allMaskExpr.length() > 0) {
-                    allMaskExpr.append(" | ");
-                }
-                allMaskExpr.append(constName);
-                maskIndex++;
-            }
-            if (maskIndex == 0) {
-                writer.append("    private static final int ALL_REQUIRED_FIELDS_MASK = 0;\n\n");
-            } else {
-                writer.append(maskConstants.toString());
-                writer.append("\n");
-                writer.append("    private static final int ALL_REQUIRED_FIELDS_MASK = ").append(allMaskExpr.toString()).append(";\n\n");
-            }
+        // Generate the validation method
+        writer.append("    /**\n");
+        writer.append("     * Ensures that, for malloc'ed instances, all field setters have been called before use.\n");
+        writer.append("     * If this instance was created with calloc (or copied from another struct), this check is a no-op.\n");
+        writer.append("     */\n");
+        writer.append("    public void checkValidStateForUse() {\n");
+        writer.append("        setterValidation.checkValidStateForUse();\n");
+        writer.append("    }\n\n");
 
-            // Generate the validation method
-            writer.append("    /**\n");
-            writer.append("     * Ensures that, for malloc'ed instances, all field setters have been called before use.\n");
-            writer.append("     * If this instance was created with calloc (or copied from another struct), this check is a no-op.\n");
-            writer.append("     */\n");
-            writer.append("    public void checkValidStateForUse() {\n");
-            writer.append("        if (checkSetCalled == 0) { return; }\n");
-            writer.append("        StringBuilder missing = new StringBuilder();\n");
-            for (StructField field : struct.getFields()) {
-                boolean hasSetter = !(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer());
-                if (!hasSetter) {
-                    continue;
-                }
-                String fieldNameUpper = field.getName().toUpperCase();
-                String constName = "NOT_SET_" + fieldNameUpper + "_MASK";
-                writer.append("        if ((checkSetCalled & ").append(constName).append(") != 0) {\n");
-                writer.append("            if (missing.length() > 0) missing.append(\", \");\n");
-                writer.append("            missing.append(\"").append(field.getName()).append("\");\n");
-                writer.append("        }\n");
-            }
-            writer.append("        if (missing.length() > 0) {\n");
-            writer.append("            throw new IllegalStateException(\"").append(struct.getName()).append(" has unset fields: \" + missing.toString());\n");
-            writer.append("        }\n");
-            writer.append("    }\n\n");
-        }
+        writer.append("    /**\n");
+        writer.append("     * Informs this struct that it has been malloced and so must have setter validation carried out\n");
+        writer.append("     */\n");
+        writer.append("    public void setNeedsToValidateAllMethodsCalled() {\n");
+        writer.append("        setterValidation.setNeedsToValidateAllMethodsCalled();\n");
+        writer.append("    }\n\n");
 
        struct.getBaseHeader().ifPresent(parent -> {
            writer.append("    /** Get a view of this struct as its parent (for use in methods that take the parent)*/\n");
@@ -374,7 +358,7 @@ public class StructGenerator extends FileGenerator {
         writer.append("    /** Returns a new {@code " + struct.getName() + "} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */\n");
         writer.append("    public static " + struct.getName() + " malloc() {\n");
         writer.append("        " + struct.getName() + " instance = new " + struct.getName() + "(nmemAllocChecked(SIZEOF), null);\n");
-        writer.append("        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;\n");
+        writer.append("        instance.setterValidation.setNeedsToValidateAllMethodsCalled();\n");
         writer.append("        return instance;\n");
         writer.append("    }\n\n");
 
@@ -406,7 +390,9 @@ public class StructGenerator extends FileGenerator {
         writer.append("     * @param capacity the buffer capacity\n");
         writer.append("     */\n");
         writer.append("    public static Buffer malloc(int capacity) {\n");
-        writer.append("        return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);\n");
+        writer.append("        Buffer buf = new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);\n");
+        writer.append("        buf.markAllAsNeedsValidation();\n");
+        writer.append("        return buf;\n");
         writer.append("    }\n\n");
 
         writer.append("    /**\n");
@@ -451,7 +437,7 @@ public class StructGenerator extends FileGenerator {
         writer.append("     */\n");
         writer.append("    public static " + struct.getName() + " malloc(MemoryStack stack) {\n");
         writer.append("        " + struct.getName() + " instance = new " + struct.getName() + "(stack.nmalloc(ALIGNOF, SIZEOF), null);\n");
-        writer.append("        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;\n");
+        writer.append("        instance.setterValidation.setNeedsToValidateAllMethodsCalled();\n");
         writer.append("        return instance;\n");
         writer.append("    }\n\n");
 
@@ -471,7 +457,9 @@ public class StructGenerator extends FileGenerator {
         writer.append("     * @param capacity the buffer capacity\n");
         writer.append("     */\n");
         writer.append("    public static Buffer malloc(int capacity, MemoryStack stack) {\n");
-        writer.append("        return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);\n");
+        writer.append("        Buffer buf = new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);\n");
+        writer.append("        buf.markAllAsNeedsValidation();\n");
+        writer.append("        return buf;\n");
         writer.append("    }\n\n");
 
         writer.append("    /**\n");
@@ -503,7 +491,7 @@ public class StructGenerator extends FileGenerator {
         writer.append("    /** An array of {@link " + struct.getName() + "} structs. */\n");
         writer.append("    public static class Buffer extends StructBuffer<" + struct.getName() + ", Buffer> {\n\n");
 
-        writer.append("        private static final " + struct.getName() + " ELEMENT_FACTORY = " + struct.getName() + ".create(-1L);\n\n");
+        writer.append("        private static final Function<Long," + struct.getName() + "> ELEMENT_FACTORY = address ->" + struct.getName() + ".create(address);\n\n");
 
         writer.append("        /**\n");
         writer.append("         * Creates a new {@code " + struct.getName() + ".Buffer} instance backed by the specified container.\n");
@@ -515,25 +503,15 @@ public class StructGenerator extends FileGenerator {
         writer.append("         * <p>The created buffer instance holds a strong reference to the container object.</p>\n");
         writer.append("         */\n");
         writer.append("        public Buffer(ByteBuffer container) {\n");
-        writer.append("            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);\n");
+        writer.append("            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF, SIZEOF);\n");
         writer.append("        }\n\n");
 
         writer.append("        public Buffer(long address, int cap) {\n");
-        writer.append("            super(address, null, -1, 0, cap, cap);\n");
-        writer.append("        }\n\n");
-
-        writer.append("        @Override\n");
-        writer.append("        public " + struct.getName() + " get(int index) {\n");
-        writer.append("            return " + struct.getName() + ".create(address + index * SIZEOF);\n");
-        writer.append("        }\n\n");
-
-        writer.append("        @Override\n");
-        writer.append("        public Buffer slice() {\n");
-        writer.append("            return slice(0, remaining());\n");
+        writer.append("            super(address, null, -1, 0, cap, cap, SIZEOF);\n");
         writer.append("        }\n\n");
 
         writer.append("        Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {\n");
-        writer.append("            super(address, container, mark, pos, lim, cap);\n");
+        writer.append("            super(address, container, mark, pos, lim, cap, SIZEOF);\n");
         writer.append("        }\n\n");
 
         writer.append("        @Override\n");
@@ -547,10 +525,9 @@ public class StructGenerator extends FileGenerator {
         writer.append("        }\n\n");
 
         writer.append("        @Override\n");
-        writer.append("        protected " + struct.getName() + " getElementFactory() {\n");
+        writer.append("        protected Function<Long," + struct.getName() + "> getElementFactory() {\n");
         writer.append("            return ELEMENT_FACTORY;\n");
         writer.append("        }\n\n");
-
         writer.append("    }\n");
         writer.append("}\n");
 
@@ -779,7 +756,7 @@ public class StructGenerator extends FileGenerator {
         } else{
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value);\n");
         }
-        writer.append("        this.checkSetCalled &= ~NOT_SET_"+fieldNameUpper+"_MASK;\n");
+        writer.append("        this.setterValidation.setFieldCalled(\"").append(fieldName).append("\");\n");
         writer.append("        return this;\n");
         writer.append("    }\n");
 

@@ -14,6 +14,8 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView
 
 import java.nio.ByteBuffer;
 
+import java.util.Map;
+import java.util.function.Function;
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
 import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
@@ -40,6 +42,8 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     /** The struct alignment in bytes. */
     public static final int ALIGNOF;
 
+    /** Runtime validation bit masks for field setters. */
+    private static final Map<String, Integer> FIELD_BIT_MASKS;
     /** The struct member offsets. */
     public static final int
         TYPE,
@@ -62,10 +66,12 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
         NEXT = layout.offsetof(1);
         UUIDCOUNT = layout.offsetof(2);
         UUIDS = layout.offsetof(3);
+        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("type", "next", "uuidCount", "uuids");
     }
 
     protected XrSpaceUuidFilterInfoFB(long address, ByteBuffer container) {
         super(address, container);
+        this.setterValidation = new StructSetterValidationObject("XrSpaceUuidFilterInfoFB", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -92,6 +98,7 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
      */
     public XrSpaceUuidFilterInfoFB(ByteBuffer container) {
         super(memAddress(container), __checkContainer(container, SIZEOF));
+        this.setterValidation = new StructSetterValidationObject("XrSpaceUuidFilterInfoFB", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -117,25 +124,25 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     /** Sets the specified value to the {@code type} field. */
     public XrSpaceUuidFilterInfoFB type(XrStructureType value) { 
         XrSpaceUuidFilterInfoFB.ntype(address(), value.getValue());
-        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
+        this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrSpaceUuidFilterInfoFB next(long value) { 
         XrSpaceUuidFilterInfoFB.nnext(address(), value);
-        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
+        this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code uuidCount} field. */
     public XrSpaceUuidFilterInfoFB uuidCount(int value) { 
         XrSpaceUuidFilterInfoFB.nuuidCount(address(), value);
-        this.checkSetCalled &= ~NOT_SET_UUIDCOUNT_MASK;
+        this.setterValidation.setFieldCalled("uuidCount");
         return this;
     }
     /** Sets the specified value to the {@code uuids} field. */
     public XrSpaceUuidFilterInfoFB uuids(XrUuidEXT.Buffer value) { 
         XrSpaceUuidFilterInfoFB.nuuids(address(), value);
-        this.checkSetCalled &= ~NOT_SET_UUIDS_MASK;
+        this.setterValidation.setFieldCalled("uuids");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -186,42 +193,21 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
         return sb.toString();
     }
 
-    // Runtime initialization tracking for malloc'ed instances
-    private int checkSetCalled;
-
-    private static final int NOT_SET_TYPE_MASK = 1 << 0;
-    private static final int NOT_SET_NEXT_MASK = 1 << 1;
-    private static final int NOT_SET_UUIDCOUNT_MASK = 1 << 2;
-    private static final int NOT_SET_UUIDS_MASK = 1 << 3;
-
-    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_UUIDCOUNT_MASK | NOT_SET_UUIDS_MASK;
+    private final StructSetterValidationObject setterValidation;
 
     /**
      * Ensures that, for malloc'ed instances, all field setters have been called before use.
      * If this instance was created with calloc (or copied from another struct), this check is a no-op.
      */
     public void checkValidStateForUse() {
-        if (checkSetCalled == 0) { return; }
-        StringBuilder missing = new StringBuilder();
-        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("type");
-        }
-        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("next");
-        }
-        if ((checkSetCalled & NOT_SET_UUIDCOUNT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("uuidCount");
-        }
-        if ((checkSetCalled & NOT_SET_UUIDS_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("uuids");
-        }
-        if (missing.length() > 0) {
-            throw new IllegalStateException("XrSpaceUuidFilterInfoFB has unset fields: " + missing.toString());
-        }
+        setterValidation.checkValidStateForUse();
+    }
+
+    /**
+     * Informs this struct that it has been malloced and so must have setter validation carried out
+     */
+    public void setNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNeedsToValidateAllMethodsCalled();
     }
 
     /** Get a view of this struct as its parent (for use in methods that take the parent)*/
@@ -234,7 +220,7 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     /** Returns a new {@code XrSpaceUuidFilterInfoFB} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrSpaceUuidFilterInfoFB malloc() {
         XrSpaceUuidFilterInfoFB instance = new XrSpaceUuidFilterInfoFB(nmemAllocChecked(SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -265,7 +251,9 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity) {
-        return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        Buffer buf = new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -309,7 +297,7 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
      */
     public static XrSpaceUuidFilterInfoFB malloc(MemoryStack stack) {
         XrSpaceUuidFilterInfoFB instance = new XrSpaceUuidFilterInfoFB(stack.nmalloc(ALIGNOF, SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -329,7 +317,9 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity, MemoryStack stack) {
-        return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        Buffer buf = new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -393,7 +383,7 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     /** An array of {@link XrSpaceUuidFilterInfoFB} structs. */
     public static class Buffer extends StructBuffer<XrSpaceUuidFilterInfoFB, Buffer> {
 
-        private static final XrSpaceUuidFilterInfoFB ELEMENT_FACTORY = XrSpaceUuidFilterInfoFB.create(-1L);
+        private static final Function<Long,XrSpaceUuidFilterInfoFB> ELEMENT_FACTORY = address ->XrSpaceUuidFilterInfoFB.create(address);
 
         /**
          * Creates a new {@code XrSpaceUuidFilterInfoFB.Buffer} instance backed by the specified container.
@@ -405,25 +395,15 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
          * <p>The created buffer instance holds a strong reference to the container object.</p>
          */
         public Buffer(ByteBuffer container) {
-            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);
+            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF, SIZEOF);
         }
 
         public Buffer(long address, int cap) {
-            super(address, null, -1, 0, cap, cap);
-        }
-
-        @Override
-        public XrSpaceUuidFilterInfoFB get(int index) {
-            return XrSpaceUuidFilterInfoFB.create(address + index * SIZEOF);
-        }
-
-        @Override
-        public Buffer slice() {
-            return slice(0, remaining());
+            super(address, null, -1, 0, cap, cap, SIZEOF);
         }
 
         Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {
-            super(address, container, mark, pos, lim, cap);
+            super(address, container, mark, pos, lim, cap, SIZEOF);
         }
 
         @Override
@@ -437,7 +417,7 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
         }
 
         @Override
-        protected XrSpaceUuidFilterInfoFB getElementFactory() {
+        protected Function<Long,XrSpaceUuidFilterInfoFB> getElementFactory() {
             return ELEMENT_FACTORY;
         }
 

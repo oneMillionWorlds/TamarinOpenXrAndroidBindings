@@ -14,6 +14,8 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView
 
 import java.nio.ByteBuffer;
 
+import java.util.Map;
+import java.util.function.Function;
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
 import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
@@ -47,6 +49,8 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
     /** The struct alignment in bytes. */
     public static final int ALIGNOF;
 
+    /** Runtime validation bit masks for field setters. */
+    private static final Map<String, Integer> FIELD_BIT_MASKS;
     /** The struct member offsets. */
     public static final int
         TYPE,
@@ -90,10 +94,12 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
         ISSTICKY = layout.offsetof(8);
         ONHAPTIC = layout.offsetof(9);
         OFFHAPTIC = layout.offsetof(10);
+        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("type", "next", "binding", "actionSet", "forceThreshold", "forceThresholdReleased", "centerRegion", "wedgeAngle", "isSticky", "onHaptic", "offHaptic");
     }
 
     protected XrInteractionProfileDpadBindingEXT(long address, ByteBuffer container) {
         super(address, container);
+        this.setterValidation = new StructSetterValidationObject("XrInteractionProfileDpadBindingEXT", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -120,6 +126,7 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
      */
     public XrInteractionProfileDpadBindingEXT(ByteBuffer container) {
         super(memAddress(container), __checkContainer(container, SIZEOF));
+        this.setterValidation = new StructSetterValidationObject("XrInteractionProfileDpadBindingEXT", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -173,67 +180,67 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
     /** Sets the specified value to the {@code type} field. */
     public XrInteractionProfileDpadBindingEXT type(XrStructureType value) { 
         XrInteractionProfileDpadBindingEXT.ntype(address(), value.getValue());
-        this.checkSetCalled &= ~NOT_SET_TYPE_MASK;
+        this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrInteractionProfileDpadBindingEXT next(long value) { 
         XrInteractionProfileDpadBindingEXT.nnext(address(), value);
-        this.checkSetCalled &= ~NOT_SET_NEXT_MASK;
+        this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code binding} field. */
     public XrInteractionProfileDpadBindingEXT binding(long value) { 
         XrInteractionProfileDpadBindingEXT.nbinding(address(), value);
-        this.checkSetCalled &= ~NOT_SET_BINDING_MASK;
+        this.setterValidation.setFieldCalled("binding");
         return this;
     }
     /** Sets the specified value to the {@code actionSet} field. */
     public XrInteractionProfileDpadBindingEXT actionSet(XrActionSet value) { 
         XrInteractionProfileDpadBindingEXT.nactionSet(address(), value.getRawHandle());
-        this.checkSetCalled &= ~NOT_SET_ACTIONSET_MASK;
+        this.setterValidation.setFieldCalled("actionSet");
         return this;
     }
     /** Sets the specified value to the {@code forceThreshold} field. */
     public XrInteractionProfileDpadBindingEXT forceThreshold(float value) { 
         XrInteractionProfileDpadBindingEXT.nforceThreshold(address(), value);
-        this.checkSetCalled &= ~NOT_SET_FORCETHRESHOLD_MASK;
+        this.setterValidation.setFieldCalled("forceThreshold");
         return this;
     }
     /** Sets the specified value to the {@code forceThresholdReleased} field. */
     public XrInteractionProfileDpadBindingEXT forceThresholdReleased(float value) { 
         XrInteractionProfileDpadBindingEXT.nforceThresholdReleased(address(), value);
-        this.checkSetCalled &= ~NOT_SET_FORCETHRESHOLDRELEASED_MASK;
+        this.setterValidation.setFieldCalled("forceThresholdReleased");
         return this;
     }
     /** Sets the specified value to the {@code centerRegion} field. */
     public XrInteractionProfileDpadBindingEXT centerRegion(float value) { 
         XrInteractionProfileDpadBindingEXT.ncenterRegion(address(), value);
-        this.checkSetCalled &= ~NOT_SET_CENTERREGION_MASK;
+        this.setterValidation.setFieldCalled("centerRegion");
         return this;
     }
     /** Sets the specified value to the {@code wedgeAngle} field. */
     public XrInteractionProfileDpadBindingEXT wedgeAngle(float value) { 
         XrInteractionProfileDpadBindingEXT.nwedgeAngle(address(), value);
-        this.checkSetCalled &= ~NOT_SET_WEDGEANGLE_MASK;
+        this.setterValidation.setFieldCalled("wedgeAngle");
         return this;
     }
     /** Sets the specified value to the {@code isSticky} field. */
     public XrInteractionProfileDpadBindingEXT isSticky(int value) { 
         XrInteractionProfileDpadBindingEXT.nisSticky(address(), value);
-        this.checkSetCalled &= ~NOT_SET_ISSTICKY_MASK;
+        this.setterValidation.setFieldCalled("isSticky");
         return this;
     }
     /** Sets the specified value to the {@code onHaptic} field. */
     public XrInteractionProfileDpadBindingEXT onHaptic(XrHapticBaseHeader value) { 
         XrInteractionProfileDpadBindingEXT.nonHaptic(address(), value);
-        this.checkSetCalled &= ~NOT_SET_ONHAPTIC_MASK;
+        this.setterValidation.setFieldCalled("onHaptic");
         return this;
     }
     /** Sets the specified value to the {@code offHaptic} field. */
     public XrInteractionProfileDpadBindingEXT offHaptic(XrHapticBaseHeader value) { 
         XrInteractionProfileDpadBindingEXT.noffHaptic(address(), value);
-        this.checkSetCalled &= ~NOT_SET_OFFHAPTIC_MASK;
+        this.setterValidation.setFieldCalled("offHaptic");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -319,77 +326,21 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
         return sb.toString();
     }
 
-    // Runtime initialization tracking for malloc'ed instances
-    private int checkSetCalled;
-
-    private static final int NOT_SET_TYPE_MASK = 1 << 0;
-    private static final int NOT_SET_NEXT_MASK = 1 << 1;
-    private static final int NOT_SET_BINDING_MASK = 1 << 2;
-    private static final int NOT_SET_ACTIONSET_MASK = 1 << 3;
-    private static final int NOT_SET_FORCETHRESHOLD_MASK = 1 << 4;
-    private static final int NOT_SET_FORCETHRESHOLDRELEASED_MASK = 1 << 5;
-    private static final int NOT_SET_CENTERREGION_MASK = 1 << 6;
-    private static final int NOT_SET_WEDGEANGLE_MASK = 1 << 7;
-    private static final int NOT_SET_ISSTICKY_MASK = 1 << 8;
-    private static final int NOT_SET_ONHAPTIC_MASK = 1 << 9;
-    private static final int NOT_SET_OFFHAPTIC_MASK = 1 << 10;
-
-    private static final int ALL_REQUIRED_FIELDS_MASK = NOT_SET_TYPE_MASK | NOT_SET_NEXT_MASK | NOT_SET_BINDING_MASK | NOT_SET_ACTIONSET_MASK | NOT_SET_FORCETHRESHOLD_MASK | NOT_SET_FORCETHRESHOLDRELEASED_MASK | NOT_SET_CENTERREGION_MASK | NOT_SET_WEDGEANGLE_MASK | NOT_SET_ISSTICKY_MASK | NOT_SET_ONHAPTIC_MASK | NOT_SET_OFFHAPTIC_MASK;
+    private final StructSetterValidationObject setterValidation;
 
     /**
      * Ensures that, for malloc'ed instances, all field setters have been called before use.
      * If this instance was created with calloc (or copied from another struct), this check is a no-op.
      */
     public void checkValidStateForUse() {
-        if (checkSetCalled == 0) { return; }
-        StringBuilder missing = new StringBuilder();
-        if ((checkSetCalled & NOT_SET_TYPE_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("type");
-        }
-        if ((checkSetCalled & NOT_SET_NEXT_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("next");
-        }
-        if ((checkSetCalled & NOT_SET_BINDING_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("binding");
-        }
-        if ((checkSetCalled & NOT_SET_ACTIONSET_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("actionSet");
-        }
-        if ((checkSetCalled & NOT_SET_FORCETHRESHOLD_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("forceThreshold");
-        }
-        if ((checkSetCalled & NOT_SET_FORCETHRESHOLDRELEASED_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("forceThresholdReleased");
-        }
-        if ((checkSetCalled & NOT_SET_CENTERREGION_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("centerRegion");
-        }
-        if ((checkSetCalled & NOT_SET_WEDGEANGLE_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("wedgeAngle");
-        }
-        if ((checkSetCalled & NOT_SET_ISSTICKY_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("isSticky");
-        }
-        if ((checkSetCalled & NOT_SET_ONHAPTIC_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("onHaptic");
-        }
-        if ((checkSetCalled & NOT_SET_OFFHAPTIC_MASK) != 0) {
-            if (missing.length() > 0) missing.append(", ");
-            missing.append("offHaptic");
-        }
-        if (missing.length() > 0) {
-            throw new IllegalStateException("XrInteractionProfileDpadBindingEXT has unset fields: " + missing.toString());
-        }
+        setterValidation.checkValidStateForUse();
+    }
+
+    /**
+     * Informs this struct that it has been malloced and so must have setter validation carried out
+     */
+    public void setNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNeedsToValidateAllMethodsCalled();
     }
 
     /** Get a view of this struct as its parent (for use in methods that take the parent)*/
@@ -402,7 +353,7 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
     /** Returns a new {@code XrInteractionProfileDpadBindingEXT} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
     public static XrInteractionProfileDpadBindingEXT malloc() {
         XrInteractionProfileDpadBindingEXT instance = new XrInteractionProfileDpadBindingEXT(nmemAllocChecked(SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -433,7 +384,9 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity) {
-        return new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        Buffer buf = new Buffer(nmemAllocChecked(__checkMalloc(capacity * SIZEOF)), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -477,7 +430,7 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
      */
     public static XrInteractionProfileDpadBindingEXT malloc(MemoryStack stack) {
         XrInteractionProfileDpadBindingEXT instance = new XrInteractionProfileDpadBindingEXT(stack.nmalloc(ALIGNOF, SIZEOF), null);
-        instance.checkSetCalled = ALL_REQUIRED_FIELDS_MASK;
+        instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
@@ -497,7 +450,9 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
      * @param capacity the buffer capacity
      */
     public static Buffer malloc(int capacity, MemoryStack stack) {
-        return new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        Buffer buf = new Buffer(stack.nmalloc(ALIGNOF, capacity * SIZEOF), capacity);
+        buf.markAllAsNeedsValidation();
+        return buf;
     }
 
     /**
@@ -583,7 +538,7 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
     /** An array of {@link XrInteractionProfileDpadBindingEXT} structs. */
     public static class Buffer extends StructBuffer<XrInteractionProfileDpadBindingEXT, Buffer> {
 
-        private static final XrInteractionProfileDpadBindingEXT ELEMENT_FACTORY = XrInteractionProfileDpadBindingEXT.create(-1L);
+        private static final Function<Long,XrInteractionProfileDpadBindingEXT> ELEMENT_FACTORY = address ->XrInteractionProfileDpadBindingEXT.create(address);
 
         /**
          * Creates a new {@code XrInteractionProfileDpadBindingEXT.Buffer} instance backed by the specified container.
@@ -595,25 +550,15 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
          * <p>The created buffer instance holds a strong reference to the container object.</p>
          */
         public Buffer(ByteBuffer container) {
-            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF);
+            super(memAddress(container), container, -1, 0, container.remaining() / SIZEOF, container.remaining() / SIZEOF, SIZEOF);
         }
 
         public Buffer(long address, int cap) {
-            super(address, null, -1, 0, cap, cap);
-        }
-
-        @Override
-        public XrInteractionProfileDpadBindingEXT get(int index) {
-            return XrInteractionProfileDpadBindingEXT.create(address + index * SIZEOF);
-        }
-
-        @Override
-        public Buffer slice() {
-            return slice(0, remaining());
+            super(address, null, -1, 0, cap, cap, SIZEOF);
         }
 
         Buffer(long address, ByteBuffer container, int mark, int pos, int lim, int cap) {
-            super(address, container, mark, pos, lim, cap);
+            super(address, container, mark, pos, lim, cap, SIZEOF);
         }
 
         @Override
@@ -627,7 +572,7 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
         }
 
         @Override
-        protected XrInteractionProfileDpadBindingEXT getElementFactory() {
+        protected Function<Long,XrInteractionProfileDpadBindingEXT> getElementFactory() {
             return ELEMENT_FACTORY;
         }
 
