@@ -110,52 +110,52 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrHapticVibration.ntype(address()));
+        return XrStructureType.fromValue(XrHapticVibration.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
-        return nnext(address());
+        return nnext(addressUnsafe());
     }
     /** Returns the value of the {@code duration} field. */
     public long duration() {
-        return nduration(address());
+        return nduration(addressUnsafe());
     }
     /** Returns the value of the {@code frequency} field. */
     public float frequency() {
-        return nfrequency(address());
+        return nfrequency(addressUnsafe());
     }
     /** Returns the value of the {@code amplitude} field. */
     public float amplitude() {
-        return namplitude(address());
+        return namplitude(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
     public XrHapticVibration type(XrStructureType value) { 
-        XrHapticVibration.ntype(address(), value.getValue());
+        XrHapticVibration.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrHapticVibration next(long value) { 
-        XrHapticVibration.nnext(address(), value);
+        XrHapticVibration.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code duration} field. */
     public XrHapticVibration duration(long value) { 
-        XrHapticVibration.nduration(address(), value);
+        XrHapticVibration.nduration(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("duration");
         return this;
     }
     /** Sets the specified value to the {@code frequency} field. */
     public XrHapticVibration frequency(float value) { 
-        XrHapticVibration.nfrequency(address(), value);
+        XrHapticVibration.nfrequency(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("frequency");
         return this;
     }
     /** Sets the specified value to the {@code amplitude} field. */
     public XrHapticVibration amplitude(float value) { 
-        XrHapticVibration.namplitude(address(), value);
+        XrHapticVibration.namplitude(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("amplitude");
         return this;
     }
@@ -290,7 +290,7 @@ public class XrHapticVibration extends Struct<XrHapticVibration> {
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 

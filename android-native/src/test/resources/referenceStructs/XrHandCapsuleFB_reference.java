@@ -91,28 +91,28 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
 
     /** Returns the value of the {@code points} field. */
     public XrVector3f.Buffer points() {
-        return npoints(address());
+        return npoints(addressUnsafe());
     }
     /** Returns the value of the index-th item in the {@code points} field. Note to mutate the value get by index then mutate in place*/
-    public XrVector3f points(int index) { return XrHandCapsuleFB.npoints(address(), index); }
+    public XrVector3f points(int index) { return XrHandCapsuleFB.npoints(addressUnsafe(), index); }
     /** Returns the value of the {@code radius} field. */
     public float radius() {
-        return nradius(address());
+        return nradius(addressUnsafe());
     }
     /** Returns the value of the {@code joint} field. */
     public XrHandJointEXT joint() {
-        return XrHandJointEXT.fromValue(XrHandCapsuleFB.njoint(address()));
+        return XrHandJointEXT.fromValue(XrHandCapsuleFB.njoint(addressUnsafe()));
     }
 
     /** Sets the specified value to the {@code radius} field. */
     public XrHandCapsuleFB radius(float value) { 
-        XrHandCapsuleFB.nradius(address(), value);
+        XrHandCapsuleFB.nradius(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("radius");
         return this;
     }
     /** Sets the specified value to the {@code joint} field. */
     public XrHandCapsuleFB joint(XrHandJointEXT value) { 
-        XrHandCapsuleFB.njoint(address(), value.getValue());
+        XrHandCapsuleFB.njoint(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("joint");
         return this;
     }
@@ -222,7 +222,7 @@ public class XrHandCapsuleFB extends Struct<XrHandCapsuleFB> {
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 

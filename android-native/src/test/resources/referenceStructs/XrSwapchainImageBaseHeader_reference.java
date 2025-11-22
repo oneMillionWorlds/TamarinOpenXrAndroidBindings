@@ -87,22 +87,22 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrSwapchainImageBaseHeader.ntype(address()));
+        return XrStructureType.fromValue(XrSwapchainImageBaseHeader.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
-        return nnext(address());
+        return nnext(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
     public XrSwapchainImageBaseHeader type(XrStructureType value) { 
-        XrSwapchainImageBaseHeader.ntype(address(), value.getValue());
+        XrSwapchainImageBaseHeader.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrSwapchainImageBaseHeader next(long value) { 
-        XrSwapchainImageBaseHeader.nnext(address(), value);
+        XrSwapchainImageBaseHeader.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
@@ -222,7 +222,7 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 

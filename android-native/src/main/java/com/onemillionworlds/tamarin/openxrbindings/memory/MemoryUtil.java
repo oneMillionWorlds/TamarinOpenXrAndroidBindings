@@ -157,7 +157,7 @@ public class MemoryUtil {
      * @param capacity the capacity in bytes
      * @return the ByteBuffer
      */
-    public static ByteBuffer __create(int capacity, int alignment) {
+    public static ByteBuffer __create(int capacity) {
         return memSetupBuffer(ByteBuffer.allocateDirect(capacity));
     }
 

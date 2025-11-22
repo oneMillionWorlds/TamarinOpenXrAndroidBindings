@@ -111,82 +111,82 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrInstanceCreateInfo.ntype(address()));
+        return XrStructureType.fromValue(XrInstanceCreateInfo.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
-        return nnext(address());
+        return nnext(addressUnsafe());
     }
     /** Returns the value of the {@code createFlags} field. */
     public long createFlags() {
-        return ncreateFlags(address());
+        return ncreateFlags(addressUnsafe());
     }
     /** Returns the value of the {@code applicationInfo} field. */
     public XrApplicationInfo applicationInfo() {
-        return napplicationInfo(address());
+        return napplicationInfo(addressUnsafe());
     }
     /** Returns the value of the {@code enabledApiLayerCount} field. */
     public int enabledApiLayerCount() {
-        return nenabledApiLayerCount(address());
+        return nenabledApiLayerCount(addressUnsafe());
     }
     /** Returns the value of the {@code enabledApiLayerNames} field. */
     public long enabledApiLayerNames() {
-        return nenabledApiLayerNames(address());
+        return nenabledApiLayerNames(addressUnsafe());
     }
     /** Returns the value of the {@code enabledExtensionCount} field. */
     public int enabledExtensionCount() {
-        return nenabledExtensionCount(address());
+        return nenabledExtensionCount(addressUnsafe());
     }
     /** Returns the value of the {@code enabledExtensionNames} field. */
     public long enabledExtensionNames() {
-        return nenabledExtensionNames(address());
+        return nenabledExtensionNames(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
     public XrInstanceCreateInfo type(XrStructureType value) { 
-        XrInstanceCreateInfo.ntype(address(), value.getValue());
+        XrInstanceCreateInfo.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrInstanceCreateInfo next(long value) { 
-        XrInstanceCreateInfo.nnext(address(), value);
+        XrInstanceCreateInfo.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code createFlags} field. */
     public XrInstanceCreateInfo createFlags(long value) { 
-        XrInstanceCreateInfo.ncreateFlags(address(), value);
+        XrInstanceCreateInfo.ncreateFlags(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("createFlags");
         return this;
     }
     /** Sets the specified value to the {@code applicationInfo} field. */
     public XrInstanceCreateInfo applicationInfo(XrApplicationInfo value) { 
-        XrInstanceCreateInfo.napplicationInfo(address(), value);
+        XrInstanceCreateInfo.napplicationInfo(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("applicationInfo");
         return this;
     }
     /** Sets the specified value to the {@code enabledApiLayerCount} field. */
     public XrInstanceCreateInfo enabledApiLayerCount(int value) { 
-        XrInstanceCreateInfo.nenabledApiLayerCount(address(), value);
+        XrInstanceCreateInfo.nenabledApiLayerCount(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("enabledApiLayerCount");
         return this;
     }
     /** Sets the specified value to the {@code enabledApiLayerNames} field. */
     public XrInstanceCreateInfo enabledApiLayerNames(long value) { 
-        XrInstanceCreateInfo.nenabledApiLayerNames(address(), value);
+        XrInstanceCreateInfo.nenabledApiLayerNames(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("enabledApiLayerNames");
         return this;
     }
     /** Sets the specified value to the {@code enabledExtensionCount} field. */
     public XrInstanceCreateInfo enabledExtensionCount(int value) { 
-        XrInstanceCreateInfo.nenabledExtensionCount(address(), value);
+        XrInstanceCreateInfo.nenabledExtensionCount(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("enabledExtensionCount");
         return this;
     }
     /** Sets the specified value to the {@code enabledExtensionNames} field. */
     public XrInstanceCreateInfo enabledExtensionNames(long value) { 
-        XrInstanceCreateInfo.nenabledExtensionNames(address(), value);
+        XrInstanceCreateInfo.nenabledExtensionNames(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("enabledExtensionNames");
         return this;
     }
@@ -331,7 +331,7 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 

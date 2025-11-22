@@ -410,7 +410,7 @@ public class StructGenerator extends FileGenerator {
         writer.append("     * @param capacity the buffer capacity\n");
         writer.append("     */\n");
         writer.append("    public static Buffer create(int capacity) {\n");
-        writer.append("        ByteBuffer container = __create(capacity, SIZEOF);\n");
+        writer.append("        ByteBuffer container = __create(capacity * SIZEOF);\n");
         writer.append("        return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);\n");
         writer.append("    }\n\n");
 
@@ -584,25 +584,25 @@ public class StructGenerator extends FileGenerator {
         writer.append("    public " + javaType + " " + fieldNameSanitised + "() {\n");
 
         if(field.isEnumType()){
-            writer.append("        return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(address()));\n");
+            writer.append("        return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(addressUnsafe()));\n");
         } else if(field.isHandle() && !field.isPointer()) {
-            writer.append("        return new " + javaType + "(" + struct.getName() + ".n" + fieldName + "(address()));\n");
+            writer.append("        return new " + javaType + "(" + struct.getName() + ".n" + fieldName + "(addressUnsafe()));\n");
         } else {
-            writer.append("        return n" + fieldNameSanitised + "(address());\n");
+            writer.append("        return n" + fieldNameSanitised + "(addressUnsafe());\n");
         }
         writer.append("    }\n");
 
         if(field.getArraySizeConstant() != null && field.isStruct() && !field.isPointer()) {
             // bonus getter by index if an array of structs
             writer.append("    /** Returns the value of the index-th item in the {@code " + fieldName + "} field. Note to mutate the value get by index then mutate in place*/\n");
-            writer.append("    public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(address(), index); }\n");
+            writer.append("    public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(addressUnsafe(), index); }\n");
         }
 
         if(field.getJavaType().equals("ByteBufferView")) {
             // add a bonus string method
             writer.append("    /** Returns a String view of the {@code " + fieldName + "} field. */\n");
             writer.append("    public String " + fieldNameSanitised + "String() {\n");
-            writer.append("        return " + struct.getName() + ".n" + fieldNameSanitised + "String(address());\n");
+            writer.append("        return " + struct.getName() + ".n" + fieldNameSanitised + "String(addressUnsafe());\n");
             writer.append("    }\n");
         }
     }
@@ -750,11 +750,11 @@ public class StructGenerator extends FileGenerator {
         writer.append("    public " + struct.getName() + " " + fieldNameSanitised + "(" + fieldType + " value) { \n");
 
         if(field.isEnumType()){
-            writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value.getValue());\n");
+            writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(addressUnsafe(), value.getValue());\n");
         } else if(field.isHandle() && !field.isPointer()){
-            writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value.getRawHandle());\n");
+            writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(addressUnsafe(), value.getRawHandle());\n");
         } else{
-            writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(address(), value);\n");
+            writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(addressUnsafe(), value);\n");
         }
         writer.append("        this.setterValidation.setFieldCalled(\"").append(fieldName).append("\");\n");
         writer.append("        return this;\n");

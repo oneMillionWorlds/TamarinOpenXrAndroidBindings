@@ -106,42 +106,42 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrSpaceUuidFilterInfoFB.ntype(address()));
+        return XrStructureType.fromValue(XrSpaceUuidFilterInfoFB.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
-        return nnext(address());
+        return nnext(addressUnsafe());
     }
     /** Returns the value of the {@code uuidCount} field. */
     public int uuidCount() {
-        return nuuidCount(address());
+        return nuuidCount(addressUnsafe());
     }
     /** Returns the value of the {@code uuids} field. */
     public XrUuidEXT.Buffer uuids() {
-        return nuuids(address());
+        return nuuids(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
     public XrSpaceUuidFilterInfoFB type(XrStructureType value) { 
-        XrSpaceUuidFilterInfoFB.ntype(address(), value.getValue());
+        XrSpaceUuidFilterInfoFB.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrSpaceUuidFilterInfoFB next(long value) { 
-        XrSpaceUuidFilterInfoFB.nnext(address(), value);
+        XrSpaceUuidFilterInfoFB.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code uuidCount} field. */
     public XrSpaceUuidFilterInfoFB uuidCount(int value) { 
-        XrSpaceUuidFilterInfoFB.nuuidCount(address(), value);
+        XrSpaceUuidFilterInfoFB.nuuidCount(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("uuidCount");
         return this;
     }
     /** Sets the specified value to the {@code uuids} field. */
     public XrSpaceUuidFilterInfoFB uuids(XrUuidEXT.Buffer value) { 
-        XrSpaceUuidFilterInfoFB.nuuids(address(), value);
+        XrSpaceUuidFilterInfoFB.nuuids(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("uuids");
         return this;
     }
@@ -271,7 +271,7 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 

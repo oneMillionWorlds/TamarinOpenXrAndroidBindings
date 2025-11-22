@@ -103,62 +103,62 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrDebugUtilsMessengerCreateInfoEXT.ntype(address()));
+        return XrStructureType.fromValue(XrDebugUtilsMessengerCreateInfoEXT.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
-        return nnext(address());
+        return nnext(addressUnsafe());
     }
     /** Returns the value of the {@code messageSeverities} field. */
     public long messageSeverities() {
-        return nmessageSeverities(address());
+        return nmessageSeverities(addressUnsafe());
     }
     /** Returns the value of the {@code messageTypes} field. */
     public long messageTypes() {
-        return nmessageTypes(address());
+        return nmessageTypes(addressUnsafe());
     }
     /** Returns the value of the {@code userCallback} field. */
     public long userCallback() {
-        return nuserCallback(address());
+        return nuserCallback(addressUnsafe());
     }
     /** Returns the value of the {@code userData} field. */
     public long userData() {
-        return nuserData(address());
+        return nuserData(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
     public XrDebugUtilsMessengerCreateInfoEXT type(XrStructureType value) { 
-        XrDebugUtilsMessengerCreateInfoEXT.ntype(address(), value.getValue());
+        XrDebugUtilsMessengerCreateInfoEXT.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrDebugUtilsMessengerCreateInfoEXT next(long value) { 
-        XrDebugUtilsMessengerCreateInfoEXT.nnext(address(), value);
+        XrDebugUtilsMessengerCreateInfoEXT.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code messageSeverities} field. */
     public XrDebugUtilsMessengerCreateInfoEXT messageSeverities(long value) { 
-        XrDebugUtilsMessengerCreateInfoEXT.nmessageSeverities(address(), value);
+        XrDebugUtilsMessengerCreateInfoEXT.nmessageSeverities(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("messageSeverities");
         return this;
     }
     /** Sets the specified value to the {@code messageTypes} field. */
     public XrDebugUtilsMessengerCreateInfoEXT messageTypes(long value) { 
-        XrDebugUtilsMessengerCreateInfoEXT.nmessageTypes(address(), value);
+        XrDebugUtilsMessengerCreateInfoEXT.nmessageTypes(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("messageTypes");
         return this;
     }
     /** Sets the specified value to the {@code userCallback} field. */
     public XrDebugUtilsMessengerCreateInfoEXT userCallback(long value) { 
-        XrDebugUtilsMessengerCreateInfoEXT.nuserCallback(address(), value);
+        XrDebugUtilsMessengerCreateInfoEXT.nuserCallback(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("userCallback");
         return this;
     }
     /** Sets the specified value to the {@code userData} field. */
     public XrDebugUtilsMessengerCreateInfoEXT userData(long value) { 
-        XrDebugUtilsMessengerCreateInfoEXT.nuserData(address(), value);
+        XrDebugUtilsMessengerCreateInfoEXT.nuserData(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("userData");
         return this;
     }
@@ -293,7 +293,7 @@ public class XrDebugUtilsMessengerCreateInfoEXT extends Struct<XrDebugUtilsMesse
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 

@@ -25,6 +25,14 @@ public abstract class Struct<T extends Struct<T>> implements NativeResource {
         return address;
     }
 
+    /**
+     * Returns the memory address of this structure without checking that it is valid.
+     * Used internally while setting values.
+     */
+    public long addressUnsafe() {
+        return address;
+    }
+
     abstract void checkValidStateForUse();
 
     /**

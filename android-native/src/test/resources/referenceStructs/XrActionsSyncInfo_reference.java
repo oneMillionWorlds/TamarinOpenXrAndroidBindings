@@ -95,42 +95,42 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrActionsSyncInfo.ntype(address()));
+        return XrStructureType.fromValue(XrActionsSyncInfo.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
-        return nnext(address());
+        return nnext(addressUnsafe());
     }
     /** Returns the value of the {@code countActiveActionSets} field. */
     public int countActiveActionSets() {
-        return ncountActiveActionSets(address());
+        return ncountActiveActionSets(addressUnsafe());
     }
     /** Returns the value of the {@code activeActionSets} field. */
     public XrActiveActionSet.Buffer activeActionSets() {
-        return nactiveActionSets(address());
+        return nactiveActionSets(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
     public XrActionsSyncInfo type(XrStructureType value) { 
-        XrActionsSyncInfo.ntype(address(), value.getValue());
+        XrActionsSyncInfo.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrActionsSyncInfo next(long value) { 
-        XrActionsSyncInfo.nnext(address(), value);
+        XrActionsSyncInfo.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code countActiveActionSets} field. */
     public XrActionsSyncInfo countActiveActionSets(int value) { 
-        XrActionsSyncInfo.ncountActiveActionSets(address(), value);
+        XrActionsSyncInfo.ncountActiveActionSets(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("countActiveActionSets");
         return this;
     }
     /** Sets the specified value to the {@code activeActionSets} field. */
     public XrActionsSyncInfo activeActionSets(XrActiveActionSet.Buffer value) { 
-        XrActionsSyncInfo.nactiveActionSets(address(), value);
+        XrActionsSyncInfo.nactiveActionSets(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("activeActionSets");
         return this;
     }
@@ -255,7 +255,7 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 

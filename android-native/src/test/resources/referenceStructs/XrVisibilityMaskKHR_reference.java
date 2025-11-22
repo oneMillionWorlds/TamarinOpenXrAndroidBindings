@@ -111,82 +111,82 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrVisibilityMaskKHR.ntype(address()));
+        return XrStructureType.fromValue(XrVisibilityMaskKHR.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
-        return nnext(address());
+        return nnext(addressUnsafe());
     }
     /** Returns the value of the {@code vertexCapacityInput} field. */
     public int vertexCapacityInput() {
-        return nvertexCapacityInput(address());
+        return nvertexCapacityInput(addressUnsafe());
     }
     /** Returns the value of the {@code vertexCountOutput} field. */
     public int vertexCountOutput() {
-        return nvertexCountOutput(address());
+        return nvertexCountOutput(addressUnsafe());
     }
     /** Returns the value of the {@code vertices} field. */
     public XrVector2f.Buffer vertices() {
-        return nvertices(address());
+        return nvertices(addressUnsafe());
     }
     /** Returns the value of the {@code indexCapacityInput} field. */
     public int indexCapacityInput() {
-        return nindexCapacityInput(address());
+        return nindexCapacityInput(addressUnsafe());
     }
     /** Returns the value of the {@code indexCountOutput} field. */
     public int indexCountOutput() {
-        return nindexCountOutput(address());
+        return nindexCountOutput(addressUnsafe());
     }
     /** Returns the value of the {@code indices} field. */
     public long indices() {
-        return nindices(address());
+        return nindices(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
     public XrVisibilityMaskKHR type(XrStructureType value) { 
-        XrVisibilityMaskKHR.ntype(address(), value.getValue());
+        XrVisibilityMaskKHR.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrVisibilityMaskKHR next(long value) { 
-        XrVisibilityMaskKHR.nnext(address(), value);
+        XrVisibilityMaskKHR.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code vertexCapacityInput} field. */
     public XrVisibilityMaskKHR vertexCapacityInput(int value) { 
-        XrVisibilityMaskKHR.nvertexCapacityInput(address(), value);
+        XrVisibilityMaskKHR.nvertexCapacityInput(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("vertexCapacityInput");
         return this;
     }
     /** Sets the specified value to the {@code vertexCountOutput} field. */
     public XrVisibilityMaskKHR vertexCountOutput(int value) { 
-        XrVisibilityMaskKHR.nvertexCountOutput(address(), value);
+        XrVisibilityMaskKHR.nvertexCountOutput(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("vertexCountOutput");
         return this;
     }
     /** Sets the specified value to the {@code vertices} field. */
     public XrVisibilityMaskKHR vertices(XrVector2f.Buffer value) { 
-        XrVisibilityMaskKHR.nvertices(address(), value);
+        XrVisibilityMaskKHR.nvertices(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("vertices");
         return this;
     }
     /** Sets the specified value to the {@code indexCapacityInput} field. */
     public XrVisibilityMaskKHR indexCapacityInput(int value) { 
-        XrVisibilityMaskKHR.nindexCapacityInput(address(), value);
+        XrVisibilityMaskKHR.nindexCapacityInput(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("indexCapacityInput");
         return this;
     }
     /** Sets the specified value to the {@code indexCountOutput} field. */
     public XrVisibilityMaskKHR indexCountOutput(int value) { 
-        XrVisibilityMaskKHR.nindexCountOutput(address(), value);
+        XrVisibilityMaskKHR.nindexCountOutput(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("indexCountOutput");
         return this;
     }
     /** Sets the specified value to the {@code indices} field. */
     public XrVisibilityMaskKHR indices(long value) { 
-        XrVisibilityMaskKHR.nindices(address(), value);
+        XrVisibilityMaskKHR.nindices(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("indices");
         return this;
     }
@@ -331,7 +331,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 

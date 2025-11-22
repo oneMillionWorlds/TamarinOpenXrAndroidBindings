@@ -99,60 +99,60 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrActionSetCreateInfo.ntype(address()));
+        return XrStructureType.fromValue(XrActionSetCreateInfo.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
-        return nnext(address());
+        return nnext(addressUnsafe());
     }
     /** Returns the value of the {@code actionSetName} field. */
     public ByteBufferView actionSetName() {
-        return nactionSetName(address());
+        return nactionSetName(addressUnsafe());
     }
     /** Returns a String view of the {@code actionSetName} field. */
     public String actionSetNameString() {
-        return XrActionSetCreateInfo.nactionSetNameString(address());
+        return XrActionSetCreateInfo.nactionSetNameString(addressUnsafe());
     }
     /** Returns the value of the {@code localizedActionSetName} field. */
     public ByteBufferView localizedActionSetName() {
-        return nlocalizedActionSetName(address());
+        return nlocalizedActionSetName(addressUnsafe());
     }
     /** Returns a String view of the {@code localizedActionSetName} field. */
     public String localizedActionSetNameString() {
-        return XrActionSetCreateInfo.nlocalizedActionSetNameString(address());
+        return XrActionSetCreateInfo.nlocalizedActionSetNameString(addressUnsafe());
     }
     /** Returns the value of the {@code priority} field. */
     public int priority() {
-        return npriority(address());
+        return npriority(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
     public XrActionSetCreateInfo type(XrStructureType value) { 
-        XrActionSetCreateInfo.ntype(address(), value.getValue());
+        XrActionSetCreateInfo.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrActionSetCreateInfo next(long value) { 
-        XrActionSetCreateInfo.nnext(address(), value);
+        XrActionSetCreateInfo.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code actionSetName} field. */
     public XrActionSetCreateInfo actionSetName(ByteBufferView value) { 
-        XrActionSetCreateInfo.nactionSetName(address(), value);
+        XrActionSetCreateInfo.nactionSetName(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("actionSetName");
         return this;
     }
     /** Sets the specified value to the {@code localizedActionSetName} field. */
     public XrActionSetCreateInfo localizedActionSetName(ByteBufferView value) { 
-        XrActionSetCreateInfo.nlocalizedActionSetName(address(), value);
+        XrActionSetCreateInfo.nlocalizedActionSetName(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("localizedActionSetName");
         return this;
     }
     /** Sets the specified value to the {@code priority} field. */
     public XrActionSetCreateInfo priority(int value) { 
-        XrActionSetCreateInfo.npriority(address(), value);
+        XrActionSetCreateInfo.npriority(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("priority");
         return this;
     }
@@ -282,7 +282,7 @@ public class XrActionSetCreateInfo extends Struct<XrActionSetCreateInfo> {
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 

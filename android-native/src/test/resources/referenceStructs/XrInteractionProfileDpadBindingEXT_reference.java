@@ -134,112 +134,112 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrInteractionProfileDpadBindingEXT.ntype(address()));
+        return XrStructureType.fromValue(XrInteractionProfileDpadBindingEXT.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
-        return nnext(address());
+        return nnext(addressUnsafe());
     }
     /** Returns the value of the {@code binding} field. */
     public long binding() {
-        return nbinding(address());
+        return nbinding(addressUnsafe());
     }
     /** Returns the value of the {@code actionSet} field. */
     public XrActionSet actionSet() {
-        return new XrActionSet(XrInteractionProfileDpadBindingEXT.nactionSet(address()));
+        return new XrActionSet(XrInteractionProfileDpadBindingEXT.nactionSet(addressUnsafe()));
     }
     /** Returns the value of the {@code forceThreshold} field. */
     public float forceThreshold() {
-        return nforceThreshold(address());
+        return nforceThreshold(addressUnsafe());
     }
     /** Returns the value of the {@code forceThresholdReleased} field. */
     public float forceThresholdReleased() {
-        return nforceThresholdReleased(address());
+        return nforceThresholdReleased(addressUnsafe());
     }
     /** Returns the value of the {@code centerRegion} field. */
     public float centerRegion() {
-        return ncenterRegion(address());
+        return ncenterRegion(addressUnsafe());
     }
     /** Returns the value of the {@code wedgeAngle} field. */
     public float wedgeAngle() {
-        return nwedgeAngle(address());
+        return nwedgeAngle(addressUnsafe());
     }
     /** Returns the value of the {@code isSticky} field. */
     public int isSticky() {
-        return nisSticky(address());
+        return nisSticky(addressUnsafe());
     }
     /** Returns the value of the {@code onHaptic} field. */
     public XrHapticBaseHeader onHaptic() {
-        return nonHaptic(address());
+        return nonHaptic(addressUnsafe());
     }
     /** Returns the value of the {@code offHaptic} field. */
     public XrHapticBaseHeader offHaptic() {
-        return noffHaptic(address());
+        return noffHaptic(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
     public XrInteractionProfileDpadBindingEXT type(XrStructureType value) { 
-        XrInteractionProfileDpadBindingEXT.ntype(address(), value.getValue());
+        XrInteractionProfileDpadBindingEXT.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrInteractionProfileDpadBindingEXT next(long value) { 
-        XrInteractionProfileDpadBindingEXT.nnext(address(), value);
+        XrInteractionProfileDpadBindingEXT.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code binding} field. */
     public XrInteractionProfileDpadBindingEXT binding(long value) { 
-        XrInteractionProfileDpadBindingEXT.nbinding(address(), value);
+        XrInteractionProfileDpadBindingEXT.nbinding(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("binding");
         return this;
     }
     /** Sets the specified value to the {@code actionSet} field. */
     public XrInteractionProfileDpadBindingEXT actionSet(XrActionSet value) { 
-        XrInteractionProfileDpadBindingEXT.nactionSet(address(), value.getRawHandle());
+        XrInteractionProfileDpadBindingEXT.nactionSet(addressUnsafe(), value.getRawHandle());
         this.setterValidation.setFieldCalled("actionSet");
         return this;
     }
     /** Sets the specified value to the {@code forceThreshold} field. */
     public XrInteractionProfileDpadBindingEXT forceThreshold(float value) { 
-        XrInteractionProfileDpadBindingEXT.nforceThreshold(address(), value);
+        XrInteractionProfileDpadBindingEXT.nforceThreshold(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("forceThreshold");
         return this;
     }
     /** Sets the specified value to the {@code forceThresholdReleased} field. */
     public XrInteractionProfileDpadBindingEXT forceThresholdReleased(float value) { 
-        XrInteractionProfileDpadBindingEXT.nforceThresholdReleased(address(), value);
+        XrInteractionProfileDpadBindingEXT.nforceThresholdReleased(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("forceThresholdReleased");
         return this;
     }
     /** Sets the specified value to the {@code centerRegion} field. */
     public XrInteractionProfileDpadBindingEXT centerRegion(float value) { 
-        XrInteractionProfileDpadBindingEXT.ncenterRegion(address(), value);
+        XrInteractionProfileDpadBindingEXT.ncenterRegion(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("centerRegion");
         return this;
     }
     /** Sets the specified value to the {@code wedgeAngle} field. */
     public XrInteractionProfileDpadBindingEXT wedgeAngle(float value) { 
-        XrInteractionProfileDpadBindingEXT.nwedgeAngle(address(), value);
+        XrInteractionProfileDpadBindingEXT.nwedgeAngle(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("wedgeAngle");
         return this;
     }
     /** Sets the specified value to the {@code isSticky} field. */
     public XrInteractionProfileDpadBindingEXT isSticky(int value) { 
-        XrInteractionProfileDpadBindingEXT.nisSticky(address(), value);
+        XrInteractionProfileDpadBindingEXT.nisSticky(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("isSticky");
         return this;
     }
     /** Sets the specified value to the {@code onHaptic} field. */
     public XrInteractionProfileDpadBindingEXT onHaptic(XrHapticBaseHeader value) { 
-        XrInteractionProfileDpadBindingEXT.nonHaptic(address(), value);
+        XrInteractionProfileDpadBindingEXT.nonHaptic(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("onHaptic");
         return this;
     }
     /** Sets the specified value to the {@code offHaptic} field. */
     public XrInteractionProfileDpadBindingEXT offHaptic(XrHapticBaseHeader value) { 
-        XrInteractionProfileDpadBindingEXT.noffHaptic(address(), value);
+        XrInteractionProfileDpadBindingEXT.noffHaptic(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("offHaptic");
         return this;
     }
@@ -404,7 +404,7 @@ public class XrInteractionProfileDpadBindingEXT extends Struct<XrInteractionProf
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 

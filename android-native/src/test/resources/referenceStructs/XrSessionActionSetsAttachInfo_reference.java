@@ -95,42 +95,42 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrSessionActionSetsAttachInfo.ntype(address()));
+        return XrStructureType.fromValue(XrSessionActionSetsAttachInfo.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
-        return nnext(address());
+        return nnext(addressUnsafe());
     }
     /** Returns the value of the {@code countActionSets} field. */
     public int countActionSets() {
-        return ncountActionSets(address());
+        return ncountActionSets(addressUnsafe());
     }
     /** Returns the value of the {@code actionSets} field. */
     public XrActionSet.HandleBuffer actionSets() {
-        return nactionSets(address());
+        return nactionSets(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
     public XrSessionActionSetsAttachInfo type(XrStructureType value) { 
-        XrSessionActionSetsAttachInfo.ntype(address(), value.getValue());
+        XrSessionActionSetsAttachInfo.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
     public XrSessionActionSetsAttachInfo next(long value) { 
-        XrSessionActionSetsAttachInfo.nnext(address(), value);
+        XrSessionActionSetsAttachInfo.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
     /** Sets the specified value to the {@code countActionSets} field. */
     public XrSessionActionSetsAttachInfo countActionSets(int value) { 
-        XrSessionActionSetsAttachInfo.ncountActionSets(address(), value);
+        XrSessionActionSetsAttachInfo.ncountActionSets(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("countActionSets");
         return this;
     }
     /** Sets the specified value to the {@code actionSets} field. */
     public XrSessionActionSetsAttachInfo actionSets(XrActionSet.HandleBuffer value) { 
-        XrSessionActionSetsAttachInfo.nactionSets(address(), value);
+        XrSessionActionSetsAttachInfo.nactionSets(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("actionSets");
         return this;
     }
@@ -255,7 +255,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
      * @param capacity the buffer capacity
      */
     public static Buffer create(int capacity) {
-        ByteBuffer container = __create(capacity, SIZEOF);
+        ByteBuffer container = __create(capacity * SIZEOF);
         return new Buffer(memAddress(container), container, -1, 0, capacity, capacity);
     }
 
