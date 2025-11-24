@@ -26,3 +26,5 @@ build
 /android-native/.cxx/
 /lib/.cxx/
 /android-native/src/main/generated/
+/.idea/
+/local.properties
