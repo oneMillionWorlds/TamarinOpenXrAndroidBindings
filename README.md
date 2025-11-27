@@ -34,7 +34,7 @@ dependencies {
 
 ## Usage
 
-// todo
+See https://github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings/wiki
 
 ## Building from Source
 
