@@ -52,6 +52,12 @@ public abstract class StructBuffer<T extends Struct<T>, B extends StructBuffer<T
         }
     }
 
+    public void setNoLongerNeedsToValidateAllMethodsCalled(){
+        for(int i = 0; i < capacity; i++){
+            get(i).setNoLongerNeedsToValidateAllMethodsCalled();
+        }
+    }
+
     /**
      * Returns this buffer's position.
      */

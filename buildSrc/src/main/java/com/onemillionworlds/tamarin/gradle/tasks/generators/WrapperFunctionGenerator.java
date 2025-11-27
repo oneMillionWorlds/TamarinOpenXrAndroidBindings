@@ -87,6 +87,13 @@ public class WrapperFunctionGenerator {
             String paramName = param.getName();
             boolean isPointer = param.isPointer();
             boolean isStructByValue = param.isStructByValue();
+
+            if(!param.isConst() && param.isStruct()){
+                // this is probably an out parameter. Disable validation for this struct (because it is fine
+                // if it has been malloced as openXR will overwrite it anyway)
+                writer.append("        if("+paramName+"!=null){" + paramName + ".setNoLongerNeedsToValidateAllMethodsCalled();}\n");
+            }
+
             if(isPointer || isStructByValue){
                 writer.append("        long " + paramName + "Address = " + paramName + " == null ? MemoryUtil.NULL : " + paramName + ".address();\n");
             }
@@ -105,6 +112,7 @@ public class WrapperFunctionGenerator {
             boolean isStructByValue = param.isStructByValue();
             boolean isEnum = param.isEnumType();
             boolean isHandle = param.isHandle();
+
             if(isPointer || isStructByValue){
                 writer.append(paramName + "Address");
             }else{
