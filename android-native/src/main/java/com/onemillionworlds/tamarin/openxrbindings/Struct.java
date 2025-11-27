@@ -44,6 +44,8 @@ public abstract class Struct<T extends Struct<T>> implements NativeResource {
      */
     abstract void setNeedsToValidateAllMethodsCalled();
 
+    abstract void setNoLongerNeedsToValidateAllMethodsCalled();
+
     public ByteBuffer container() {
         return container;
     }

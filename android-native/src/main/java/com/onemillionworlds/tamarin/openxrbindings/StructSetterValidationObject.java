@@ -29,6 +29,10 @@ public class StructSetterValidationObject {
         this.checkSetCalled |= (1 << numberOfFields) - 1;
     }
 
+    public void setNoLongerNeedsToValidateAllMethodsCalled(){
+        this.checkSetCalled = 0;
+    }
+
     public void setFieldCalled(String fieldName) {
         @SuppressWarnings("DataFlowIssue") 
         int mask = fieldBitMasks.get(fieldName);

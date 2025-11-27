@@ -333,8 +333,17 @@ public class StructGenerator extends FileGenerator {
         writer.append("    /**\n");
         writer.append("     * Informs this struct that it has been malloced and so must have setter validation carried out\n");
         writer.append("     */\n");
+        writer.append("    @Override\n");
         writer.append("    public void setNeedsToValidateAllMethodsCalled() {\n");
         writer.append("        setterValidation.setNeedsToValidateAllMethodsCalled();\n");
+        writer.append("    }\n\n");
+
+        writer.append("    /**\n");
+        writer.append("     * Informs this struct that it no longer needs setter validation carried out (maybe because it is an out parameter)\n");
+        writer.append("     */\n");
+        writer.append("    @Override\n");
+        writer.append("    public void setNoLongerNeedsToValidateAllMethodsCalled() {\n");
+        writer.append("        setterValidation.setNoLongerNeedsToValidateAllMethodsCalled();\n");
         writer.append("    }\n\n");
 
        struct.getBaseHeader().ifPresent(parent -> {
