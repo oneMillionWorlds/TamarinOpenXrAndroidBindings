@@ -184,6 +184,7 @@ class WrapperFunctionGeneratorTest {
                      * @return The XrResult status code
                      */
                     public static XrResult xrSetInputDeviceStateVector2fEXT(XrSession session, long topLevelPath, long inputSourcePath, XrVector2f state) {
+                        if(state!=null){state.setNoLongerNeedsToValidateAllMethodsCalled();}
                         long stateAddress = state == null ? MemoryUtil.NULL : state.address();
                         return XrResult.fromValue(nxrSetInputDeviceStateVector2fEXT(session.getRawHandle(), topLevelPath, inputSourcePath, stateAddress));
                     }
