@@ -155,8 +155,17 @@ public class XrSwapchainImageBaseHeader extends Struct<XrSwapchainImageBaseHeade
     /**
      * Informs this struct that it has been malloced and so must have setter validation carried out
      */
+    @Override
     public void setNeedsToValidateAllMethodsCalled() {
         setterValidation.setNeedsToValidateAllMethodsCalled();
+    }
+
+    /**
+     * Informs this struct that it no longer needs setter validation carried out (maybe because it is an out parameter)
+     */
+    @Override
+    public void setNoLongerNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNoLongerNeedsToValidateAllMethodsCalled();
     }
 
     /** Casts the specified {@link XrSwapchainImageBaseHeader} instance to the {@code XrSwapchainImageOpenGLESKHR} class. 

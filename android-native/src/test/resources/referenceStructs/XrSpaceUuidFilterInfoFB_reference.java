@@ -206,8 +206,17 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     /**
      * Informs this struct that it has been malloced and so must have setter validation carried out
      */
+    @Override
     public void setNeedsToValidateAllMethodsCalled() {
         setterValidation.setNeedsToValidateAllMethodsCalled();
+    }
+
+    /**
+     * Informs this struct that it no longer needs setter validation carried out (maybe because it is an out parameter)
+     */
+    @Override
+    public void setNoLongerNeedsToValidateAllMethodsCalled() {
+        setterValidation.setNoLongerNeedsToValidateAllMethodsCalled();
     }
 
     /** Get a view of this struct as its parent (for use in methods that take the parent)*/
