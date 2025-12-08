@@ -36,5 +36,13 @@ public class LongBufferView extends JavaBufferView<java.nio.LongBuffer>{
         return new LongBufferView(buffer, buffer.asLongBuffer(), address);
     }
 
+    @Override
+    public String toString(){
+        StringBuilder contents = new StringBuilder();
+        for(int i = 0; i < capacity(); i++){
+            contents.append(get(i)).append(", ");
+        }
+        return getClass().getSimpleName() + "{address: "  + address() + "contents: " +  contents + "}";
+    }
 
 }

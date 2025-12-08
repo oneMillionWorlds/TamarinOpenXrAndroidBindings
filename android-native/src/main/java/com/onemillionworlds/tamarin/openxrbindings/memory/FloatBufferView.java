@@ -35,4 +35,13 @@ public class FloatBufferView extends JavaBufferView<java.nio.FloatBuffer>{
         long address = MemoryUtil.memAddress(buffer);
         return new FloatBufferView(buffer, buffer.asFloatBuffer(), address);
     }
+
+    @Override
+    public String toString(){
+        StringBuilder contents = new StringBuilder();
+        for(int i = 0; i < capacity(); i++){
+            contents.append(get(i)).append(", ");
+        }
+        return getClass().getSimpleName() + "{address: "  + address() + "contents: " +  contents + "}";
+    }
 }

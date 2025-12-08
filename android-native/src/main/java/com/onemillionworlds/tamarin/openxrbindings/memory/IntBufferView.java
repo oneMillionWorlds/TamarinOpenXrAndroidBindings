@@ -36,4 +36,13 @@ public class IntBufferView extends JavaBufferView<java.nio.IntBuffer>{
         return new IntBufferView(buffer, buffer.asIntBuffer(), address);
     }
 
+    @Override
+    public String toString(){
+        StringBuilder contents = new StringBuilder();
+        for(int i = 0; i < capacity(); i++){
+            contents.append(get(i)).append(", ");
+        }
+        return getClass().getSimpleName() + "{address: "  + address() + "contents: " +  contents + "}";
+    }
+
 }
