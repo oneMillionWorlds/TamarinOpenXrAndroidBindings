@@ -3,6 +3,8 @@ package com.onemillionworlds.tamarin.openxrbindings.thickc;
 
 import android.app.Activity;
 
+import java.util.logging.Logger;
+
 import android.content.Context;
 import com.onemillionworlds.tamarin.openxrbindings.XR10;
 import com.onemillionworlds.tamarin.openxrbindings.enums.XrResult;
@@ -22,6 +24,8 @@ import java.util.function.Consumer;
  * </p>
  */
 public class ThickC {
+    private static final Logger LOGGER = Logger.getLogger(ThickC.class.getName());
+
 
     static {
         System.loadLibrary("openxrjni");
@@ -82,6 +86,7 @@ public class ThickC {
         long messengerHandle = setupDebug(instance, messageConsumer, resultCode);
 
         if (resultCode[0] != 0 || messengerHandle == 0) { // 0 == XR_SUCCESS
+            LOGGER.warning("Failed to setup debug messenger, result code: " + resultCode[0] + ", handle: " + messengerHandle);
             return null;
         }
 

@@ -98,7 +98,7 @@ repositories {
 And in your gradle.properties:
 
 ```
-# Use a Bearer token made from base64(username:password). See PublishingUsingPortalApi.txt.
+# Use a Bearer token made from base64(username:password).
 centralManualTestingAuthHeaderName=Authorization
 centralManualTestingAuthHeaderValue=Bearer <base64-username-colon-password>
 ```
