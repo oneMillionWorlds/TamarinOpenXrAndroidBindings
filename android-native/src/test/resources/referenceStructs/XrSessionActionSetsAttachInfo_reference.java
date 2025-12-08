@@ -345,7 +345,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     }
     public static void nactionSets(long struct, XrActionSet.HandleBuffer value ) {
         memPutAddress(struct + XrSessionActionSetsAttachInfo.ACTIONSETS, value.address());
-        ncountActionSets(struct + XrSessionActionSetsAttachInfo.ACTIONSETS, value.capacity());
+        ncountActionSets(struct, value.capacity());
     }
 
 

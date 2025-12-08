@@ -719,7 +719,7 @@ public class StructGenerator extends FileGenerator {
 
                     writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value ) {\n");
                     writer.append("        " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value.address());\n");
-                    writer.append("        " + countMethodName + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value.capacity());\n");
+                    writer.append("        " + countMethodName + "(struct, value.capacity());\n");
                     writer.append("    }\n");
                 }else {
                     writer.append("    public static long n" + fieldNameSanitised + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
