@@ -18,13 +18,13 @@ repositories {
 }
 
 android {
-    namespace 'com.onemillionworlds.tamarin.openxrbindings'
-    compileSdk 34
+    namespace = 'com.onemillionworlds.tamarin.openxrbindings'
+    compileSdk = 34
 
     // Specify the manifest file location
     sourceSets {
         main {
-            manifest.srcFile 'AndroidManifest.xml'
+            manifest.srcFile('AndroidManifest.xml')
             java.srcDirs = ['src/main/java']
             // Wire generated sources so any task consuming sources (compile, sourcesJar, javadoc, etc.)
             // will automatically run parseOpenXrFile first via builtBy linkage.
@@ -38,8 +38,8 @@ android {
     }
 
     defaultConfig {
-        minSdk 26
-        targetSdk 34
+        minSdk = 26
+        targetSdk = 34
 
         // Configure CMake
         externalNativeBuild {
@@ -58,22 +58,22 @@ android {
     // Link to CMakeLists.txt
     externalNativeBuild {
         cmake {
-            path "src/native/CMakeLists.txt"
+            path = file("src/native/CMakeLists.txt")
         }
     }
 
     // Configure build types
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
     // Configure Java compatibility
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     // Specify Java toolchain
