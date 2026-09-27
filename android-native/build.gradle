@@ -113,27 +113,20 @@ task parseOpenXrFile(type: ParseOpenXr) {
     cOutputDir = generatedCOutputDir
 }
 
-// Make sure the CreateStructs task runs before Java compilation
-tasks.withType(JavaCompile) {
-    dependsOn parseOpenXrFile
+// Make sure the CreateStructs task runs before Java compilation (and Kotlin compilation, which AGP 9 always
+// registers and which also reads the java source dirs)
+tasks.matching { task -> task instanceof JavaCompile || (task.name.startsWith("compile") && task.name.endsWith("Kotlin")) }.all { task ->
+    task.dependsOn parseOpenXrFile
 }
 
-// Ensure extractDebugAnnotations task depends on parseOpenXrFile
-android.libraryVariants.all { variant ->
-    tasks.matching { task -> task.name.startsWith("extract") && task.name.endsWith("Annotations") }.all { task ->
-        task.dependsOn parseOpenXrFile
-    }
-}
-android.libraryVariants.all { variant ->
-    tasks.matching { task -> task.name.startsWith("javaDoc") && task.name.endsWith("Generation") }.all { task ->
-        task.dependsOn parseOpenXrFile
-    }
-}
-
-android.libraryVariants.all { variant ->
-    tasks.matching { task -> task.name.equals("sourceReleaseJar")}.all { task ->
-        task.dependsOn parseOpenXrFile
-    }
+// Ensure tasks that read the generated sources (annotation extraction, javadoc, sources jar) depend on parseOpenXrFile
+tasks.matching { task ->
+    def n = task.name
+    return (n.startsWith("extract") && n.endsWith("Annotations")) ||
+           (n.startsWith("javaDoc") && n.endsWith("Generation")) ||
+           n == "sourceReleaseJar"
+}.all { task ->
+    task.dependsOn parseOpenXrFile
 }
 
 // Ensure native build (CMake/externalNativeBuild) runs after generating sources
@@ -158,6 +151,7 @@ dependencies {
     // Android testing dependencies
     testImplementation libs.junit.jupiter.api
     testImplementation libs.jupiter.junit.jupiter.engine
+    testRuntimeOnly libs.junit.platform.launcher
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
