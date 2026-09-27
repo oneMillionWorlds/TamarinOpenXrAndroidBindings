@@ -11,6 +11,7 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil;
 import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;
 import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;
 import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;
+import com.onemillionworlds.tamarin.openxrbindings.memory.IntBufferView;
 
 import java.nio.ByteBuffer;
 
@@ -138,7 +139,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
         return nindexCountOutput(addressUnsafe());
     }
     /** Returns the value of the {@code indices} field. */
-    public long indices() {
+    public IntBufferView indices() {
         return nindices(addressUnsafe());
     }
 
@@ -185,7 +186,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
         return this;
     }
     /** Sets the specified value to the {@code indices} field. */
-    public XrVisibilityMaskKHR indices(long value) { 
+    public XrVisibilityMaskKHR indices(IntBufferView value) { 
         XrVisibilityMaskKHR.nindices(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("indices");
         return this;
@@ -202,7 +203,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
         XrVector2f.Buffer vertices,
         int indexCapacityInput,
         int indexCountOutput,
-        long indices
+        IntBufferView indices
     ) {
         type(type);
         next(next);
@@ -434,8 +435,17 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     public static int nindexCountOutput(long struct) { return memGetInt(struct + XrVisibilityMaskKHR.INDEXCOUNTOUTPUT); }
     public static void nindexCountOutput(long struct, int value) { memPutInt(struct + XrVisibilityMaskKHR.INDEXCOUNTOUTPUT, value); }
     /** Unsafe version of indices}. */
-    public static long nindices(long struct) { return memGetAddress(struct + XrVisibilityMaskKHR.INDICES); }
-    public static void nindices(long struct, long value) { memPutAddress(struct + XrVisibilityMaskKHR.INDICES, value); }
+    public static IntBufferView nindices(long struct) {
+        int count = (int)nindexCapacityInput(struct);
+        return IntBufferView.wrap(memGetAddress(struct + XrVisibilityMaskKHR.INDICES), count);
+    }
+    public static void nindices(long struct, IntBufferView value){
+        long address = value == null ? NULL : value.address();
+        memPutAddress(struct + INDICES, address);
+        if(value!=null){
+            nindexCapacityInput(struct, value.capacity());
+        }
+    }
 
 
     // -----------------------------------

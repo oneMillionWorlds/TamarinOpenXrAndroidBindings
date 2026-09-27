@@ -23,6 +23,17 @@ public class ShortBufferView extends JavaBufferView<java.nio.ShortBuffer>{
     }
 
     /**
+     * A view of existing native memory (e.g. an array a struct points to). The memory isn't owned by the view.
+     * @param address the address of the first short
+     * @param capacity the number of shorts
+     * @return the view, or null if the address is NULL
+     */
+    public static ShortBufferView wrap(long address, int capacity){
+        ByteBuffer buffer = MemoryUtil.memByteBuffer(address, capacity * Short.BYTES);
+        return buffer == null ? null : new ShortBufferView(buffer, buffer.asShortBuffer(), address);
+    }
+
+    /**
      * Creates a new ShortBufferView with the specified capacity.
      * <p>
      * This is managed by java and will be freed when the ShortBufferView is garbage collected.

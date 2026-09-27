@@ -43,6 +43,7 @@ Key conventions in the generated code:
 - Every `XR10.xrFoo(...)` is a high-level wrapper returning `XrResult` that unwraps structs/buffers to addresses and calls `public static native int nxrFoo(...)`
 - In C, core functions (required by a `<feature>` in `xr.xml`, see `XmlFeatureParser`) are called directly; **extension functions** (everything else) go through `PFN_` pointers loaded by `initializeExtensionFunctions`, which is called from a special hand-emitted `nxrCreateInstance`. A missing extension returns `XR_ERROR_FUNCTION_UNSUPPORTED`
 - Pointer params become `*BufferView` / `Struct.Buffer` / `Handle.HandleBuffer`; structs passed by value are passed as addresses and dereferenced in C
+- Pointer struct fields with a `len` (a count field) become `Struct.Buffer`, `Handle.HandleBuffer` or, for plain values (numbers, enums, atoms), `IntBufferView`/`FloatBufferView`/... (`StructField.getPrimitiveBufferViewType`); setting one also sets the count field. A struct pointer without a `len` is a single struct; any other pointer without one is a raw `long` address
 - Structs: `malloc()` variants turn on setter validation (`StructSetterValidationObject` throws on `address()` if any setter wasn't called); `calloc()`/`create()` don't. Non-const struct params in `XR10` wrappers are treated as out-params and have validation disabled. `type$Default()` sets the matching `XrStructureType` (not generated for abstract base headers)
 
 Note: `xr.xml` (the only input to generation) and the headers the C compiles against are always the same version as

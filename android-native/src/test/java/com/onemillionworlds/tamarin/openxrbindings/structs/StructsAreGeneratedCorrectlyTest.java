@@ -82,7 +82,8 @@ public class StructsAreGeneratedCorrectlyTest {
     }
 
     /**
-     * XrVisibilityMaskKHR is interesting because the vertices parameter is written INTO by openXR
+     * XrVisibilityMaskKHR is interesting because the vertices parameter is written INTO by openXR, and indices is a
+     * pointer to an array of primitives (uint32_t) whose length is in indexCapacityInput, so it is an IntBufferView
      */
     @Test
     public void xrVisibilityMaskKHRTest() {
@@ -123,6 +124,15 @@ public class StructsAreGeneratedCorrectlyTest {
     @Test
     public void xrSpatialComponentMesh2DListEXTTest(){
         test("XrSpatialComponentMesh2DListEXT");
+    }
+
+    /**
+     * XrSpatialCapabilityConfigurationAnchorEXT is interesting because enabledComponents is a pointer to an array of
+     * enums (so it is an IntBufferView, not a single enum value)
+     */
+    @Test
+    public void xrSpatialCapabilityConfigurationAnchorEXTTest(){
+        test("XrSpatialCapabilityConfigurationAnchorEXT");
     }
 
     public static void test(String structName){

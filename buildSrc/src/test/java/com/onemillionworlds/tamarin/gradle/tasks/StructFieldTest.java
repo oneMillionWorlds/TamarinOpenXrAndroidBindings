@@ -24,6 +24,28 @@ class StructFieldTest {
         assertEquals("memPutByte", uint8.getMemorySetMethod());
     }
 
+    private static StructField pointerField(String type, boolean isEnum, String countField){
+        return new StructField(type, "values", null, true, false, isEnum, false, false, false, false, false, false, false, countField);
+    }
+
+    @Test
+    void pointerToPrimitivesWithACountIsATypedView() {
+        assertEquals("FloatBufferView", pointerField("float", false, "valueCount").getJavaType());
+        assertEquals("IntBufferView", pointerField("uint32_t", false, "valueCount").getJavaType());
+        assertEquals("ShortBufferView", pointerField("uint16_t", false, "valueCount").getJavaType());
+        assertEquals("ByteBufferView", pointerField("uint8_t", false, "valueCount").getJavaType());
+        // an array of enums is an array of ints, not a single enum
+        assertEquals("IntBufferView", pointerField("XrSpatialComponentTypeEXT", true, "valueCount").getJavaType());
+    }
+
+    @Test
+    void pointerWithoutACountIsARawAddress() {
+        StructField enumPointer = pointerField("XrSpatialComponentTypeEXT", true, null);
+        assertEquals("long", enumPointer.getJavaType());
+        assertEquals("memGetAddress", enumPointer.getMemoryAccessMethod());
+        assertEquals("memPutAddress", enumPointer.getMemorySetMethod());
+    }
+
     /**
      * An unknown type must fail generation rather than silently being read/written as some default size
      */

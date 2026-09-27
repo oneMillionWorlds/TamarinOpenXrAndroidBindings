@@ -23,6 +23,17 @@ public class IntBufferView extends JavaBufferView<java.nio.IntBuffer>{
     }
 
     /**
+     * A view of existing native memory (e.g. an array a struct points to). The memory isn't owned by the view.
+     * @param address the address of the first int
+     * @param capacity the number of ints
+     * @return the view, or null if the address is NULL
+     */
+    public static IntBufferView wrap(long address, int capacity){
+        ByteBuffer buffer = MemoryUtil.memByteBuffer(address, capacity * Integer.BYTES);
+        return buffer == null ? null : new IntBufferView(buffer, buffer.asIntBuffer(), address);
+    }
+
+    /**
      * Creates a new IntBufferView with the specified capacity.
      * <p>
      * This is managed by java and will be freed when the PointerBufferView is garbage collected.

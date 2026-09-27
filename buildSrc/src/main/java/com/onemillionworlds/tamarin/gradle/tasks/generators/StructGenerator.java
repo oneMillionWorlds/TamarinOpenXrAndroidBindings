@@ -49,6 +49,12 @@ public class StructGenerator extends FileGenerator {
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.ByteBufferView;\n");
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.PointerBufferView;\n");
         writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView;\n");
+        struct.getFields().stream()
+                .map(StructField::getPrimitiveBufferViewType)
+                .filter(viewType -> viewType != null && !viewType.equals("ByteBufferView"))
+                .distinct()
+                .sorted()
+                .forEach(viewType -> writer.append("import com.onemillionworlds.tamarin.openxrbindings.memory.").append(viewType).append(";\n"));
 
 
         writer.append("\nimport java.nio.ByteBuffer;\n\n");
@@ -302,7 +308,7 @@ public class StructGenerator extends FileGenerator {
                     // Single struct or pointer forms: rely on getter's toString/null handling
                     writer.append("        sb.append(String.valueOf(").append(fieldNameSanitised).append("()));\n");
                 }
-            } else if ("ByteBufferView".equals(javaType)) {
+            } else if ("ByteBufferView".equals(javaType) && field.getArraySizeConstant() != null) {
                 // Use the String view for C char arrays
                 writer.append("        sb.append(").append(fieldNameSanitised).append("String());\n");
             } else {
@@ -590,7 +596,7 @@ public class StructGenerator extends FileGenerator {
 
         writer.append("    public " + javaType + " " + fieldNameSanitised + "() {\n");
 
-        if(field.isEnumType()){
+        if(field.isEnumType() && !field.isPointer()){
             writer.append("        return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldNameSanitised + "(addressUnsafe()));\n");
         } else if(field.isHandle() && !field.isPointer()) {
             writer.append("        return new " + javaType + "(" + struct.getName() + ".n" + fieldName + "(addressUnsafe()));\n");
@@ -605,8 +611,8 @@ public class StructGenerator extends FileGenerator {
             writer.append("    public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(addressUnsafe(), index); }\n");
         }
 
-        if(field.getJavaType().equals("ByteBufferView")) {
-            // add a bonus string method
+        if(field.getJavaType().equals("ByteBufferView") && field.getArraySizeConstant() != null) {
+            // add a bonus string method (for fixed size char arrays)
             writer.append("    /** Returns a String view of the {@code " + fieldName + "} field. */\n");
             writer.append("    public String " + fieldNameSanitised + "String() {\n");
             writer.append("        return " + struct.getName() + ".n" + fieldNameSanitised + "String(addressUnsafe());\n");
@@ -671,6 +677,21 @@ public class StructGenerator extends FileGenerator {
                     writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value) { memCopy(value.address(), struct +" + struct.getName() + "." + fieldNameUpper + "," + javaType + ".SIZEOF); }\n");
                 }
             }
+        } else if (field.getPrimitiveBufferViewType() != null) {
+            // a pointer to an array of plain values, whose length is in another field
+            String countMethodName = struct.findCountParameterForPointerField(field.getName()).map(f -> "n" + f).orElseThrow();
+            writer.append("    public static " + javaType + " n" + fieldNameSanitised + "(long struct) {\n");
+            writer.append("        int count = (int)" + countMethodName + "(struct);\n");
+            writer.append("        return " + javaType + ".wrap(memGetAddress(struct + " + struct.getName() + "." + fieldNameUpper + "), count);\n");
+            writer.append("    }\n");
+
+            writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value){\n");
+            writer.append("        long address = value == null ? NULL : value.address();\n");
+            writer.append("        memPutAddress(struct + " + fieldNameUpper + ", address);\n");
+            writer.append("        if(value!=null){\n");
+            writer.append("            " + countMethodName + "(struct, value.capacity());\n");
+            writer.append("        }\n");
+            writer.append("    }\n");
         } else if (javaType.equals("ByteBufferView")) {
             writer.append("    public static ByteBufferView n" + fieldNameSanitised + "(long struct) { \n");
             writer.append("        long address = struct + " + struct.getName() + "." + fieldNameUpper + ";\n");
@@ -697,7 +718,7 @@ public class StructGenerator extends FileGenerator {
             String accessMethod = field.getMemoryAccessMethod();
             String setMethod = field.getMemorySetMethod();
 
-            if (field.isEnumType()) {
+            if (field.isEnumType() && !field.isPointer()) {
                 writer.append("    public static int n" + fieldNameSanitised + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
                 writer.append("    public static void n" + fieldNameSanitised + "(long struct, int value ) { " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value); }\n");
             } else if (field.isHandle()) {
@@ -756,7 +777,7 @@ public class StructGenerator extends FileGenerator {
         writer.append("    /** Sets the specified value to the {@code " + fieldName + "} field. */\n");
         writer.append("    public " + struct.getName() + " " + fieldNameSanitised + "(" + fieldType + " value) { \n");
 
-        if(field.isEnumType()){
+        if(field.isEnumType() && !field.isPointer()){
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(addressUnsafe(), value.getValue());\n");
         } else if(field.isHandle() && !field.isPointer()){
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(addressUnsafe(), value.getRawHandle());\n");

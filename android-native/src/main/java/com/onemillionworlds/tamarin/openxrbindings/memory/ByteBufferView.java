@@ -26,6 +26,17 @@ public class ByteBufferView {
     }
 
     /**
+     * A view of existing native memory (e.g. an array a struct points to). The memory isn't owned by the view.
+     * @param address the address of the first byte
+     * @param capacity the number of bytes
+     * @return the view, or null if the address is NULL
+     */
+    public static ByteBufferView wrap(long address, int capacity){
+        ByteBuffer buffer = MemoryUtil.memByteBuffer(address, capacity);
+        return buffer == null ? null : new ByteBufferView(buffer, address);
+    }
+
+    /**
      * Creates a new ByteBufferView with the specified capacity.
      * <p>
      * This is managed by java and will be freed when the ByteBufferView is garbage collected.

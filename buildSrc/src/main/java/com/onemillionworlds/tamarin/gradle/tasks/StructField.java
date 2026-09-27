@@ -118,6 +118,30 @@ public class StructField {
     }
 
     /**
+     * For a pointer to an array of plain values (numbers, enums, atoms, ...) whose length is held in another field (its
+     * "len" in xr.xml), the typed view it is exposed as (e.g. "IntBufferView"). Null for anything else (struct and
+     * handle arrays have their own buffer types, a pointer without a len stays a raw address)
+     */
+    public String getPrimitiveBufferViewType() {
+        if (!isPointer || isDoublePointer || isStruct || isHandle || arraySizeConstant != null || countField == null) {
+            return null;
+        }
+        if (type.equals("float")) {
+            return "FloatBufferView";
+        } else if (type.equals("uint32_t") || type.equals("int32_t") || isTypeDefInt || isEnumType) {
+            return "IntBufferView";
+        } else if (type.equals("uint64_t") || type.equals("int64_t") || isAtom || isFlag || isTypeDefLong) {
+            return "LongBufferView";
+        } else if (type.equals("uint16_t") || type.equals("int16_t")) {
+            return "ShortBufferView";
+        } else if (type.equals("uint8_t") || type.equals("char") || type.equals("void")) {
+            // raw bytes (the len is a byte count)
+            return "ByteBufferView";
+        }
+        throw new RuntimeException("Unknown buffer view type for field " + this);
+    }
+
+    /**
      * Structs by value are weird. On the java side we still treat them as pointers but then deferernce them on
      * the native side to be passed by value. This is because we can't cope with passing structs by reference on the
      * java side.
@@ -165,7 +189,9 @@ public class StructField {
             return "ByteBufferView";
         } else if (arraySizeConstant != null && isStructByValue()) {
             return type + ".Buffer";
-        }else if (isEnumType) {
+        } else if (getPrimitiveBufferViewType() != null) {
+            return getPrimitiveBufferViewType();
+        }else if (isEnumType && !isPointer) {
             return type;
         }else if(isSingletonStructPointer()) {
             return type;
@@ -216,7 +242,7 @@ public class StructField {
             } else {
                 return "memByteBuffer";
             }
-        } else if (isEnumType) {
+        } else if (isEnumType && !isPointer) {
             return "memGetInt";
         } else if (isPointer || type.startsWith("PFN")) {
             return "memGetAddress";
@@ -247,7 +273,7 @@ public class StructField {
             } else {
                 return "memByteBuffer";
             }
-        } else if (isEnumType) {
+        } else if (isEnumType && !isPointer) {
             return "memPutInt";
         } else if (isPointer || type.startsWith("PFN")) {
             return "memPutAddress";

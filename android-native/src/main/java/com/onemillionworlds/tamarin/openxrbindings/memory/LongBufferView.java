@@ -23,6 +23,17 @@ public class LongBufferView extends JavaBufferView<java.nio.LongBuffer>{
     }
 
     /**
+     * A view of existing native memory (e.g. an array a struct points to). The memory isn't owned by the view.
+     * @param address the address of the first long
+     * @param capacity the number of longs
+     * @return the view, or null if the address is NULL
+     */
+    public static LongBufferView wrap(long address, int capacity){
+        ByteBuffer buffer = MemoryUtil.memByteBuffer(address, capacity * Long.BYTES);
+        return buffer == null ? null : new LongBufferView(buffer, buffer.asLongBuffer(), address);
+    }
+
+    /**
      * Creates a new LongBufferView with the specified capacity.
      * <p>
      * This is managed by java and will be freed when the LongBufferView is garbage collected.

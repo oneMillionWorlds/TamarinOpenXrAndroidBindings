@@ -23,6 +23,17 @@ public class FloatBufferView extends JavaBufferView<java.nio.FloatBuffer>{
     }
 
     /**
+     * A view of existing native memory (e.g. an array a struct points to). The memory isn't owned by the view.
+     * @param address the address of the first float
+     * @param capacity the number of floats
+     * @return the view, or null if the address is NULL
+     */
+    public static FloatBufferView wrap(long address, int capacity){
+        ByteBuffer buffer = MemoryUtil.memByteBuffer(address, capacity * Float.BYTES);
+        return buffer == null ? null : new FloatBufferView(buffer, buffer.asFloatBuffer(), address);
+    }
+
+    /**
      * Creates a new FloatBufferView with the specified capacity.
      * <p>
      * This is managed by java and will be freed when the FloatBufferView is garbage collected.
