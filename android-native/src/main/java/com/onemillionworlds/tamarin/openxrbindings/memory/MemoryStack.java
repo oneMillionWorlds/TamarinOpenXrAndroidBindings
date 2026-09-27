@@ -187,6 +187,16 @@ public class MemoryStack implements AutoCloseable {
         return new FloatBufferView(buffer.buffer, buffer.buffer.asFloatBuffer(), buffer.address);
     }
 
+    public ShortBufferView mallocShort(int size) {
+        ByteBufferView buffer = malloc(2, size * 2);
+        return new ShortBufferView(buffer.buffer, buffer.buffer.asShortBuffer(), buffer.address);
+    }
+
+    public ShortBufferView callocShort(int size) {
+        ByteBufferView buffer = calloc(2, size * 2);
+        return new ShortBufferView(buffer.buffer, buffer.buffer.asShortBuffer(), buffer.address);
+    }
+
     /**
      * Returns a ByteBuffer that represents the specified string on the stack.
      */

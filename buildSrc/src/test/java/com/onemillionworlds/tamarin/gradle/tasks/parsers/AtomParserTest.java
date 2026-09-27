@@ -24,6 +24,13 @@ class AtomParserTest {
     }
 
     @Test
+    void parseAtom_opaque64() {
+        String line = "XR_DEFINE_OPAQUE_64(XrFutureEXT)";
+        Optional<String> result = AtomParser.parseAtom(line);
+        assertEquals(Optional.of("XrFutureEXT"), result);
+    }
+
+    @Test
     void parseAtom_invalidAtom() {
         String line = "This is not an atom definition";
         Optional<String> result = AtomParser.parseAtom(line);

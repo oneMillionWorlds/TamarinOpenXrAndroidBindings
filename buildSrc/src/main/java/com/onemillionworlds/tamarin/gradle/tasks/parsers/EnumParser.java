@@ -10,8 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EnumParser {
-    public static Pattern enumStartPattern = Pattern.compile("typedef\\s+enum\\s+(?:(Xr[A-Za-z]+)\\s+)?\\{");
-    static Pattern enumEndPattern = Pattern.compile("\\}\\s+(Xr[A-Za-z]+);");
+    public static Pattern enumStartPattern = Pattern.compile("typedef\\s+enum\\s+(?:(Xr[A-Za-z0-9]+)\\s+)?\\{");
+    static Pattern enumEndPattern = Pattern.compile("\\}\\s+(Xr[A-Za-z0-9]+);");
     static Pattern enumValuePattern = Pattern.compile("\\s*(XR_[A-Z0-9_]+)\\s*=\\s*([^,]+),?");
 
     public static EnumDefinition parseEnum(BufferedReader readerOngoing, String triggeringLine) throws IOException {

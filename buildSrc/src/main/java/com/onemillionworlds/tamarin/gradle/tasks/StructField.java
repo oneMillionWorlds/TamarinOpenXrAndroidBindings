@@ -126,7 +126,7 @@ public class StructField {
     public String getMemorySize() {
         if (isPointer || type.startsWith("PFN")) return SIZE_POINTER;
         if (type.equals("char")) return SIZE_1_BYTE;
-        if (type.equals("int16_t")) return SIZE_2_BYTES;
+        if (type.equals("int16_t") || type.equals("uint16_t")) return SIZE_2_BYTES;
         if (type.equals("float")) return SIZE_4_BYTES;
         if (type.equals("double")) return SIZE_8_BYTES;
         if(type.equals("uint8_t")) return SIZE_1_BYTE;
@@ -177,7 +177,9 @@ public class StructField {
             return "float";
         } else if (type.equals("double")) {
             return "double";
-        } else if (type.equals("int16_t")) {
+        } else if (type.equals("uint8_t")) {
+            return "byte";
+        } else if (type.equals("int16_t") || type.equals("uint16_t")) {
             return "short";
         } else if (isStructByValue()) {
             return type;
@@ -219,8 +221,10 @@ public class StructField {
             return "memGetFloat";
         } else if (type.equals("double")) {
             return "memGetDouble";
-        } else if (type.equals("int16_t")) {
+        } else if (type.equals("int16_t") || type.equals("uint16_t")) {
             return "memGetShort";
+        } else if (type.equals("uint8_t")) {
+            return "memGetByte";
         } else if (type.equals("EGLDisplay") || type.equals("EGLConfig") || type.equals("EGLContext")) {
             // EGL types are pointers on Android
             return "memGetAddress";
@@ -249,8 +253,10 @@ public class StructField {
             return "memPutFloat";
         } else if (type.equals("double")) {
             return "memPutDouble";
-        } else if (type.equals("int16_t")) {
+        } else if (type.equals("int16_t") || type.equals("uint16_t")) {
             return "memPutShort";
+        } else if (type.equals("uint8_t")) {
+            return "memPutByte";
         } else if (type.equals("EGLDisplay") || type.equals("EGLConfig") || type.equals("EGLContext")) {
             // EGL types are pointers on Android
             return "memPutAddress";

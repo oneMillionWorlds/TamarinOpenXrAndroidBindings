@@ -8,34 +8,35 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Generator for JNI C implementation file for OpenXR functions.
  */
 public class X10CGenerator extends FileGenerator {
     private final List<FunctionDefinition> functions;
-    private final List<String> extensionSuffixes = Arrays.asList("KHR", "EXT", "MSFT", "FB", "OCULUS", "VALVE", "HTC", "EPIC", "VARJO", "ML", "ALMALENCE", "QUALCOMM", "MND", "HUAWEI", "SAMSUNG");
 
-    public X10CGenerator(Logger logger, List<FunctionDefinition> functions) {
+    /**
+     * Functions that are part of a core OpenXR version (from xr.xml), these are exported by the loader and can be
+     * called directly
+     */
+    private final Set<String> coreFunctions;
+
+    public X10CGenerator(Logger logger, List<FunctionDefinition> functions, Set<String> coreFunctions) {
         super(logger);
         this.functions = functions;
+        this.coreFunctions = coreFunctions;
     }
 
     /**
-     * Checks if a function is an extension function by looking for extension suffixes in the function name.
-     * 
+     * Checks if a function is an extension function (i.e. not part of any core OpenXR version).
+     *
      * @param functionName The name of the function to check
      * @return true if the function is an extension function, false otherwise
      */
     private boolean isExtensionFunction(String functionName) {
-        for (String suffix : extensionSuffixes) {
-            if (functionName.contains(suffix)) {
-                return true;
-            }
-        }
-        return false;
+        return !coreFunctions.contains(functionName);
     }
 
     @Override
@@ -75,9 +76,9 @@ public class X10CGenerator extends FileGenerator {
             // Include manual EGL handle definitions needed by some platform structs
             writer.write("#include \"../../../../native/include/tamarinManualDefines.h\"\n\n");
 
-            // Include OpenXR headers
-            writer.write("#include \"../../../../native/include/openxr/openxr.h\"\n");
-            writer.write("#include \"../../../../native/include/openxr/openxr_platform.h\"\n");
+            // Include OpenXR headers (from the loader AAR, on the include path via prefab's OpenXR::headers)
+            writer.write("#include <openxr/openxr.h>\n");
+            writer.write("#include <openxr/openxr_platform.h>\n");
             // Define logging macros
             writer.write("#define TAG \"XR10\"\n");
             writer.write("#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)\n");

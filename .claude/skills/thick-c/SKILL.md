@@ -22,7 +22,7 @@ use the `codegen-change` skill instead. Thick C is for things that need real C l
 1. In `ThickC.java` declare a low-level `public static native` method taking primitives / `long` addresses / Java objects, plus (usually) a friendly Java wrapper that allocates on `MemoryStack`, checks the result code and returns typed objects (`Handle` subclasses, structs). See `initializeLoader(Context)` and `setupDebugMessenger`
 2. Compile once (`./gradlew :android-native:compileDebugJavaWithJavac`) — javac's `-h` flag writes the JNI header to `android-native/src/native/headers/` (git-ignored). Copy the exact function name/signature from it
 3. Implement in the C file. Conventions already used there:
-   - `#define XR_USE_PLATFORM_ANDROID` / `XR_EXTENSION_PROTOTYPES` before including `../include/openxr/openxr.h` and `openxr_platform.h`
+   - `#define XR_USE_PLATFORM_ANDROID` / `XR_EXTENSION_PROTOTYPES` before including `<openxr/openxr.h>` and `<openxr/openxr_platform.h>` (on the include path via prefab's `OpenXR::headers`, from the loader AAR)
    - `LOGI`/`LOGE` via `__android_log_print`
    - Addresses cross JNI as `jlong` and are cast with `(T*)(intptr_t)addr`
    - Extension functions must be fetched with `xrGetInstanceProcAddr` (they are not linked directly); return `XR_ERROR_FUNCTION_UNSUPPORTED` if unavailable

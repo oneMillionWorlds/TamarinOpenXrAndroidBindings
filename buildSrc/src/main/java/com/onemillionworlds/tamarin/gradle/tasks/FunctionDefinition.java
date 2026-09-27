@@ -182,6 +182,9 @@ public class FunctionDefinition {
                 if(type.equals("uint8_t")){
                     return "ByteBufferView";
                 }
+                if(type.equals("uint16_t")){
+                    return "ShortBufferView";
+                }
                 if(type.equals("float")){
                     return "FloatBufferView";
                 }
@@ -204,6 +207,9 @@ public class FunctionDefinition {
                 }
                 if(type.equals("float")){
                     return "float";
+                }
+                if(type.equals("double")){
+                    return "double";
                 }
                 throw new RuntimeException("Unexpected non pointer type: " + this);
             }
@@ -232,6 +238,8 @@ public class FunctionDefinition {
                 return "long";
             } else if (paramType.equals("float")) {
                 return "float";
+            } else if (paramType.equals("double")) {
+                return "double";
             } else {
                 return "int";
             }

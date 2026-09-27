@@ -85,7 +85,9 @@ public class StructGenerator extends FileGenerator {
                 writer.append("const ");
             }
             writer.append(fieldType);
-            if(field.isPointer()){
+            if(field.isDoublePointer()){
+                writer.append(field.isConst() ? "* const*" : "**");
+            }else if(field.isPointer()){
                 writer.append("*");
             }
             writer.append(" ");
@@ -593,7 +595,7 @@ public class StructGenerator extends FileGenerator {
         writer.append("    public " + javaType + " " + fieldNameSanitised + "() {\n");
 
         if(field.isEnumType()){
-            writer.append("        return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldName + "(addressUnsafe()));\n");
+            writer.append("        return " + fieldType + ".fromValue(" + struct.getName() + ".n" + fieldNameSanitised + "(addressUnsafe()));\n");
         } else if(field.isHandle() && !field.isPointer()) {
             writer.append("        return new " + javaType + "(" + struct.getName() + ".n" + fieldName + "(addressUnsafe()));\n");
         } else {

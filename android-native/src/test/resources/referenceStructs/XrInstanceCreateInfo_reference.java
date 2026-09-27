@@ -32,9 +32,9 @@ import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
  *     XrInstanceCreateFlags createFlags;
  *     XrApplicationInfo applicationInfo;
  *     uint32_t enabledApiLayerCount;
- *     const * enabledApiLayerNames;
+ *     const char* const* enabledApiLayerNames;
  *     uint32_t enabledExtensionCount;
- *     const * enabledExtensionNames;
+ *     const char* const* enabledExtensionNames;
  * }</code></pre>
  * @noinspection unused
  */

@@ -172,8 +172,9 @@ public class StructDefinition {
             return Optional.of("box");
         }else if (plural.equals("spheres")){
             return Optional.of("sphere");
-        }else if (plural.endsWith("properties")){
-            return Optional.of(plural.replace("properties", "property"));
+        }else if (plural.endsWith("ies")){
+            // e.g. properties -> property, entities -> entity
+            return Optional.of(plural.substring(0, plural.length() - 3) + "y");
         }else if(plural.endsWith("Meshes")){
             return Optional.of(plural.replace("Meshes", "Mesh"));
         }else if(plural.endsWith("s")) {

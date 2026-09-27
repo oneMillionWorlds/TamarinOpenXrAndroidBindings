@@ -17,6 +17,7 @@ import com.onemillionworlds.tamarin.gradle.tasks.parsers.HandleParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.IntTypeDefPasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.LongTypeDefPasser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.StructParser;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.XmlFeatureParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.XmlStructParser;
 import com.onemillionworlds.tamarin.gradle.tasks.utility.IfDefParser;
 import org.gradle.api.DefaultTask;
@@ -41,6 +42,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -120,6 +122,7 @@ public class ParseOpenXr extends DefaultTask {
         // Create an XML helper for traversing the document
         List<Element> types = XmlHelper.getElements(XmlHelper.getElement(xrXmlDocument.getDocumentElement(), "types").orElseThrow(), "type");
         Map<String, XmlStructParser.XmlStruct> xmlStructs = XmlStructParser.parseStructs(types);
+        Set<String> coreCommands = XmlFeatureParser.parseCoreCommands(xrXmlDocument.getDocumentElement());
 
         getLogger().lifecycle("Found XML structs: {}", xmlStructs.size());
 
@@ -157,6 +160,8 @@ public class ParseOpenXr extends DefaultTask {
             getLogger().lifecycle("Pasring header {}", header.getAbsolutePath());
             parseHeaderFile(header, constants, structs, enums, functions, atoms, intTypedefs, longTypedefs, handles, flags);
         }
+
+        addEnumValuesUsedAsArraySizes(structs, enums, constants);
 
         Map<String, List<String>> parentToChildren = new LinkedHashMap<>();
 
@@ -228,7 +233,7 @@ public class ParseOpenXr extends DefaultTask {
 
         // Generate C JNI implementation file
         if (cOutput != null) {
-            new X10CGenerator(getLogger(), functions).generate(cOutput);
+            new X10CGenerator(getLogger(), functions, coreCommands).generate(cOutput);
         }
     }
 
@@ -292,6 +297,10 @@ public class ParseOpenXr extends DefaultTask {
                 // Parse flag definitions
                 FlagsParser.parseFlags(line).ifPresent(flags::add);
 
+                if(line.startsWith("typedef Xr")) {
+                    StructParser.parseStructAlias(line, structs, xrStructureTypeValues(enums)).ifPresent(structs::add);
+                }
+
                 if(StructParser.structStartPattern.matcher(line).find()) {
                     List<String> knownEnums = new ArrayList<>(enums.size() + HAND_WRITTEN_ENUMS.size());
                     knownEnums.addAll(enums.stream().map(EnumDefinition::getName).toList());
@@ -300,16 +309,46 @@ public class ParseOpenXr extends DefaultTask {
 
                     List<String> knownStructs = structs.stream().map(StructDefinition::getName).toList();
 
-                    List<String> xrStructureTypeValues = enums.stream()
-                            .filter(e -> e.getName().equals("XrStructureType"))
-                            .flatMap(e -> e.getValues().stream())
-                            .map(EnumDefinition.EnumValue::getName)
-                            .toList();
+                    List<String> xrStructureTypeValues = xrStructureTypeValues(enums);
 
                     structs.add(StructParser.parseStruct(reader, line, knownEnums, atoms, intTypedefs, longTypedefs, handles, flags, knownStructs, xrStructureTypeValues));
                 }
             }
         }
+    }
+
+    /**
+     * Some fixed size arrays are sized by an enum value rather than a #define (e.g. gaze[XR_EYE_POSITION_COUNT_FB]).
+     * The generated code refers to array sizes as XR10Constants, so those enum values are added as int constants.
+     */
+    private static void addEnumValuesUsedAsArraySizes(List<StructDefinition> structs, List<EnumDefinition> enums, Map<String, ConstParser.Const> constants){
+        Map<String, String> enumValues = new LinkedHashMap<>();
+        enums.forEach(e -> e.getValues().forEach(v -> enumValues.put(v.getName(), v.getValue())));
+
+        for(StructDefinition struct : structs){
+            for(StructField field : struct.getFields()){
+                if(field.getArraySizeConstant() == null){
+                    continue;
+                }
+                for(String sizePart : field.getArraySizeConstant().split("\\s*\\*\\s*")){
+                    if(sizePart.startsWith("XR_") && !constants.containsKey(sizePart)){
+                        String value = enumValues.get(sizePart);
+                        if(value == null){
+                            throw new RuntimeException("Unknown array size " + sizePart + " for " + struct.getName() + "." + field.getName());
+                        }
+                        constants.put(sizePart, new ConstParser.Const("int", sizePart, value));
+                    }
+                }
+            }
+        }
+    }
+
+    private static List<String> xrStructureTypeValues(List<EnumDefinition> enums){
+        return enums.stream()
+                .filter(e -> e.getName().equals("XrStructureType"))
+                .flatMap(e -> e.getValues().stream())
+                .map(EnumDefinition.EnumValue::getName)
+                .toList();
     }
 
 }

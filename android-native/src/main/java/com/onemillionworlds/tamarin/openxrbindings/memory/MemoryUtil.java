@@ -208,6 +208,22 @@ public class MemoryUtil {
     public static native short memGetShort(long address);
 
     /**
+     * Gets a double value from the specified memory address.
+     *
+     * @param address the memory address
+     * @return the double value
+     */
+    public static native double memGetDouble(long address);
+
+    /**
+     * Gets a byte value from the specified memory address.
+     *
+     * @param address the memory address
+     * @return the byte value
+     */
+    public static native byte memGetByte(long address);
+
+    /**
      * Gets an address value from the specified memory address.
      * 
      * @param address the memory address
@@ -238,6 +254,22 @@ public class MemoryUtil {
      * @param value the short value
      */
     public static native void memPutShort(long address, short value);
+
+    /**
+     * Puts a double value at the specified memory address.
+     *
+     * @param address the memory address
+     * @param value the double value
+     */
+    public static native void memPutDouble(long address, double value);
+
+    /**
+     * Puts a byte value at the specified memory address.
+     *
+     * @param address the memory address
+     * @param value the byte value
+     */
+    public static native void memPutByte(long address, byte value);
 
     /**
      * Starting at the memory address, sets the specified number of bytes to zero.

@@ -10,8 +10,8 @@ set(JNI_SOURCES
 )
 
 # The OpenXR loader comes from the org.khronos.openxr:openxr_loader_for_android AAR via prefab.
-# We only link the library; our headers are the vendored ones in include/openxr (included by relative path), which
-# is what the Java/C code generation is based on
+# Linking OpenXR::openxr_loader also puts the AAR's OpenXR headers (OpenXR::headers) on the include path. Those are the
+# same headers the Java/C code generation is based on (see extractOpenXrHeaders in build.gradle)
 find_package(OpenXR REQUIRED CONFIG)
 
 
@@ -29,7 +29,6 @@ endif()
 
 # Add include directories for headers
 target_include_directories(openxrjni PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/openxr
     ${CMAKE_CURRENT_SOURCE_DIR}/headers
     ${CMAKE_CURRENT_BINARY_DIR}
 )

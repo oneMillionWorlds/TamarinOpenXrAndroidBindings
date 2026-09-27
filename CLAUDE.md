@@ -12,14 +12,14 @@ Published as `com.onemillionworlds.tamarin:openxr-bindings-native` (version in `
 
 - `buildSrc/` — the code generator (a Gradle plugin, plain Java 17+, has its own JUnit tests)
   - `tasks/ParseOpenXr.java` — the Gradle task and entry point. Reads headers line by line, then `xr.xml`, then runs every generator
-  - `tasks/parsers/` — line-based parsers for the C headers (`StructParser`, `FunctionParser`, `EnumParser`, `IfDefParser`, ...) and `XmlStructParser` for `xr.xml`
+  - `tasks/parsers/` — line-based parsers for the C headers (`StructParser`, `FunctionParser`, `EnumParser`, `IfDefParser`, ...) and `XmlStructParser` / `XmlFeatureParser` for `xr.xml`
   - `tasks/StructDefinition`, `StructField`, `FunctionDefinition`, `EnumDefinition` — the intermediate model. Type mapping (C type → Java high-level / low-level / JNI type) lives mostly on `StructField` and `FunctionDefinition.FunctionParameter`
   - `tasks/generators/` — `StructGenerator` (largest), `X10Generator` + `WrapperFunctionGenerator` (Java `XR10`), `X10CGenerator` + `CWrapperFunctionGenerator` (JNI C), `EnumGenerator`, `HandleGenerator`, `ConstantsGenerator`
 - `android-native/` — the only published module (Android library)
   - `src/main/java/.../openxrbindings/` — hand-written runtime: `Struct`, `StructBuffer`, `Layout` (C layout/alignment calc), `Handle`, `StructSetterValidationObject`, `memory/` (`MemoryStack`, `MemoryUtil`, `*BufferView`), `thickc/ThickC` (hand-written native helpers), `enums/EGLenum` (hand-written)
   - `src/main/generated/` — **generated, git-ignored, never edit**. `java/.../openxrbindings/` (`XR10`, `XR10Constants`, one class per struct, `enums/`, `handles/`) and `native/src/com_onemillionworlds_tamarin_openxrbindings_XR10.c`
-  - `src/native/` — CMake project: `src/*.c` hand-written JNI (`MemoryUtil`, `ThickC`), `include/openxr/*.h` vendored OpenXR headers, `include/tamarinManualDefines.h` (opaque EGL typedefs), `headers/` (javac `-h` output, git-ignored)
-  - `src/openxrSpec/xr.xml` — Khronos registry
+  - `src/native/` — CMake project: `src/*.c` hand-written JNI (`MemoryUtil`, `ThickC`), `include/tamarinManualDefines.h` (opaque EGL typedefs), `headers/` (javac `-h` output, git-ignored)
+  - `build/openxrSpec/` — **not checked in**: `include/openxr/*.h` extracted from the loader AAR (`extractOpenXrHeaders`) and `xr.xml` downloaded from GitHub (`downloadXrXml`, SHA-256 pinned in `android-native/build.gradle`)
   - `src/test/` — JVM unit tests (see Testing)
 
 ## Generation pipeline
@@ -35,13 +35,14 @@ tasks. It:
 
 Key conventions in the generated code:
 - Every `XR10.xrFoo(...)` is a high-level wrapper returning `XrResult` that unwraps structs/buffers to addresses and calls `public static native int nxrFoo(...)`
-- In C, core functions are called directly; **extension functions** (name contains a vendor suffix in `X10CGenerator.extensionSuffixes`) go through `PFN_` pointers loaded by `initializeExtensionFunctions`, which is called from a special hand-emitted `nxrCreateInstance`. A missing extension returns `XR_ERROR_FUNCTION_UNSUPPORTED`
+- In C, core functions (required by a `<feature>` in `xr.xml`, see `XmlFeatureParser`) are called directly; **extension functions** (everything else) go through `PFN_` pointers loaded by `initializeExtensionFunctions`, which is called from a special hand-emitted `nxrCreateInstance`. A missing extension returns `XR_ERROR_FUNCTION_UNSUPPORTED`
 - Pointer params become `*BufferView` / `Struct.Buffer` / `Handle.HandleBuffer`; structs passed by value are passed as addresses and dereferenced in C
 - Structs: `malloc()` variants turn on setter validation (`StructSetterValidationObject` throws on `address()` if any setter wasn't called); `calloc()`/`create()` don't. Non-const struct params in `XR10` wrappers are treated as out-params and have validation disabled. `type$Default()` sets the matching `XrStructureType` (not generated for abstract base headers)
 
-Note: the vendored headers are OpenXR **1.0.24** while `xr.xml` is **1.1.51** and the runtime loader
-(`org.khronos.openxr:openxr_loader_for_android`, via prefab, see `README_DEEP.md`) is newer still. The headers are the
-source of truth for what gets generated.
+Note: the headers and `xr.xml` are always the same version as the runtime loader (`openxr-loader` in
+`gradle/libs.versions.toml`, currently **1.1.63**; `org.khronos.openxr:openxr_loader_for_android`, via prefab, see
+`README_DEEP.md`). The headers are still the source of truth for what gets generated. Building needs network access
+to GitHub for `xr.xml`.
 
 ## Rules
 
@@ -81,4 +82,4 @@ Don't bump the version by hand.
 
 - `/codegen-change` — changing what the generator produces (structs, XR10 wrappers, JNI C)
 - `/thick-c` — adding hand-written native functionality
-- `/update-openxr-spec` — updating the vendored headers / `xr.xml`
+- `/update-openxr-spec` — moving to a newer OpenXR version (bumping the loader, which drives the headers and `xr.xml`)

@@ -21,5 +21,15 @@ public class DefineParserTest {
         assertEquals("16", defineResult.constantValue);
     }
 
+    @Test
+    void testParse_unsignedSuffixIsDropped() {
+        String input = "#define XR_MAX_HAPTIC_AMPLITUDE_ENVELOPE_SAMPLES_FB 4000u";
+
+        ConstParser.Const constant = ConstParser.Const.fromDefine(DefinePasser.parseDefine(input).orElseThrow());
+
+        assertEquals("int", constant.type);
+        assertEquals("4000", constant.value);
+    }
+
 
 }

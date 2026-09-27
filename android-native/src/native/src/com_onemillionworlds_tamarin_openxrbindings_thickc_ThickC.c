@@ -8,8 +8,8 @@
 #define XR_USE_PLATFORM_ANDROID
 #define XR_EXTENSION_PROTOTYPES
 
-#include "../include/openxr/openxr.h"
-#include "../include/openxr/openxr_platform.h"
+#include <openxr/openxr.h>
+#include <openxr/openxr_platform.h>
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)

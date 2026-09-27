@@ -89,10 +89,11 @@ public class ConstParser {
         public static Const fromDefine(DefinePasser.Define define){
 
             String javaType;
-            String constantValue = define.constantValue;
-            if(define.constantValue.contains("\"")){
+            // Java has no unsigned literal suffix, so drop it (e.g. "4000u" -> "4000", "0x1ULL" -> "0x1LL")
+            String constantValue = define.constantValue.replaceFirst("^(0x[0-9A-Fa-f]+|[0-9]+)[uU]", "$1");
+            if(constantValue.contains("\"")){
                 javaType = "String";
-            } else if (define.constantValue.endsWith("L")){
+            } else if (constantValue.endsWith("L")){
                 javaType = "long";
                 constantValue = constantValue.replace("LL", "L");
             } else{

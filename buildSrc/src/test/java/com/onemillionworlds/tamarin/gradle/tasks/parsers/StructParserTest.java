@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static com.onemillionworlds.tamarin.gradle.tasks.generators.CommonData.XR_STRUCTURE_TYPE_ENUM_VALUES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -91,6 +92,67 @@ class StructParserTest {
         assertEquals(expectedStruct, actualStruct);
     }
 
+
+    @Test
+    void parseStruct_multiDimensionalArrayIsFlattened() throws IOException {
+        String structString = """
+                typedef struct XrSphericalHarmonicsANDROID {
+                    float                              coefficients[9][3];
+                } XrSphericalHarmonicsANDROID;
+                """;
+        BufferedReader reader = new BufferedReader(new StringReader(structString));
+
+        StructDefinition expectedStruct = new StructDefinition("XrSphericalHarmonicsANDROID", false);
+        expectedStruct.addField(new StructField("float", "coefficients", "9 * 3", false, false, false, false,false,false,false,false,false,false, false));
+
+        StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine(),
+                KNOWN_ENUM_TYPES, KNOWN_ATOMS, KNOWN_TYPEDEF_INTS, KNOWN_TYPEDEF_LONGS,
+                KNOWN_HANDLES, KNOWN_FLAGS, KNOWN_STRUCTS, XR_STRUCTURE_TYPE_ENUM_VALUES);
+
+        assertEquals(expectedStruct, actualStruct);
+    }
+
+    @Test
+    void parseStruct_doublePointersAreRawAddresses() throws IOException {
+        // Both forms of double pointer to a known struct; they must not be treated as a struct pointer (which would
+        // become a Struct.Buffer) but as a raw address, keeping the pointed to type for the documentation
+        String structString = """
+                typedef struct XrCameraPropertiesBD {
+                    const XrCompositionLayerBaseHeader* const*    layers;
+                    XrCompositionLayerBaseHeader**    properties;
+                } XrCameraPropertiesBD;
+                """;
+        BufferedReader reader = new BufferedReader(new StringReader(structString));
+        List<String> knownStructs = List.of("XrCompositionLayerBaseHeader");
+
+        StructDefinition expectedStruct = new StructDefinition("XrCameraPropertiesBD", false);
+        expectedStruct.addField(new StructField("XrCompositionLayerBaseHeader", "layers", null, true, true, false, false,false,false,false,false,false,true, false));
+        expectedStruct.addField(new StructField("XrCompositionLayerBaseHeader", "properties", null, true, false, false, false,false,false,false,false,false,true, false));
+
+        StructDefinition actualStruct = StructParser.parseStruct(reader, reader.readLine(),
+                KNOWN_ENUM_TYPES, KNOWN_ATOMS, KNOWN_TYPEDEF_INTS, KNOWN_TYPEDEF_LONGS,
+                KNOWN_HANDLES, KNOWN_FLAGS, knownStructs, XR_STRUCTURE_TYPE_ENUM_VALUES);
+
+        assertEquals(expectedStruct, actualStruct);
+    }
+
+    @Test
+    void parseStructAlias() {
+        StructDefinition target = new StructDefinition("XrUuid", false);
+        target.addField(new StructField("uint8_t", "data", "XR_UUID_SIZE", false, false, false, false,false,false,false,false,false,false, false));
+
+        Optional<StructDefinition> alias = StructParser.parseStructAlias("typedef XrUuid XrUuidEXT;", List.of(target), XR_STRUCTURE_TYPE_ENUM_VALUES);
+
+        StructDefinition expectedAlias = new StructDefinition("XrUuidEXT", false);
+        expectedAlias.addField(new StructField("uint8_t", "data", "XR_UUID_SIZE", false, false, false, false,false,false,false,false,false,false, false));
+        assertEquals(Optional.of(expectedAlias), alias);
+    }
+
+    @Test
+    void parseStructAlias_notAStruct() {
+        // flags and other typedefs of non-structs are not struct aliases
+        assertEquals(Optional.empty(), StructParser.parseStructAlias("typedef XrFlags64 XrInstanceCreateFlags;", List.of(), XR_STRUCTURE_TYPE_ENUM_VALUES));
+    }
 
     @Test
     void createXrStructureTypeEnumValueForStruct(){

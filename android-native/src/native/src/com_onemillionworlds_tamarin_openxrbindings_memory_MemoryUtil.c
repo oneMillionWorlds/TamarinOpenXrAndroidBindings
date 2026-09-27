@@ -167,6 +167,34 @@ JNIEXPORT jshort JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory
 
 /*
  * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
+ * Method:    memGetDouble
+ * Signature: (J)D
+ */
+JNIEXPORT jdouble JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil_memGetDouble
+  (JNIEnv *env, jclass cls, jlong address) {
+    void *ptr = (void*)(intptr_t)address;
+    if (ptr == NULL) {
+        return 0.0;
+    }
+    return *(jdouble*)ptr;
+}
+
+/*
+ * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
+ * Method:    memGetByte
+ * Signature: (J)B
+ */
+JNIEXPORT jbyte JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil_memGetByte
+  (JNIEnv *env, jclass cls, jlong address) {
+    void *ptr = (void*)(intptr_t)address;
+    if (ptr == NULL) {
+        return 0;
+    }
+    return *(jbyte*)ptr;
+}
+
+/*
+ * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
  * Method:    memGetAddress
  * Signature: (J)J
  */
@@ -215,6 +243,32 @@ JNIEXPORT void JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory_M
     void *ptr = (void*)(intptr_t)address;
     if (ptr != NULL) {
         *(jshort*)ptr = value;
+    }
+}
+
+/*
+ * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
+ * Method:    memPutDouble
+ * Signature: (JD)V
+ */
+JNIEXPORT void JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil_memPutDouble
+  (JNIEnv *env, jclass cls, jlong address, jdouble value) {
+    void *ptr = (void*)(intptr_t)address;
+    if (ptr != NULL) {
+        *(jdouble*)ptr = value;
+    }
+}
+
+/*
+ * Class:     com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil
+ * Method:    memPutByte
+ * Signature: (JB)V
+ */
+JNIEXPORT void JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil_memPutByte
+  (JNIEnv *env, jclass cls, jlong address, jbyte value) {
+    void *ptr = (void*)(intptr_t)address;
+    if (ptr != NULL) {
+        *(jbyte*)ptr = value;
     }
 }
 

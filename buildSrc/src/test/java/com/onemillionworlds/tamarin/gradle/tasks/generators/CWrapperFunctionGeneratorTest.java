@@ -42,6 +42,43 @@ class CWrapperFunctionGeneratorTest {
     }
 
     @Test
+    void generateCWrapperFunction_doubleParameters() {
+        // doubles must be jdouble / "D" to match the Java native method's double parameters
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrCheckVpsAvailabilityAsyncANDROID", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("double", "latitude", false, false, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("double", "longitude", false, false, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrFutureEXT", "future", true, false, false, true, false, false, false, false, false, false));
+
+        String expectedValue = """
+                /*
+                 * Class:     com_onemillionworlds_tamarin_openxrbindings_XR10
+                 * Method:    nxrCheckVpsAvailabilityAsyncANDROID
+                 * Signature: (JDDJ)I
+                 */
+                JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_XR10_nxrCheckVpsAvailabilityAsyncANDROID
+                  (JNIEnv *env, jclass cls, jlong session, jdouble latitude, jdouble longitude, jlong future) {
+
+                    // Convert JNI parameters to OpenXR parameters
+                    XrSession sessionHandle = (XrSession)(intptr_t)session;
+                    double latitudeValue = (double)latitude;
+                    double longitudeValue = (double)longitude;
+                    XrFutureEXT *futurePtr = (XrFutureEXT *)(intptr_t)future;
+
+                    // Call the OpenXR function
+                    XrResult result = xrCheckVpsAvailabilityAsyncANDROID(sessionHandle, latitudeValue, longitudeValue, futurePtr);
+
+                    // Return the result as a jint
+                    return (jint)result;
+                }
+                """;
+
+        String actualValue = CWrapperFunctionGenerator.generateCWrapperFunction(functionDefinition);
+
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
+
+    @Test
     void generateCWrapperFunction_xrGetInstanceProcAddr() {
         FunctionDefinition functionDefinition = new FunctionDefinition("xrGetInstanceProcAddr", "XrResult");
         functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false, false, false, true, false, false, false));

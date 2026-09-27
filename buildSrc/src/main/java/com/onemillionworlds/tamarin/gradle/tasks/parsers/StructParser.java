@@ -5,7 +5,9 @@ import com.onemillionworlds.tamarin.gradle.tasks.StructField;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +15,9 @@ public class StructParser {
 
     public static Pattern structStartPattern = Pattern.compile("\\s*typedef\\s+struct\\s+(?:XR_MAY_ALIAS\\s+)?(\\w+)\\s*\\{");
     static Pattern structEndPattern = Pattern.compile("\\s*\\}\\s+(\\w+);");
-    static Pattern fieldPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s*\\*(?:\\s*XR_MAY_ALIAS)?)?(?:\\s+const)?)\\s+(\\w+)(?:\\s*\\[\\s*(XR_[A-Z_]+|\\d+)\\s*\\])?;");
+    static Pattern fieldPattern = Pattern.compile("\\s*((?:const\\s+)?\\w+(?:\\s*\\*(?:\\s*const)?(?:\\s*\\*)?)?(?:\\s+const)?)\\s+(\\w+)((?:\\s*\\[\\s*(?:XR_[A-Z_0-9]+|\\d+)\\s*\\])*);");
+    static Pattern structAliasPattern = Pattern.compile("^\\s*typedef\\s+(Xr\\w+)\\s+(Xr\\w+)\\s*;");
+    static Pattern arrayDimensionPattern = Pattern.compile("\\[\\s*(XR_[A-Z_0-9]+|\\d+)\\s*\\]");
 
     public static StructDefinition parseStruct(BufferedReader readerOngoing, String triggeringLine, List<String> knownEnumTypes,
                                               List<String> knownAtoms, List<String> knownTypeDefInts, List<String> knownTypeDefLongs, 
@@ -43,26 +47,27 @@ public class StructParser {
                 if(matcher.find()){
                     String type = matcher.group(1);
                     String fieldName = matcher.group(2);
-                    String arraySizeConstant = matcher.group(3); // May be null
+                    String arraySizeConstant = parseArraySize(matcher.group(3)); // May be null
 
                     // Check if it's const
                     boolean isConst = type.trim().startsWith("const") || type.contains(" const ");
 
-                    // Check if it's a pointer or double pointer
-                    boolean isDoublePointer = type.contains("**");
+                    // Check if it's a pointer or double pointer (e.g. "X**" or "const X* const*")
+                    boolean isDoublePointer = type.chars().filter(c -> c == '*').count() == 2;
                     boolean isPointer = isDoublePointer || type.contains("*");
 
                     // Remove * from type
                     type = type.replace("*", "").replace("const", "").trim();
 
-                    // Check type characteristics
-                    boolean isEnumType = knownEnumTypes.contains(type);
-                    boolean isAtomType = knownAtoms.contains(type);
-                    boolean isTypeDefInt = knownTypeDefInts.contains(type);
-                    boolean isTypeDefLong = knownTypeDefLongs.contains(type);
-                    boolean isHandle = knownHandles.contains(type);
-                    boolean isFlag = knownFlags.contains(type);
-                    boolean isStruct = knownStructs.contains(type);
+                    // Check type characteristics. Double pointers are exposed as raw addresses, so the pointed to
+                    // type's characteristics are deliberately ignored
+                    boolean isEnumType = !isDoublePointer && knownEnumTypes.contains(type);
+                    boolean isAtomType = !isDoublePointer && knownAtoms.contains(type);
+                    boolean isTypeDefInt = !isDoublePointer && knownTypeDefInts.contains(type);
+                    boolean isTypeDefLong = !isDoublePointer && knownTypeDefLongs.contains(type);
+                    boolean isHandle = !isDoublePointer && knownHandles.contains(type);
+                    boolean isFlag = !isDoublePointer && knownFlags.contains(type);
+                    boolean isStruct = !isDoublePointer && knownStructs.contains(type);
                     boolean isSingletonStructPointer = isStruct
                             && isPointer
                             && structDefinition.findCountParameterForPointerField(fieldName).isEmpty();
@@ -78,6 +83,50 @@ public class StructParser {
         }else{
             throw new RuntimeException("Unexpected not a struct: " + triggeringLine);
         }
+    }
+
+    /**
+     * Parses a struct alias (e.g. "typedef XrUuid XrUuidEXT;", created when an extension is promoted to core). The alias
+     * is generated as its own struct with the same fields as the struct it aliases, so the old name keeps working.
+     * The alias doesn't take part in its target's parent/child relationships.
+     */
+    public static Optional<StructDefinition> parseStructAlias(String line, List<StructDefinition> knownStructs,
+                                                              List<String> xrStructureTypeValues){
+        Matcher matcher = structAliasPattern.matcher(line);
+        if(!matcher.find()){
+            return Optional.empty();
+        }
+        String targetName = matcher.group(1);
+        String aliasName = matcher.group(2);
+        return knownStructs.stream()
+                .filter(s -> s.getName().equals(targetName))
+                .findFirst()
+                .map(target -> {
+                    String proposedXrStructureTypeEnumValue = createXrStructureTypeEnumValueForStruct(aliasName);
+                    boolean aliasHasOwnType = xrStructureTypeValues.contains(proposedXrStructureTypeEnumValue);
+                    StructDefinition alias = new StructDefinition(aliasName, target.canBeItsOwnDefault());
+                    target.getFields().forEach(alias::addField);
+                    if(aliasHasOwnType){
+                        alias.setXrStructureTypeEnumValue(proposedXrStructureTypeEnumValue);
+                    }else{
+                        target.getXrStructureTypeEnumValue().ifPresent(alias::setXrStructureTypeEnumValue);
+                    }
+                    return alias;
+                });
+    }
+
+    /**
+     * Converts the array dimensions of a field (e.g. "[XR_MAX_FOO]" or "[9][3]") into a single size expression. Multi
+     * dimensional arrays are flattened (e.g. "9 * 3") as they have the same memory layout as a one dimensional array.
+     * Returns null if the field is not an array.
+     */
+    static String parseArraySize(String arrayDimensions){
+        List<String> dimensions = new ArrayList<>();
+        Matcher matcher = arrayDimensionPattern.matcher(arrayDimensions);
+        while(matcher.find()){
+            dimensions.add(matcher.group(1));
+        }
+        return dimensions.isEmpty() ? null : String.join(" * ", dimensions);
     }
 
     public static String createXrStructureTypeEnumValueForStruct(String structName){

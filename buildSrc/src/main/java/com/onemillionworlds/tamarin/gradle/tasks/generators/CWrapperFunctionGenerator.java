@@ -51,6 +51,8 @@ public class CWrapperFunctionGenerator {
                     functionString.append("J"); // long
                 } else if (param.getType().equals("float")) {
                     functionString.append("F"); // float
+                } else if (param.getType().equals("double")) {
+                    functionString.append("D"); // double
                 } else {
                     functionString.append("I"); // default to int
                 }
@@ -79,6 +81,8 @@ public class CWrapperFunctionGenerator {
                     functionString.append(", jlong " + paramName);
                 } else if (param.getType().equals("float")) {
                     functionString.append(", jfloat " + paramName);
+                } else if (param.getType().equals("double")) {
+                    functionString.append(", jdouble " + paramName);
                 } else {
                     functionString.append(", jint " + paramName); // Default to int
                 }
@@ -112,6 +116,8 @@ public class CWrapperFunctionGenerator {
                                          paramType + ")" + paramName + ";\n");
                 } else if (param.getType().equals("float")) {
                     functionString.append("    float " + paramName + "Value = (float)" + paramName + ";\n");
+                } else if (param.getType().equals("double")) {
+                    functionString.append("    double " + paramName + "Value = (double)" + paramName + ";\n");
                 } else if (param.isTypeDefInt()) {
                     functionString.append("    " + paramType + " " + paramName + "Value = (" + 
                                          paramType + ")" + paramName + ";\n");
@@ -143,7 +149,7 @@ public class CWrapperFunctionGenerator {
                     functionString.append("*" + paramName + "Ptr");
                 } else if (param.getType().equals("uint32_t") || param.isTypeDefInt() || 
                           param.isEnumType() || param.isTypeDefLong() || param.isFlag() || param.isAtom() ||
-                          param.getType().equals("float")) {
+                          param.getType().equals("float") || param.getType().equals("double")) {
                     functionString.append(paramName + "Value");
                 } else if (param.isHandle()) {
                     functionString.append(paramName + "Handle");

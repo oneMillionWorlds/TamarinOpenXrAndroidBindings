@@ -40,6 +40,39 @@ class WrapperFunctionGeneratorTest {
     }
 
     @Test
+    void generateWrapperFunction_doubleParameters() {
+        // the native method's double parameters must match the jdouble parameters in the C
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrCheckVpsAvailabilityAsyncANDROID", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("double", "latitude", false, false, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("double", "longitude", false, false, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrFutureEXT", "future", true, false, false, true, false, false, false, false, false, false));
+
+        String expectedValue = """
+                    /**
+                     * Wrapper for xrCheckVpsAvailabilityAsyncANDROID OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrCheckVpsAvailabilityAsyncANDROID.html">khronos docs</a></p>
+                     *\s
+                     * @param session (XrSession)
+                     * @param latitude (double)
+                     * @param longitude (double)
+                     * @param future (XrFutureEXT)
+                     * @return The XrResult status code
+                     */
+                    public static XrResult xrCheckVpsAvailabilityAsyncANDROID(XrSession session, double latitude, double longitude, LongBufferView future) {
+                        long futureAddress = future == null ? MemoryUtil.NULL : future.address();
+                        return XrResult.fromValue(nxrCheckVpsAvailabilityAsyncANDROID(session.getRawHandle(), latitude, longitude, futureAddress));
+                    }
+
+                    public static native int nxrCheckVpsAvailabilityAsyncANDROID(long session, double latitude, double longitude, long future);
+                """;
+
+        String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
+
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
+
+    @Test
     void generateWrapperFunction_xrGetInstanceProcAddr() {
 
         FunctionDefinition functionDefinition = new FunctionDefinition("xrGetInstanceProcAddr", "XrResult");
