@@ -158,6 +158,7 @@ public class XrSpatialCapabilityConfigurationAnchorEXT extends Struct<XrSpatialC
     public XrSpatialCapabilityConfigurationAnchorEXT enabledComponents(IntBufferView value) { 
         XrSpatialCapabilityConfigurationAnchorEXT.nenabledComponents(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("enabledComponents");
+        if(value != null){ this.setterValidation.setFieldCalled("enabledComponentCount"); }
         return this;
     }
     /** Sets the specified value to the {@code type} field. */

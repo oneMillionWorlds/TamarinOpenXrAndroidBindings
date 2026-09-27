@@ -171,6 +171,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     public XrVisibilityMaskKHR vertices(XrVector2f.Buffer value) { 
         XrVisibilityMaskKHR.nvertices(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("vertices");
+        if(value != null){ this.setterValidation.setFieldCalled("vertexCapacityInput"); }
         return this;
     }
     /** Sets the specified value to the {@code indexCapacityInput} field. */
@@ -189,6 +190,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     public XrVisibilityMaskKHR indices(IntBufferView value) { 
         XrVisibilityMaskKHR.nindices(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("indices");
+        if(value != null){ this.setterValidation.setFieldCalled("indexCapacityInput"); }
         return this;
     }
     /** Sets the specified value to the {@code type} field. */

@@ -785,6 +785,10 @@ public class StructGenerator extends FileGenerator {
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(addressUnsafe(), value);\n");
         }
         writer.append("        this.setterValidation.setFieldCalled(\"").append(fieldName).append("\");\n");
+        if(field.setterAlsoSetsCountField()){
+            // the count was written from the buffer's size, so it has been set too
+            writer.append("        if(value != null){ this.setterValidation.setFieldCalled(\"").append(field.getCountField().orElseThrow()).append("\"); }\n");
+        }
         writer.append("        return this;\n");
         writer.append("    }\n");
 

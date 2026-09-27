@@ -143,6 +143,7 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     public XrSpaceUuidFilterInfoFB uuids(XrUuidEXT.Buffer value) { 
         XrSpaceUuidFilterInfoFB.nuuids(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("uuids");
+        if(value != null){ this.setterValidation.setFieldCalled("uuidCount"); }
         return this;
     }
     /** Sets the specified value to the {@code type} field. */

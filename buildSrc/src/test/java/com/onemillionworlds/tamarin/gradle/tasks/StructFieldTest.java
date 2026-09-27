@@ -3,7 +3,9 @@ package com.onemillionworlds.tamarin.gradle.tasks;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StructFieldTest {
 
@@ -36,6 +38,19 @@ class StructFieldTest {
         assertEquals("ByteBufferView", pointerField("uint8_t", false, "valueCount").getJavaType());
         // an array of enums is an array of ints, not a single enum
         assertEquals("IntBufferView", pointerField("XrSpatialComponentTypeEXT", true, "valueCount").getJavaType());
+    }
+
+    @Test
+    void bufferSettersAlsoSetTheirCountField() {
+        assertTrue(pointerField("uint32_t", false, "valueCount").setterAlsoSetsCountField());
+        StructField structBuffer = new StructField("XrVector3f", "points", null, true, false, false, false, false, false, false, false, true, false, "pointCount");
+        assertTrue(structBuffer.setterAlsoSetsCountField());
+
+        // no count field
+        assertFalse(pointerField("uint32_t", false, null).setterAlsoSetsCountField());
+        // a double pointer (e.g. an array of strings) is a raw address, setting it doesn't touch the count
+        StructField strings = new StructField("char", "names", null, true, true, false, false, false, false, false, false, false, true, "nameCount");
+        assertFalse(strings.setterAlsoSetsCountField());
     }
 
     @Test

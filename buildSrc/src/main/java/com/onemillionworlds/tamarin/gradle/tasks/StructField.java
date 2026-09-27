@@ -118,6 +118,17 @@ public class StructField {
     }
 
     /**
+     * If setting this field (a buffer of structs, handles or plain values) also writes its count field (from the
+     * buffer's size). The count field then doesn't need setting separately
+     */
+    public boolean setterAlsoSetsCountField() {
+        if (countField == null || !isPointer || isDoublePointer) {
+            return false;
+        }
+        return isStruct || isHandle || getPrimitiveBufferViewType() != null;
+    }
+
+    /**
      * For a pointer to an array of plain values (numbers, enums, atoms, ...) whose length is held in another field (its
      * "len" in xr.xml), the typed view it is exposed as (e.g. "IntBufferView"). Null for anything else (struct and
      * handle arrays have their own buffer types, a pointer without a len stays a raw address)

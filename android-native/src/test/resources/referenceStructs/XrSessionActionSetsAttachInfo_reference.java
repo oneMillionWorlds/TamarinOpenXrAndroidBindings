@@ -132,6 +132,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     public XrSessionActionSetsAttachInfo actionSets(XrActionSet.HandleBuffer value) { 
         XrSessionActionSetsAttachInfo.nactionSets(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("actionSets");
+        if(value != null){ this.setterValidation.setFieldCalled("countActionSets"); }
         return this;
     }
     /** Sets the specified value to the {@code type} field. */

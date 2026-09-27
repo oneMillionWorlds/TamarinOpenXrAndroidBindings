@@ -132,6 +132,7 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
     public XrActionsSyncInfo activeActionSets(XrActiveActionSet.Buffer value) { 
         XrActionsSyncInfo.nactiveActionSets(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("activeActionSets");
+        if(value != null){ this.setterValidation.setFieldCalled("countActiveActionSets"); }
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
