@@ -143,10 +143,7 @@ public class ParseOpenXr extends DefaultTask {
 
         List<FunctionDefinition> functions = new ArrayList<>();
         for (FunctionDefinition functionDefinition : registry.functions) {
-            if(functionDefinition.hasADoublePointer()){
-                // these double pointers are a pain to generate for and we don't plan to use them anyway
-                getLogger().lifecycle("Function {} has a double pointer, skipping", functionDefinition.getName());
-            } else if(FUNCTIONS_TO_SKIP.contains(functionDefinition.getName())) {
+            if(FUNCTIONS_TO_SKIP.contains(functionDefinition.getName())) {
                 getLogger().lifecycle("Function {} can't be a thin binding, skipping", functionDefinition.getName());
             } else {
                 functions.add(functionDefinition);

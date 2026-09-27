@@ -37,7 +37,7 @@ tasks. It:
    member/param `len` (the count field of a pointer; `MISSING_LENS` covers the rare pointer arrays xr.xml has no `len`
    for), the `values` of a struct's `type` member (its `XrStructureType`, used for `type$Default()`/`cast()`; absent on
    abstract base headers) and `parentstruct` (drives `asParent()`/`asXxx()`/`cast()`)
-3. Emits Java + one C file. Functions with double pointers, and those in `ParseOpenXr.FUNCTIONS_TO_SKIP` (can't be thin bindings, e.g. `xrCreateSwapchainAndroidSurfaceKHR` outputs a JNI local ref), are skipped for both Java and C
+3. Emits Java + one C file. Functions in `ParseOpenXr.FUNCTIONS_TO_SKIP` (can't be thin bindings, e.g. `xrCreateSwapchainAndroidSurfaceKHR` outputs a JNI local ref) are skipped for both Java and C. `T**` params (the runtime writing out a pointer to a buffer it owns) become a `PointerBufferView` slot
 
 Key conventions in the generated code:
 - Every `XR10.xrFoo(...)` is a high-level wrapper returning `XrResult` that unwraps structs/buffers to addresses and calls `public static native int nxrFoo(...)`

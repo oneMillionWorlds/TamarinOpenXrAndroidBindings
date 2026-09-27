@@ -96,8 +96,9 @@ public class CWrapperFunctionGenerator {
                 String paramType = param.getType();
                 
                 if (param.isPointer()) {
-                    functionString.append("    " + paramType + (paramType.endsWith("*") ? "" : " *") + 
-                                         paramName + "Ptr = (" + paramType + (paramType.endsWith("*") ? "" : " *") + 
+                    String stars = param.isDoublePointer() ? " **" : " *";
+                    functionString.append("    " + paramType + stars +
+                                         paramName + "Ptr = (" + paramType + stars +
                                          ")(intptr_t)" + paramName + ";\n");
                 } else if (param.isStructByValue()) {
                     // For structs passed by value, we need to dereference the pointer

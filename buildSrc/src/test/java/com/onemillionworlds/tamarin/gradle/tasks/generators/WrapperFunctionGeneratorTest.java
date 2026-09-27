@@ -367,5 +367,36 @@ class WrapperFunctionGeneratorTest {
         assertEquals(expectedValue.trim(), actualValue.trim());
     }
 
+    /**
+     * A double pointer is a slot the runtime writes a pointer into (here to the mesh's vertex buffer, which the runtime
+     * owns), so it is a PointerBufferView
+     */
+    @Test
+    void generateWrapperFunction_xrTriangleMeshGetVertexBufferFB() {
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrTriangleMeshGetVertexBufferFB", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrTriangleMeshFB", "mesh", false, false, false, false, false, false, true, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrVector3f", "outVertexBuffer", true, false, false, false, false, false, false, false, false, true));
+
+        String expectedValue = """
+                    /**
+                     * Wrapper for xrTriangleMeshGetVertexBufferFB OpenXR function
+                     * <p>For documentation see <a href="https://registry.khronos.org/OpenXR/specs/1.1/man/html/xrTriangleMeshGetVertexBufferFB.html">khronos docs</a></p>
+                     *\s
+                     * @param mesh (XrTriangleMeshFB)
+                     * @param outVertexBuffer (XrVector3f)
+                     * @return The XrResult status code
+                     */
+                    public static XrResult xrTriangleMeshGetVertexBufferFB(XrTriangleMeshFB mesh, PointerBufferView outVertexBuffer) {
+                        long outVertexBufferAddress = outVertexBuffer == null ? MemoryUtil.NULL : outVertexBuffer.address();
+                        return XrResult.fromValue(nxrTriangleMeshGetVertexBufferFB(mesh.getRawHandle(), outVertexBufferAddress));
+                    }
+
+                    public static native int nxrTriangleMeshGetVertexBufferFB(long mesh, long outVertexBuffer);
+                """;
+
+        String actualValue = WrapperFunctionGenerator.generateWrapperFunction(functionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
+
 
 }

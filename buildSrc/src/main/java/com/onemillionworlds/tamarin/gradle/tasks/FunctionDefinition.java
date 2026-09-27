@@ -54,14 +54,6 @@ public class FunctionDefinition {
                 '}';
     }
 
-    public boolean hasADoublePointer() {
-        return parameters.stream().anyMatch(FunctionParameter::isDoublePointer);
-    }
-
-    public boolean hasParameter(String parameterName) {
-        return parameters.stream().anyMatch(p -> p.getName().equals(parameterName));
-    }
-
     /**
      * Pointer parameters usually come with a separate parameter that holds how many items the pointer points to (the
      * "len" of the param in xr.xml). This finds that count parameter
@@ -179,6 +171,10 @@ public class FunctionDefinition {
 
         public String getHighLevelJavaType(boolean hasAnAssociatedCountParameter) {
             if (isPointer || isStructByValue()) {
+                if(isDoublePointer){
+                    // an out parameter the runtime writes a pointer into (e.g. to a buffer it owns)
+                    return "PointerBufferView";
+                }
                 if(type.equals("PFN_xrVoidFunction")){
                     return "PointerBufferView";
                 }

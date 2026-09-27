@@ -110,6 +110,11 @@ class XmlRegistryParserTest {
                     </command>
                     <command name="xrEnumerateFoosKHR" alias="xrEnumerateFoos"/>
                     <command>
+                        <proto><type>XrResult</type> <name>xrGetFooPoints</name></proto>
+                        <param><type>XrInstance</type> <name>instance</name></param>
+                        <param><type>XrVector3f</type>** <name>outPoints</name></param>
+                    </command>
+                    <command>
                         <proto><type>XrResult</type> <name>xrWin32Only</name></proto>
                         <param><type>XrWin32Thing</type>* <name>thing</name></param>
                     </command>
@@ -129,6 +134,7 @@ class XmlRegistryParserTest {
                         <enum name="XR_TRUE"/>
                         <command name="xrEnumerateFoos"/>
                         <command name="xrFooToString"/>
+                        <command name="xrGetFooPoints"/>
                     </require>
                 </feature>
                 <extensions>
@@ -325,6 +331,20 @@ class XmlRegistryParserTest {
     }
 
     @Test
+    void doublePointerParametersAreAPointerSlot() throws Exception {
+        XmlRegistryParser registry = parse();
+
+        FunctionDefinition getPoints = registry.functions.stream().filter(f -> f.getName().equals("xrGetFooPoints")).findFirst().orElseThrow();
+        FunctionDefinition.FunctionParameter outPoints = getPoints.getParameters().get(1);
+        assertTrue(outPoints.isDoublePointer());
+        assertTrue(outPoints.isPointer());
+        // the runtime writes an address into it, so it isn't treated as a struct (e.g. an out param to validate)
+        assertFalse(outPoints.isStruct());
+        assertEquals("PointerBufferView", outPoints.getHighLevelJavaType(false));
+        assertEquals(Optional.of("A single pointer slot the runtime writes a XrVector3f* into"), outPoints.getExtraDocumentation());
+    }
+
+    @Test
     void aliasCommandHasTheSignatureOfWhatItAliases() throws Exception {
         XmlRegistryParser registry = parse();
 
@@ -382,7 +402,7 @@ class XmlRegistryParserTest {
 
         // XR_KHR_foo (number 5) is declared before XR_EXT_foo (number 3), so its command comes first. Core is first of all
         List<String> functionNames = registry.functions.stream().map(FunctionDefinition::getName).toList();
-        assertEquals(List.of("xrEnumerateFoos", "xrFooToString", "xrEnumerateFoosKHR", "xrAndroidOnly"), functionNames);
+        assertEquals(List.of("xrEnumerateFoos", "xrFooToString", "xrGetFooPoints", "xrEnumerateFoosKHR", "xrAndroidOnly"), functionNames);
     }
 
     @Test

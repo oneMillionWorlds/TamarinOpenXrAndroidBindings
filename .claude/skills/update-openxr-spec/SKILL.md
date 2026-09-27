@@ -32,8 +32,7 @@ Confirm the target version with the user before starting.
    - New platform/graphics `protect`s: generation only includes what `ParseOpenXr.ENABLED_PROTECTS` enables
      (Android + OpenGL ES); new EGL/Android types may need `tamarinManualDefines.h`, `HANDLES_EXTRA` or
      `HAND_WRITTEN_ENUMS`
-   - Functions with double pointers are skipped in `ParseOpenXr.execute`, others in
-     `ParseOpenXr.FUNCTIONS_TO_SKIP`. Only skip with a documented reason (a genuine JNI problem, not "didn't compile")
+   - Functions that can't be thin bindings are skipped via `ParseOpenXr.FUNCTIONS_TO_SKIP`. Only skip with a documented reason (a genuine JNI problem, not "didn't compile")
 5. `./gradlew build`. Compile errors in the generated Java mean more generator gaps. A C *link* error means a function
    is called directly that the loader doesn't export (extension detection comes from `xr.xml` `<feature>` blocks via
    `XmlFeatureParser`)

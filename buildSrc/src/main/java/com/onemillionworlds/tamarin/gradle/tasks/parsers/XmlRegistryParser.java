@@ -683,12 +683,19 @@ public class XmlRegistryParser {
             Declarator declarator = Declarator.of(param);
             String type = declarator.type;
             String arraySize = declarator.arraySize();
+            // Double pointers are exposed as a slot for a raw address, so the pointed to type's characteristics are deliberately ignored
+            boolean isDoublePointer = declarator.isDoublePointer();
             FunctionDefinition.FunctionParameter parameter = new FunctionDefinition.FunctionParameter(
                     type, declarator.name, declarator.isPointer() || arraySize != null, declarator.isConst(),
-                    isEnum(type), atoms.contains(type), intTypedefs.contains(type), longTypedefs.contains(type),
-                    handles.contains(type), flags.contains(type), structNames.contains(type), declarator.isDoublePointer());
+                    !isDoublePointer && isEnum(type), !isDoublePointer && atoms.contains(type),
+                    !isDoublePointer && intTypedefs.contains(type), !isDoublePointer && longTypedefs.contains(type),
+                    !isDoublePointer && handles.contains(type), !isDoublePointer && flags.contains(type),
+                    !isDoublePointer && structNames.contains(type), isDoublePointer);
             if(arraySize != null){
                 parameter.setExtraDocumentation("Required size " + arraySize);
+            }
+            if(isDoublePointer){
+                parameter.setExtraDocumentation("A single pointer slot the runtime writes a " + type + "* into");
             }
             parameter.setCountParameter(countOf(param, paramNames, commandName + "." + declarator.name));
             functionDefinition.addParameter(parameter);

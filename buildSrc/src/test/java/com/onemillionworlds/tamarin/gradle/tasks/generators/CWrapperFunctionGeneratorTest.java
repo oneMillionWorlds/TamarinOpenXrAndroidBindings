@@ -349,4 +349,36 @@ class CWrapperFunctionGeneratorTest {
         assertEquals(expectedValue.trim(), actualValue.trim());
         assertEquals("long", functionDefinition.getParameters().get(1).getLowLevelJavaType());
     }
+
+    @Test
+    void generateCWrapperFunction_doublePointer() {
+        // the runtime writes a pointer (to a buffer it owns) into the slot, so the slot must be cast to a double pointer
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrTriangleMeshGetVertexBufferFB", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrTriangleMeshFB", "mesh", false, false, false, false, false, false, true, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrVector3f", "outVertexBuffer", true, false, false, false, false, false, false, false, false, true));
+
+        String expectedValue = """
+                /*
+                 * Class:     com_onemillionworlds_tamarin_openxrbindings_XR10
+                 * Method:    nxrTriangleMeshGetVertexBufferFB
+                 * Signature: (JJ)I
+                 */
+                JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_XR10_nxrTriangleMeshGetVertexBufferFB
+                  (JNIEnv *env, jclass cls, jlong mesh, jlong outVertexBuffer) {
+
+                    // Convert JNI parameters to OpenXR parameters
+                    XrTriangleMeshFB meshHandle = (XrTriangleMeshFB)(intptr_t)mesh;
+                    XrVector3f **outVertexBufferPtr = (XrVector3f **)(intptr_t)outVertexBuffer;
+
+                    // Call the OpenXR function
+                    XrResult result = xrTriangleMeshGetVertexBufferFB(meshHandle, outVertexBufferPtr);
+
+                    // Return the result as a jint
+                    return (jint)result;
+                }
+                """;
+
+        String actualValue = CWrapperFunctionGenerator.generateCWrapperFunction(functionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
 }
