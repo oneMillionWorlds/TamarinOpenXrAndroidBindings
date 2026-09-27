@@ -37,7 +37,8 @@ public class StructsAreGeneratedCorrectlyTest {
     }
 
     /**
-     * XrInstanceCreateInfo is interesting because it is a struct that itself contains structs.
+     * XrInstanceCreateInfo is interesting because it is a struct that itself contains structs, and it has arrays of
+     * null-terminated strings (enabledExtensionNames) which are a PointerBufferView plus a List of Strings getter
      */
     @Test
     public void xrInstanceCreateInfoTest() {
@@ -133,6 +134,15 @@ public class StructsAreGeneratedCorrectlyTest {
     @Test
     public void xrSpatialCapabilityConfigurationAnchorEXTTest(){
         test("XrSpatialCapabilityConfigurationAnchorEXT");
+    }
+
+    /**
+     * XrDebugUtilsLabelEXT is interesting because labelName is a single null-terminated string (a const char*), so it
+     * is a ByteBufferView that must be null-terminated plus a String getter
+     */
+    @Test
+    public void xrDebugUtilsLabelEXTTest(){
+        test("XrDebugUtilsLabelEXT");
     }
 
     public static void test(String structName){

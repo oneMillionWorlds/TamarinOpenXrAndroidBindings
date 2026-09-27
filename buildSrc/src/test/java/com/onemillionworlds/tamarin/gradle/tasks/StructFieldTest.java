@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class StructFieldTest {
 
     private static StructField scalarField(String type){
-        return new StructField(type, "value", null, false, false, false, false, false, false, false, false, false, false, null);
+        return new StructField(type, "value", null, false, false, false, false, false, false, false, false, false, false, null, false);
     }
 
     @Test
@@ -27,7 +27,7 @@ class StructFieldTest {
     }
 
     private static StructField pointerField(String type, boolean isEnum, String countField){
-        return new StructField(type, "values", null, true, false, isEnum, false, false, false, false, false, false, false, countField);
+        return new StructField(type, "values", null, true, false, isEnum, false, false, false, false, false, false, false, countField, false);
     }
 
     @Test
@@ -43,14 +43,33 @@ class StructFieldTest {
     @Test
     void bufferSettersAlsoSetTheirCountField() {
         assertTrue(pointerField("uint32_t", false, "valueCount").setterAlsoSetsCountField());
-        StructField structBuffer = new StructField("XrVector3f", "points", null, true, false, false, false, false, false, false, false, true, false, "pointCount");
+        StructField structBuffer = new StructField("XrVector3f", "points", null, true, false, false, false, false, false, false, false, true, false, "pointCount", false);
         assertTrue(structBuffer.setterAlsoSetsCountField());
 
         // no count field
         assertFalse(pointerField("uint32_t", false, null).setterAlsoSetsCountField());
-        // a double pointer (e.g. an array of strings) is a raw address, setting it doesn't touch the count
-        StructField strings = new StructField("char", "names", null, true, true, false, false, false, false, false, false, false, true, "nameCount");
+        // a double pointer that isn't an array of strings is a raw address, setting it doesn't touch the count
+        StructField strings = new StructField("char", "names", null, true, true, false, false, false, false, false, false, false, true, "nameCount", false);
         assertFalse(strings.setterAlsoSetsCountField());
+    }
+
+    @Test
+    void nullTerminatedStrings() {
+        // const char* labelName (len="null-terminated")
+        StructField string = new StructField("char", "labelName", null, true, true, false, false, false, false, false, false, false, false, null, true);
+        assertTrue(string.isNullTerminatedString());
+        assertEquals("ByteBufferView", string.getJavaType());
+
+        // const char* const* enabledExtensionNames (len="enabledExtensionCount,null-terminated")
+        StructField strings = new StructField("char", "enabledExtensionNames", null, true, true, false, false, false, false, false, false, false, true, "enabledExtensionCount", true);
+        assertTrue(strings.isStringArray());
+        assertEquals("PointerBufferView", strings.getJavaType());
+        assertTrue(strings.setterAlsoSetsCountField());
+
+        // a char* with a count (not null-terminated) is just bytes
+        StructField bytes = new StructField("char", "buffer", null, true, false, false, false, false, false, false, false, false, false, "bufferCapacityInput", false);
+        assertFalse(bytes.isNullTerminatedString());
+        assertEquals("ByteBufferView", bytes.getJavaType());
     }
 
     @Test

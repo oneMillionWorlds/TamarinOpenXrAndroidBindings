@@ -24,6 +24,18 @@ public class PointerBufferView extends JavaBufferView<LongBuffer>{
     }
 
     /**
+     * A view of existing native memory (e.g. an array of pointers a struct points to). The memory isn't owned by the
+     * view.
+     * @param address the address of the first pointer
+     * @param capacity the number of pointers
+     * @return the view, or null if the address is NULL
+     */
+    public static PointerBufferView wrap(long address, int capacity){
+        ByteBuffer buffer = MemoryUtil.memByteBuffer(address, capacity * XR10Constants.POINTER_SIZE);
+        return buffer == null ? null : new PointerBufferView(buffer, buffer.asLongBuffer(), address);
+    }
+
+    /**
      * Creates a new PointerBufferView with the specified capacity.
      * <p>
      * This is managed by java and will be freed when the PointerBufferView is garbage collected.

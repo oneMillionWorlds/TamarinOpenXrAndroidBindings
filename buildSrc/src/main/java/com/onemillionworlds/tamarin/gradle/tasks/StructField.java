@@ -27,6 +27,12 @@ public class StructField {
      */
     private final String countField;
 
+    /**
+     * The pointed to chars are null-terminated strings (the "len" of the member in xr.xml includes "null-terminated").
+     * Either a single string (char*) or, with a count field, an array of strings (char**)
+     */
+    private final boolean isNullTerminated;
+
     // Constants for memory sizes
     private static final String SIZE_1_BYTE = "1";
     private static final String SIZE_2_BYTES = "2";
@@ -36,7 +42,8 @@ public class StructField {
 
     public StructField(String type, String name, String arraySizeConstant, boolean isPointer, boolean isConst,
                        boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong,
-                       boolean isHandle, boolean isFlag, boolean isStruct, boolean isDoublePointer, String countField) {
+                       boolean isHandle, boolean isFlag, boolean isStruct, boolean isDoublePointer, String countField,
+                       boolean isNullTerminated) {
         this.type = type;
         this.name = name;
         this.arraySizeConstant = arraySizeConstant;
@@ -51,6 +58,7 @@ public class StructField {
         this.isStruct = isStruct;
         this.isDoublePointer = isDoublePointer;
         this.countField = countField;
+        this.isNullTerminated = isNullTerminated;
     }
 
     public String getType() {
@@ -118,14 +126,33 @@ public class StructField {
     }
 
     /**
-     * If setting this field (a buffer of structs, handles or plain values) also writes its count field (from the
-     * buffer's size). The count field then doesn't need setting separately
+     * If setting this field (a buffer of structs, handles, plain values or strings) also writes its count field (from
+     * the buffer's size). The count field then doesn't need setting separately
      */
     public boolean setterAlsoSetsCountField() {
+        if (isStringArray()) {
+            return true;
+        }
         if (countField == null || !isPointer || isDoublePointer) {
             return false;
         }
         return isStruct || isHandle || getPrimitiveBufferViewType() != null;
+    }
+
+    /**
+     * A single null-terminated string (const char*), exposed as a ByteBufferView (e.g. from MemoryStack.utf8) plus a
+     * String getter
+     */
+    public boolean isNullTerminatedString() {
+        return isNullTerminated && type.equals("char") && isPointer && !isDoublePointer && arraySizeConstant == null;
+    }
+
+    /**
+     * An array of null-terminated strings (const char* const*) whose length is in another field, exposed as a
+     * PointerBufferView (of string addresses) plus a List&lt;String&gt; getter
+     */
+    public boolean isStringArray() {
+        return isNullTerminated && type.equals("char") && isDoublePointer && countField != null;
     }
 
     /**
@@ -202,6 +229,10 @@ public class StructField {
             return type + ".Buffer";
         } else if (getPrimitiveBufferViewType() != null) {
             return getPrimitiveBufferViewType();
+        } else if (isNullTerminatedString()) {
+            return "ByteBufferView";
+        } else if (isStringArray()) {
+            return "PointerBufferView";
         }else if (isEnumType && !isPointer) {
             return type;
         }else if(isSingletonStructPointer()) {
@@ -349,13 +380,14 @@ public class StructField {
                Objects.equals(type, that.type) && 
                Objects.equals(name, that.name) && 
                Objects.equals(arraySizeConstant, that.arraySizeConstant) &&
-               Objects.equals(countField, that.countField);
+               Objects.equals(countField, that.countField) &&
+               isNullTerminated == that.isNullTerminated;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(type, name, arraySizeConstant, isPointer, isConst, isEnumType, isAtom, 
-                           isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct, isDoublePointer, countField);
+                           isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct, isDoublePointer, countField, isNullTerminated);
     }
 
     @Override

@@ -39,4 +39,14 @@ public class BufferUtils {
             throw new IllegalArgumentException("Buffer length exceeds maximum permitted length of " + maximumPermittedLength);
         }
     }
+
+    /**
+     * Checks the buffer holds a null-terminated string (its last byte is 0), as OpenXR will read until it finds one.
+     * {@code MemoryStack.utf8(String)} creates such a buffer.
+     */
+    public static void checkNullTerminated(ByteBuffer buffer){
+        if(buffer.limit() == 0 || buffer.get(buffer.limit() - 1) != 0){
+            throw new IllegalArgumentException("Buffer is not null-terminated (use MemoryStack.utf8 to create a null-terminated string)");
+        }
+    }
 }

@@ -37,6 +37,23 @@ public class ByteBufferView {
     }
 
     /**
+     * A view of an existing null-terminated string in native memory. The view includes the null terminator. The
+     * memory isn't owned by the view.
+     * @param address the address of the first char
+     * @return the view, or null if the address is NULL
+     */
+    public static ByteBufferView wrapNullTerminated(long address){
+        if(address == 0){
+            return null;
+        }
+        int length = 0;
+        while(MemoryUtil.memGetByte(address + length) != 0){
+            length++;
+        }
+        return wrap(address, length + 1);
+    }
+
+    /**
      * Creates a new ByteBufferView with the specified capacity.
      * <p>
      * This is managed by java and will be freed when the ByteBufferView is garbage collected.

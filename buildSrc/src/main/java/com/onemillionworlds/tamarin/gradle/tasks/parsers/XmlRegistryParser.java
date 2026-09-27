@@ -669,7 +669,8 @@ public class XmlRegistryParser {
                     !isDoublePointer && intTypedefs.contains(type), !isDoublePointer && longTypedefs.contains(type),
                     !isDoublePointer && handles.contains(type), !isDoublePointer && flags.contains(type),
                     !isDoublePointer && structNames.contains(type), isDoublePointer,
-                    countOf(member, memberNames, structName + "." + declarator.name)));
+                    countOf(member, memberNames, structName + "." + declarator.name),
+                    member.getAttribute("len").contains("null-terminated")));
         }
         return Optional.of(structDefinition);
     }

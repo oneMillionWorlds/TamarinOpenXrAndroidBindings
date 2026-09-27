@@ -14,6 +14,8 @@ import com.onemillionworlds.tamarin.openxrbindings.memory.TypedPointerBufferView
 
 import java.nio.ByteBuffer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import static com.onemillionworlds.tamarin.openxrbindings.memory.MemoryUtil.*;
@@ -130,16 +132,24 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
         return nenabledApiLayerCount(addressUnsafe());
     }
     /** Returns the value of the {@code enabledApiLayerNames} field. */
-    public long enabledApiLayerNames() {
+    public PointerBufferView enabledApiLayerNames() {
         return nenabledApiLayerNames(addressUnsafe());
+    }
+    /** Returns the strings in the {@code enabledApiLayerNames} field. */
+    public List<String> enabledApiLayerNamesStrings() {
+        return XrInstanceCreateInfo.nenabledApiLayerNamesStrings(addressUnsafe());
     }
     /** Returns the value of the {@code enabledExtensionCount} field. */
     public int enabledExtensionCount() {
         return nenabledExtensionCount(addressUnsafe());
     }
     /** Returns the value of the {@code enabledExtensionNames} field. */
-    public long enabledExtensionNames() {
+    public PointerBufferView enabledExtensionNames() {
         return nenabledExtensionNames(addressUnsafe());
+    }
+    /** Returns the strings in the {@code enabledExtensionNames} field. */
+    public List<String> enabledExtensionNamesStrings() {
+        return XrInstanceCreateInfo.nenabledExtensionNamesStrings(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
@@ -173,9 +183,10 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
         return this;
     }
     /** Sets the specified value to the {@code enabledApiLayerNames} field. */
-    public XrInstanceCreateInfo enabledApiLayerNames(long value) { 
+    public XrInstanceCreateInfo enabledApiLayerNames(PointerBufferView value) { 
         XrInstanceCreateInfo.nenabledApiLayerNames(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("enabledApiLayerNames");
+        if(value != null){ this.setterValidation.setFieldCalled("enabledApiLayerCount"); }
         return this;
     }
     /** Sets the specified value to the {@code enabledExtensionCount} field. */
@@ -185,9 +196,10 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
         return this;
     }
     /** Sets the specified value to the {@code enabledExtensionNames} field. */
-    public XrInstanceCreateInfo enabledExtensionNames(long value) { 
+    public XrInstanceCreateInfo enabledExtensionNames(PointerBufferView value) { 
         XrInstanceCreateInfo.nenabledExtensionNames(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("enabledExtensionNames");
+        if(value != null){ this.setterValidation.setFieldCalled("enabledExtensionCount"); }
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -200,9 +212,9 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
         long createFlags,
         XrApplicationInfo applicationInfo,
         int enabledApiLayerCount,
-        long enabledApiLayerNames,
+        PointerBufferView enabledApiLayerNames,
         int enabledExtensionCount,
-        long enabledExtensionNames
+        PointerBufferView enabledExtensionNames
     ) {
         type(type);
         next(next);
@@ -247,13 +259,13 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
         sb.append(String.valueOf(enabledApiLayerCount()));
         sb.append(", ");
         sb.append("enabledApiLayerNames=");
-        sb.append(String.valueOf(enabledApiLayerNames()));
+        sb.append(enabledApiLayerNamesStrings());
         sb.append(", ");
         sb.append("enabledExtensionCount=");
         sb.append(String.valueOf(enabledExtensionCount()));
         sb.append(", ");
         sb.append("enabledExtensionNames=");
-        sb.append(String.valueOf(enabledExtensionNames()));
+        sb.append(enabledExtensionNamesStrings());
         sb.append('}');
         return sb.toString();
     }
@@ -419,14 +431,54 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
     public static int nenabledApiLayerCount(long struct) { return memGetInt(struct + XrInstanceCreateInfo.ENABLEDAPILAYERCOUNT); }
     public static void nenabledApiLayerCount(long struct, int value) { memPutInt(struct + XrInstanceCreateInfo.ENABLEDAPILAYERCOUNT, value); }
     /** Unsafe version of enabledApiLayerNames}. */
-    public static long nenabledApiLayerNames(long struct) { return memGetAddress(struct + XrInstanceCreateInfo.ENABLEDAPILAYERNAMES); }
-    public static void nenabledApiLayerNames(long struct, long value) { memPutAddress(struct + XrInstanceCreateInfo.ENABLEDAPILAYERNAMES, value); }
+    public static PointerBufferView nenabledApiLayerNames(long struct) {
+        int count = (int)nenabledApiLayerCount(struct);
+        return PointerBufferView.wrap(memGetAddress(struct + XrInstanceCreateInfo.ENABLEDAPILAYERNAMES), count);
+    }
+    /** Unsafe version of enabledApiLayerNamesStrings. */
+    public static List<String> nenabledApiLayerNamesStrings(long struct) {
+        PointerBufferView pointers = nenabledApiLayerNames(struct);
+        if(pointers == null){
+            return null;
+        }
+        List<String> strings = new ArrayList<>(pointers.capacity());
+        for(int i = 0; i < pointers.capacity(); i++){
+            strings.add(pointers.get(i) == NULL ? null : memUTF8(pointers.get(i)));
+        }
+        return strings;
+    }
+    public static void nenabledApiLayerNames(long struct, PointerBufferView value){
+        memPutAddress(struct + XrInstanceCreateInfo.ENABLEDAPILAYERNAMES, value == null ? NULL : value.address());
+        if(value!=null){
+            nenabledApiLayerCount(struct, value.capacity());
+        }
+    }
     /** Unsafe version of enabledExtensionCount}. */
     public static int nenabledExtensionCount(long struct) { return memGetInt(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONCOUNT); }
     public static void nenabledExtensionCount(long struct, int value) { memPutInt(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONCOUNT, value); }
     /** Unsafe version of enabledExtensionNames}. */
-    public static long nenabledExtensionNames(long struct) { return memGetAddress(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONNAMES); }
-    public static void nenabledExtensionNames(long struct, long value) { memPutAddress(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONNAMES, value); }
+    public static PointerBufferView nenabledExtensionNames(long struct) {
+        int count = (int)nenabledExtensionCount(struct);
+        return PointerBufferView.wrap(memGetAddress(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONNAMES), count);
+    }
+    /** Unsafe version of enabledExtensionNamesStrings. */
+    public static List<String> nenabledExtensionNamesStrings(long struct) {
+        PointerBufferView pointers = nenabledExtensionNames(struct);
+        if(pointers == null){
+            return null;
+        }
+        List<String> strings = new ArrayList<>(pointers.capacity());
+        for(int i = 0; i < pointers.capacity(); i++){
+            strings.add(pointers.get(i) == NULL ? null : memUTF8(pointers.get(i)));
+        }
+        return strings;
+    }
+    public static void nenabledExtensionNames(long struct, PointerBufferView value){
+        memPutAddress(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONNAMES, value == null ? NULL : value.address());
+        if(value!=null){
+            nenabledExtensionCount(struct, value.capacity());
+        }
+    }
 
 
     // -----------------------------------

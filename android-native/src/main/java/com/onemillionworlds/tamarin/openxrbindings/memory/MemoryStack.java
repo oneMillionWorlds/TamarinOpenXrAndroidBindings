@@ -230,6 +230,18 @@ public class MemoryStack implements AutoCloseable {
     }
 
     /**
+     * Returns an array of pointers to null-terminated copies of the strings, all on the stack. E.g. for
+     * {@code XrInstanceCreateInfo.enabledExtensionNames}.
+     */
+    public PointerBufferView utf8Pointers(String... strings){
+        PointerBufferView pointers = mallocPointer(strings.length);
+        for(int i = 0; i < strings.length; i++){
+            pointers.set(i, utf8(strings[i]).address());
+        }
+        return pointers;
+    }
+
+    /**
      * Returns a LongBuffer that represents the specified memory on the stack.
      *
      * @param size the number of ints

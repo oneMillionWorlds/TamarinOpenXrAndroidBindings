@@ -58,6 +58,10 @@ public class StructGenerator extends FileGenerator {
 
 
         writer.append("\nimport java.nio.ByteBuffer;\n\n");
+        if(struct.getFields().stream().anyMatch(StructField::isStringArray)){
+            writer.append("import java.util.ArrayList;\n");
+            writer.append("import java.util.List;\n");
+        }
         writer.append("import java.util.Map;\n");
         writer.append("import java.util.function.Function;\n");
 
@@ -308,9 +312,11 @@ public class StructGenerator extends FileGenerator {
                     // Single struct or pointer forms: rely on getter's toString/null handling
                     writer.append("        sb.append(String.valueOf(").append(fieldNameSanitised).append("()));\n");
                 }
-            } else if ("ByteBufferView".equals(javaType) && field.getArraySizeConstant() != null) {
-                // Use the String view for C char arrays
+            } else if (("ByteBufferView".equals(javaType) && field.getArraySizeConstant() != null) || field.isNullTerminatedString()) {
+                // Use the String view for C char arrays and strings
                 writer.append("        sb.append(").append(fieldNameSanitised).append("String());\n");
+            } else if (field.isStringArray()) {
+                writer.append("        sb.append(").append(fieldNameSanitised).append("Strings());\n");
             } else {
                 writer.append("        sb.append(String.valueOf(").append(fieldNameSanitised).append("()));\n");
             }
@@ -611,8 +617,15 @@ public class StructGenerator extends FileGenerator {
             writer.append("    public " + fieldType + " " + fieldNameSanitised + "(int index) { return " + struct.getName() + ".n" + fieldNameSanitised + "(addressUnsafe(), index); }\n");
         }
 
-        if(field.getJavaType().equals("ByteBufferView") && field.getArraySizeConstant() != null) {
-            // add a bonus string method (for fixed size char arrays)
+        if(field.isStringArray()) {
+            writer.append("    /** Returns the strings in the {@code " + fieldName + "} field. */\n");
+            writer.append("    public List<String> " + fieldNameSanitised + "Strings() {\n");
+            writer.append("        return " + struct.getName() + ".n" + fieldNameSanitised + "Strings(addressUnsafe());\n");
+            writer.append("    }\n");
+        }
+
+        if((field.getJavaType().equals("ByteBufferView") && field.getArraySizeConstant() != null) || field.isNullTerminatedString()) {
+            // add a bonus string method (for fixed size char arrays and null-terminated strings)
             writer.append("    /** Returns a String view of the {@code " + fieldName + "} field. */\n");
             writer.append("    public String " + fieldNameSanitised + "String() {\n");
             writer.append("        return " + struct.getName() + ".n" + fieldNameSanitised + "String(addressUnsafe());\n");
@@ -677,6 +690,51 @@ public class StructGenerator extends FileGenerator {
                     writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value) { memCopy(value.address(), struct +" + struct.getName() + "." + fieldNameUpper + "," + javaType + ".SIZEOF); }\n");
                 }
             }
+        } else if (field.isNullTerminatedString()) {
+            String offset = "struct + " + struct.getName() + "." + fieldNameUpper;
+            writer.append("    public static ByteBufferView n" + fieldNameSanitised + "(long struct) {\n");
+            writer.append("        return ByteBufferView.wrapNullTerminated(memGetAddress(" + offset + "));\n");
+            writer.append("    }\n");
+
+            writer.append("    /** Unsafe version of " + fieldNameSanitised + "String. */\n");
+            writer.append("    public static String n" + fieldNameSanitised + "String(long struct) {\n");
+            writer.append("        long address = memGetAddress(" + offset + ");\n");
+            writer.append("        return address == NULL ? null : memUTF8(address);\n");
+            writer.append("    }\n");
+
+            writer.append("    public static void n" + fieldNameSanitised + "(long struct, ByteBufferView value){\n");
+            writer.append("        if(value != null){\n");
+            writer.append("            checkNullTerminated(value.getBuffer());\n");
+            writer.append("        }\n");
+            writer.append("        memPutAddress(" + offset + ", value == null ? NULL : value.address());\n");
+            writer.append("    }\n");
+        } else if (field.isStringArray()) {
+            String countMethodName = struct.findCountParameterForPointerField(field.getName()).map(f -> "n" + f).orElseThrow();
+            String offset = "struct + " + struct.getName() + "." + fieldNameUpper;
+            writer.append("    public static PointerBufferView n" + fieldNameSanitised + "(long struct) {\n");
+            writer.append("        int count = (int)" + countMethodName + "(struct);\n");
+            writer.append("        return PointerBufferView.wrap(memGetAddress(" + offset + "), count);\n");
+            writer.append("    }\n");
+
+            writer.append("    /** Unsafe version of " + fieldNameSanitised + "Strings. */\n");
+            writer.append("    public static List<String> n" + fieldNameSanitised + "Strings(long struct) {\n");
+            writer.append("        PointerBufferView pointers = n" + fieldNameSanitised + "(struct);\n");
+            writer.append("        if(pointers == null){\n");
+            writer.append("            return null;\n");
+            writer.append("        }\n");
+            writer.append("        List<String> strings = new ArrayList<>(pointers.capacity());\n");
+            writer.append("        for(int i = 0; i < pointers.capacity(); i++){\n");
+            writer.append("            strings.add(pointers.get(i) == NULL ? null : memUTF8(pointers.get(i)));\n");
+            writer.append("        }\n");
+            writer.append("        return strings;\n");
+            writer.append("    }\n");
+
+            writer.append("    public static void n" + fieldNameSanitised + "(long struct, PointerBufferView value){\n");
+            writer.append("        memPutAddress(" + offset + ", value == null ? NULL : value.address());\n");
+            writer.append("        if(value!=null){\n");
+            writer.append("            " + countMethodName + "(struct, value.capacity());\n");
+            writer.append("        }\n");
+            writer.append("    }\n");
         } else if (field.getPrimitiveBufferViewType() != null) {
             // a pointer to an array of plain values, whose length is in another field
             String countMethodName = struct.findCountParameterForPointerField(field.getName()).map(f -> "n" + f).orElseThrow();
