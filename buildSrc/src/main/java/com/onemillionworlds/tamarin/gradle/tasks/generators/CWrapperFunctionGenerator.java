@@ -37,25 +37,9 @@ public class CWrapperFunctionGenerator {
             functionString.append(" * Method:    n" + functionName + "\n");
             functionString.append(" * Signature: (");
             
-            // Generate JNI signature
+            // Generate JNI signature (the same JniType the Java native method is generated from)
             for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
-                if (param.isPointer() || param.isStructByValue()) {
-                    functionString.append("J"); // long
-                } else if (param.getType().equals("uint32_t") || param.getType().equals("int32_t") || param.isTypeDefInt()) {
-                    functionString.append("I"); // int
-                } else if (param.isHandle()) {
-                    functionString.append("J"); // long
-                } else if (param.isEnumType()) {
-                    functionString.append("I"); // int
-                } else if (param.isTypeDefLong() || param.isFlag() || param.isAtom() || param.is64BitInteger()) {
-                    functionString.append("J"); // long
-                } else if (param.getType().equals("float")) {
-                    functionString.append("F"); // float
-                } else if (param.getType().equals("double")) {
-                    functionString.append("D"); // double
-                } else {
-                    throw new RuntimeException("Unexpected parameter type " + param + " in " + functionName);
-                }
+                functionString.append(param.getJniType().signature);
             }
             functionString.append(")I\n"); // Return type is always int (XrResult)
             functionString.append(" */\n");
@@ -67,25 +51,7 @@ public class CWrapperFunctionGenerator {
             // Generate parameter list
             for (int i = 0; i < function.getParameters().size(); i++) {
                 FunctionDefinition.FunctionParameter param = function.getParameters().get(i);
-                String paramName = param.getName();
-                
-                if (param.isPointer() || param.isStructByValue()) {
-                    functionString.append(", jlong " + paramName);
-                } else if (param.getType().equals("uint32_t") || param.getType().equals("int32_t") || param.isTypeDefInt()) {
-                    functionString.append(", jint " + paramName);
-                } else if (param.isHandle()) {
-                    functionString.append(", jlong " + paramName);
-                } else if (param.isEnumType()) {
-                    functionString.append(", jint " + paramName);
-                } else if (param.isTypeDefLong() || param.isFlag() || param.isAtom() || param.is64BitInteger()) {
-                    functionString.append(", jlong " + paramName);
-                } else if (param.getType().equals("float")) {
-                    functionString.append(", jfloat " + paramName);
-                } else if (param.getType().equals("double")) {
-                    functionString.append(", jdouble " + paramName);
-                } else {
-                    throw new RuntimeException("Unexpected parameter type " + param + " in " + functionName);
-                }
+                functionString.append(", " + param.getJniType().cType + " " + param.getName());
             }
             functionString.append(") {\n\n");
             

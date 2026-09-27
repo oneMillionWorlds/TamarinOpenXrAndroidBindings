@@ -76,6 +76,7 @@ Use the Gradle wrapper (`./gradlew` in bash, `.\gradlew.bat` in PowerShell). Req
 - `buildSrc/src/test` — unit tests for the parsers (`XmlRegistryParserTest` uses a small inline registry with one of each shape) and for `WrapperFunctionGenerator` / `CWrapperFunctionGenerator` / `HandleGenerator`, asserting exact generated strings (text blocks)
 - `StructsAreGeneratedCorrectlyTest` — byte-for-byte comparison of selected generated structs against `referenceStructs/*_reference.java`. Each test has a comment saying *why* that struct is interesting (pointer-to-struct with count, function pointer, fixed array of structs, base header, odd non-const input, ...). Add a new reference + test when adding generator behaviour for a new shape
 - `StructsHaveCorrectSizeAndAlignment` — checks every generated struct's `SIZEOF`/`ALIGNOF` against `expectedSizes.csv` (real C `sizeof`/`_Alignof` values). A missing class is a pass
+- `NativeSignaturesMatchTest` — checks every generated `XR10` native method against its generated C JNI function (parameter types and the JNI signature comment). JNI binds by name only, so a mismatch otherwise links fine and passes garbage
 - There are no on-device tests here; real runtime verification happens in Tamarin on a headset. Say so rather than claiming a change "works" from a JVM test alone
 
 ## Release

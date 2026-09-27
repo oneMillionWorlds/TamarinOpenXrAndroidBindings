@@ -66,6 +66,35 @@ public class FunctionDefinition {
     }
 
     /**
+     * The JNI primitive a native parameter is passed as, in all the places it has to be written
+     */
+    public enum JniType {
+        INT("int", "jint", "I"),
+        LONG("long", "jlong", "J"),
+        FLOAT("float", "jfloat", "F"),
+        DOUBLE("double", "jdouble", "D");
+
+        /**
+         * The type on the Java native method
+         */
+        public final String javaType;
+        /**
+         * The type on the C JNI function
+         */
+        public final String cType;
+        /**
+         * The type in a JNI method signature (e.g. "(IJ)I")
+         */
+        public final String signature;
+
+        JniType(String javaType, String cType, String signature) {
+            this.javaType = javaType;
+            this.cType = cType;
+            this.signature = signature;
+        }
+    }
+
+    /**
      * Class representing a function parameter.
      */
     public static class FunctionParameter {
@@ -230,30 +259,32 @@ public class FunctionDefinition {
         }
 
         /**
-         * This is the java method that has the native keyword
+         * The type of this parameter on the java method that has the native keyword
          */
         public String getLowLevelJavaType() {
-            String paramType = getType();
-            String paramName = getName();
-            boolean isPointer = isPointer();
-            boolean isAtom = isAtom();
-            boolean isStructByValue = isStructByValue();
-            boolean isEnum = isEnumType();
+            return getJniType().javaType;
+        }
 
-            if (isPointer || isStructByValue ||isAtom) {
-                return "long";
-            } else if (paramType.equals("uint32_t") || paramType.equals("int32_t") || isTypeDefInt()) {
-                return "int";
-            } else if (isHandle()) {
-                return "long";
-            } else if (isEnum) {
-                return "int";
-            } else if (isTypeDefLong() || isFlag() || is64BitInteger()) {
-                return "long";
-            } else if (paramType.equals("float")) {
-                return "float";
-            } else if (paramType.equals("double")) {
-                return "double";
+        /**
+         * How this parameter crosses JNI. Both the Java native method and the C JNI function are generated from this,
+         * so they can't disagree
+         */
+        public JniType getJniType() {
+            if (isPointer || isStructByValue() || isAtom) {
+                // pointers and structs are passed as addresses (by value structs are dereferenced in C)
+                return JniType.LONG;
+            } else if (type.equals("uint32_t") || type.equals("int32_t") || isTypeDefInt) {
+                return JniType.INT;
+            } else if (isHandle) {
+                return JniType.LONG;
+            } else if (isEnumType) {
+                return JniType.INT;
+            } else if (isTypeDefLong || isFlag || is64BitInteger()) {
+                return JniType.LONG;
+            } else if (type.equals("float")) {
+                return JniType.FLOAT;
+            } else if (type.equals("double")) {
+                return JniType.DOUBLE;
             } else {
                 throw new RuntimeException("Unexpected parameter type: " + this);
             }

@@ -24,8 +24,10 @@ Grep the generated file for the exact text, then grep `buildSrc` for a distincti
 
 Keep the Java wrapper (`WrapperFunctionGenerator`/`FunctionParameter`) and the C side (`CWrapperFunctionGenerator`) in
 agreement: the Java `native` parameter types, the JNI signature comment, the C parameter types and the casts must all
-match, or the app crashes at runtime with `UnsatisfiedLinkError` or silently passes garbage. Nothing in the JVM tests
-catches a Java/C mismatch.
+match, or the app crashes at runtime with `UnsatisfiedLinkError` or silently passes garbage. The JNI type of each
+parameter comes from one place, `FunctionParameter.getJniType()`, which both sides use; change it there rather than in
+one generator. `NativeSignaturesMatchTest` (android-native) checks every generated Java native against its C function
+and JNI signature comment. It can't check the casts inside the C, or what the C does with the values
 
 ## 2. Make the change
 
