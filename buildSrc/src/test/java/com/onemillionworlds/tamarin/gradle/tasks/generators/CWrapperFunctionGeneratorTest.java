@@ -351,6 +351,24 @@ class CWrapperFunctionGeneratorTest {
     }
 
     @Test
+    void generateCWrapperFunction_unknownTypeFails() {
+        // an unknown type must fail the build rather than silently becoming a jint (which is how uint64_t was once
+        // passed truncated)
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrSomethingNew", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("int128_t", "value", false, false, false, false, false, false, false, false, false, false));
+
+        assertThrows(RuntimeException.class, () -> CWrapperFunctionGenerator.generateCWrapperFunction(functionDefinition));
+        assertThrows(RuntimeException.class, () -> functionDefinition.getParameters().get(0).getLowLevelJavaType());
+        assertThrows(RuntimeException.class, () -> functionDefinition.getParameters().get(0).getHighLevelJavaType(false));
+    }
+
+    @Test
+    void generateCWrapperFunction_int32Parameter() {
+        FunctionDefinition.FunctionParameter parameter = new FunctionDefinition.FunctionParameter("int32_t", "value", false, false, false, false, false, false, false, false, false, false);
+        assertEquals("int", parameter.getLowLevelJavaType());
+    }
+
+    @Test
     void generateCWrapperFunction_doublePointer() {
         // the runtime writes a pointer (to a buffer it owns) into the slot, so the slot must be cast to a double pointer
         FunctionDefinition functionDefinition = new FunctionDefinition("xrTriangleMeshGetVertexBufferFB", "XrResult");

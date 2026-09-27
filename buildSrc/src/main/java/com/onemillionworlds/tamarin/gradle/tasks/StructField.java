@@ -201,8 +201,7 @@ public class StructField {
             return "long";
         }
 
-        // Default to the type itself for other types (likely structs)
-        return type;
+        throw new RuntimeException("Unknown Java type for field " + this);
     }
 
     /**
@@ -238,8 +237,7 @@ public class StructField {
             // EGL types are pointers on Android
             return "memGetAddress";
         }
-        // Default to long for unknown types
-        return "memGetLong";
+        throw new RuntimeException("Unknown memory access method for field " + this);
     }
 
     public String getMemorySetMethod() {
@@ -270,8 +268,7 @@ public class StructField {
             // EGL types are pointers on Android
             return "memPutAddress";
         }
-        // Default to long for unknown types
-        return "memPutLong";
+        throw new RuntimeException("Unknown memory set method for field " + this);
     }
 
     /**

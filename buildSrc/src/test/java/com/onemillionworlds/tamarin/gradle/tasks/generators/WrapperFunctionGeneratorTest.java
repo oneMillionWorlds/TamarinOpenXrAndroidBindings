@@ -13,7 +13,7 @@ class WrapperFunctionGeneratorTest {
         FunctionDefinition functionDefinition = new FunctionDefinition("xrEnumerateApiLayerProperties", "XrResult");
         functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCapacityInput", false, false, false, false, false, false, false, false, false, false));
         functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCountOutput", true, false, false, false, false, false, false, false, false, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrApiLayerProperties", "properties", true, false, false, false, false, false, false, false, false, false)
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrApiLayerProperties", "properties", true, false, false, false, false, false, false, false, true, false)
                 .setCountParameter("propertyCapacityInput"));
 
         String expectedValue = """
@@ -28,6 +28,7 @@ class WrapperFunctionGeneratorTest {
                      */
                     public static XrResult xrEnumerateApiLayerProperties(int propertyCapacityInput, IntBufferView propertyCountOutput, XrApiLayerProperties.Buffer properties) {
                         long propertyCountOutputAddress = propertyCountOutput == null ? MemoryUtil.NULL : propertyCountOutput.address();
+                        if(properties!=null){properties.setNoLongerNeedsToValidateAllMethodsCalled();}
                         long propertiesAddress = properties == null ? MemoryUtil.NULL : properties.address();
                         return XrResult.fromValue(nxrEnumerateApiLayerProperties(propertyCapacityInput, propertyCountOutputAddress, propertiesAddress));
                     }
@@ -140,7 +141,7 @@ class WrapperFunctionGeneratorTest {
     void generateWrapperFunction_xrGetSystem() {
         FunctionDefinition expectedFunctionDefinition = new FunctionDefinition("xrGetSystem", "XrResult");
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false, false, false, true, false, false, false));
-        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemGetInfo", "getInfo", true, true, false, false, false, false, false, false, false, false));
+        expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemGetInfo", "getInfo", true, true, false, false, false, false, false, false, true, false));
         expectedFunctionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSystemId", "systemId", true, false, false, true, false, false, false, false, false, false));
 
         String expectedValue = """
@@ -173,7 +174,7 @@ class WrapperFunctionGeneratorTest {
         functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSpace", "space", false, false, false, false, false, false, true, false, false, false));
         functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSpace", "baseSpace", false, false, false, false, false, false, true, false, false, false));
         functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrTime", "time", false, false, false, false, false, true, false, false, false, false));
-        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSpaceLocation", "location", true, false, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSpaceLocation", "location", true, false, false, false, false, false, false, false, true, false));
 
         String expectedValue = """
                     /**
@@ -187,6 +188,7 @@ class WrapperFunctionGeneratorTest {
                      * @return The XrResult status code
                      */
                     public static XrResult xrLocateSpace(XrSpace space, XrSpace baseSpace, long time, XrSpaceLocation location) {
+                        if(location!=null){location.setNoLongerNeedsToValidateAllMethodsCalled();}
                         long locationAddress = location == null ? MemoryUtil.NULL : location.address();
                         return XrResult.fromValue(nxrLocateSpace(space.getRawHandle(), baseSpace.getRawHandle(), time, locationAddress));
                     }

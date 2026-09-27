@@ -199,6 +199,9 @@ public class FunctionDefinition {
                 if(type.equals("float")){
                     return "FloatBufferView";
                 }
+                if(!isStruct){
+                    throw new RuntimeException("Unexpected pointer type: " + this);
+                }
                 if(hasAnAssociatedCountParameter) {
                     return getType() + ".Buffer";
                 }
@@ -239,7 +242,7 @@ public class FunctionDefinition {
 
             if (isPointer || isStructByValue ||isAtom) {
                 return "long";
-            } else if (paramType.equals("uint32_t") || isTypeDefInt()) {
+            } else if (paramType.equals("uint32_t") || paramType.equals("int32_t") || isTypeDefInt()) {
                 return "int";
             } else if (isHandle()) {
                 return "long";
@@ -252,7 +255,7 @@ public class FunctionDefinition {
             } else if (paramType.equals("double")) {
                 return "double";
             } else {
-                return "int";
+                throw new RuntimeException("Unexpected parameter type: " + this);
             }
         }
 

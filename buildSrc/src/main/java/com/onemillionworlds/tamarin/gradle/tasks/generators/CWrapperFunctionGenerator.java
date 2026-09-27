@@ -41,7 +41,7 @@ public class CWrapperFunctionGenerator {
             for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
                 if (param.isPointer() || param.isStructByValue()) {
                     functionString.append("J"); // long
-                } else if (param.getType().equals("uint32_t") || param.isTypeDefInt()) {
+                } else if (param.getType().equals("uint32_t") || param.getType().equals("int32_t") || param.isTypeDefInt()) {
                     functionString.append("I"); // int
                 } else if (param.isHandle()) {
                     functionString.append("J"); // long
@@ -54,7 +54,7 @@ public class CWrapperFunctionGenerator {
                 } else if (param.getType().equals("double")) {
                     functionString.append("D"); // double
                 } else {
-                    functionString.append("I"); // default to int
+                    throw new RuntimeException("Unexpected parameter type " + param + " in " + functionName);
                 }
             }
             functionString.append(")I\n"); // Return type is always int (XrResult)
@@ -71,7 +71,7 @@ public class CWrapperFunctionGenerator {
                 
                 if (param.isPointer() || param.isStructByValue()) {
                     functionString.append(", jlong " + paramName);
-                } else if (param.getType().equals("uint32_t") || param.isTypeDefInt()) {
+                } else if (param.getType().equals("uint32_t") || param.getType().equals("int32_t") || param.isTypeDefInt()) {
                     functionString.append(", jint " + paramName);
                 } else if (param.isHandle()) {
                     functionString.append(", jlong " + paramName);
@@ -84,7 +84,7 @@ public class CWrapperFunctionGenerator {
                 } else if (param.getType().equals("double")) {
                     functionString.append(", jdouble " + paramName);
                 } else {
-                    functionString.append(", jint " + paramName); // Default to int
+                    throw new RuntimeException("Unexpected parameter type " + param + " in " + functionName);
                 }
             }
             functionString.append(") {\n\n");
