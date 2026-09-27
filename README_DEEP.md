@@ -20,8 +20,12 @@ The header files for the openXR calls (calls into the loader, not the system cal
 `lib/src/main/native/include/openxr`. These are third party headers that allow our c to call 
 the openXR loaded
 
-## OpenXR loader so files
+## OpenXR loader
 
-The file at android-native/src/main/jnilibs/arm64-v8a/libopenxr_loader.so is the actual openXR loader.
+The OpenXR loader (libopenxr_loader.so) comes from the Khronos `org.khronos.openxr:openxr_loader_for_android` 
+dependency (version in gradle/libs.versions.toml). Our CMake build links against it via prefab 
+(`find_package(OpenXR)` / `OpenXR::openxr_loader`), but only the library - our code still uses the vendored headers 
+above. It is an `api` dependency so consumers receive the loader (and the manifest entries it needs) transitively; we
+deliberately don't bundle a copy of the .so in our own AAR.
 At runtime it dynamically links to the actual OpenXR system calls and allows our java calls to flow through to 
 the underlying system.

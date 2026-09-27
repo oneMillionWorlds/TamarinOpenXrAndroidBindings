@@ -29,7 +29,6 @@ android {
             // Wire generated sources so any task consuming sources (compile, sourcesJar, javadoc, etc.)
             // will automatically run parseOpenXrFile first via builtBy linkage.
             java.srcDir(files("src/main/generated/java").builtBy('parseOpenXrFile'))
-            jniLibs.srcDirs = ['src/main/jnilibs']
         }
         test {
             java.srcDirs = ['src/test/java']
@@ -52,6 +51,19 @@ android {
         // Specify which ABIs to build for
         ndk {
             abiFilters 'arm64-v8a' // other values  'armeabi-v7a', 'x86', 'x86_64'
+        }
+    }
+
+    // Lets CMake find_package() native libraries from AAR dependencies (the OpenXR loader)
+    buildFeatures {
+        prefab = true
+    }
+
+    // The loader .so comes to consumers transitively via the Khronos AAR (see dependencies). Don't also bundle the copy
+    // CMake links against, or consumers get two libopenxr_loader.so files and a duplicate native lib merge failure
+    packaging {
+        jniLibs {
+            excludes += ['**/libopenxr_loader.so']
         }
     }
 
@@ -144,6 +156,10 @@ tasks.matching { task ->
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api libs.commons.math3
+
+    // The OpenXR loader (libopenxr_loader.so), exposed via prefab to our CMake build. Exported as api so consumers
+    // resolve a single copy of the loader (and get its manifest entries) even if they also depend on it directly
+    api libs.openxr.loader
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation libs.guava

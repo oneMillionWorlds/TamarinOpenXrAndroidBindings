@@ -9,7 +9,10 @@ set(JNI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../main/generated/native/src/com_onemillionworlds_tamarin_openxrbindings_XR10.c
 )
 
-set(OPENXR_LOADER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../main/jnilibs/arm64-v8a/libopenxr_loader.so")
+# The OpenXR loader comes from the org.khronos.openxr:openxr_loader_for_android AAR via prefab.
+# We only link the library; our headers are the vendored ones in include/openxr (included by relative path), which
+# is what the Java/C code generation is based on
+find_package(OpenXR REQUIRED CONFIG)
 
 
 # Define JNI library
@@ -35,5 +38,5 @@ target_include_directories(openxrjni PRIVATE
 target_link_libraries(openxrjni
     android
     log
-    ${OPENXR_LOADER_PATH}
+    OpenXR::openxr_loader
 )
