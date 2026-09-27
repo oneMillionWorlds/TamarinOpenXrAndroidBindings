@@ -47,7 +47,7 @@ public class CWrapperFunctionGenerator {
                     functionString.append("J"); // long
                 } else if (param.isEnumType()) {
                     functionString.append("I"); // int
-                } else if (param.isTypeDefLong() || param.isFlag() || param.isAtom()) {
+                } else if (param.isTypeDefLong() || param.isFlag() || param.isAtom() || param.is64BitInteger()) {
                     functionString.append("J"); // long
                 } else if (param.getType().equals("float")) {
                     functionString.append("F"); // float
@@ -77,7 +77,7 @@ public class CWrapperFunctionGenerator {
                     functionString.append(", jlong " + paramName);
                 } else if (param.isEnumType()) {
                     functionString.append(", jint " + paramName);
-                } else if (param.isTypeDefLong() || param.isFlag() || param.isAtom()) {
+                } else if (param.isTypeDefLong() || param.isFlag() || param.isAtom() || param.is64BitInteger()) {
                     functionString.append(", jlong " + paramName);
                 } else if (param.getType().equals("float")) {
                     functionString.append(", jfloat " + paramName);

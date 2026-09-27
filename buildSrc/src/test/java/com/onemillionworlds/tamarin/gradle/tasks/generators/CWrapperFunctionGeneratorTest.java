@@ -314,4 +314,39 @@ class CWrapperFunctionGeneratorTest {
         String actualValue = CWrapperFunctionGenerator.generateCWrapperFunction(functionDefinition);
         assertEquals(expectedValue.trim(), actualValue.trim());
     }
+
+    @Test
+    void generateCWrapperFunction_uint64Parameter() {
+        // a plain uint64_t must be jlong / "J" to match the Java native method's long parameter (a jint would
+        // silently truncate it)
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrGetMarkerSizeVARJO", "XrResult");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrSession", "session", false, false, false, false, false, false, true, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint64_t", "markerId", false, false, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrExtent2Df", "size", true, false, false, false, false, false, false, false, true, false));
+
+        String expectedValue = """
+                /*
+                 * Class:     com_onemillionworlds_tamarin_openxrbindings_XR10
+                 * Method:    nxrGetMarkerSizeVARJO
+                 * Signature: (JJJ)I
+                 */
+                JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_XR10_nxrGetMarkerSizeVARJO
+                  (JNIEnv *env, jclass cls, jlong session, jlong markerId, jlong size) {
+
+                    // Convert JNI parameters to OpenXR parameters
+                    XrSession sessionHandle = (XrSession)(intptr_t)session;
+                    XrExtent2Df *sizePtr = (XrExtent2Df *)(intptr_t)size;
+
+                    // Call the OpenXR function
+                    XrResult result = xrGetMarkerSizeVARJO(sessionHandle, markerId, sizePtr);
+
+                    // Return the result as a jint
+                    return (jint)result;
+                }
+                """;
+
+        String actualValue = CWrapperFunctionGenerator.generateCWrapperFunction(functionDefinition);
+        assertEquals(expectedValue.trim(), actualValue.trim());
+        assertEquals("long", functionDefinition.getParameters().get(1).getLowLevelJavaType());
+    }
 }

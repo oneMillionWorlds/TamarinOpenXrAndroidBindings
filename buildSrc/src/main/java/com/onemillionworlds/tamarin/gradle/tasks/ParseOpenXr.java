@@ -55,6 +55,19 @@ public class ParseOpenXr extends DefaultTask {
 
     private static final List<String> HAND_WRITTEN_ENUMS = List.of("EGLenum");
 
+    /**
+     * Functions that can't work as a generated thin binding (neither the Java nor the C is generated). If needed they
+     * should be hand-written in ThickC
+     */
+    private static final Set<String> FUNCTIONS_TO_SKIP = Set.of(
+            /*
+             * Outputs the Android Surface as a jobject* which the runtime fills with a JNI local reference. That is only
+             * valid during the native call, so it would be dangling by the time Java could read it; the C would need to
+             * NewGlobalRef it and return the object
+             */
+            "xrCreateSwapchainAndroidSurfaceKHR"
+    );
+
     private final RegularFileProperty xrXml = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputDir = getProject().getObjects().fileProperty();
     private final RegularFileProperty cOutputDir = getProject().getObjects().fileProperty();
@@ -133,9 +146,8 @@ public class ParseOpenXr extends DefaultTask {
             if(functionDefinition.hasADoublePointer()){
                 // these double pointers are a pain to generate for and we don't plan to use them anyway
                 getLogger().lifecycle("Function {} has a double pointer, skipping", functionDefinition.getName());
-            } else if(functionDefinition.getName().endsWith("META") || functionDefinition.getName().endsWith("METAFunc")){
-                // these meta methods seem to fail to compile and we aren't going to use them anyway
-                getLogger().lifecycle("Skipping META function {}", functionDefinition.getName());
+            } else if(FUNCTIONS_TO_SKIP.contains(functionDefinition.getName())) {
+                getLogger().lifecycle("Function {} can't be a thin binding, skipping", functionDefinition.getName());
             } else {
                 functions.add(functionDefinition);
             }

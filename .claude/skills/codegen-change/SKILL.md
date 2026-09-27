@@ -18,7 +18,7 @@ find the generator that writes the line you want to change.
 | `enums/*.java` | `EnumGenerator` (values, incl. extension values and `MAX_ENUM`, from `parsers/XmlRegistryParser.buildEnum`) |
 | `handles/*.java` | `HandleGenerator` (handles from `parsers/XmlRegistryParser` + `ParseOpenXr.HANDLES_EXTRA`) |
 | `XR10Constants.java` | `ConstantsGenerator` (from `XmlRegistryParser`: `#define` types via `DefinePasser`, enum constants, flag bits) |
-| Whether something is generated at all | `XmlRegistryParser` (which features/extensions/types are included, mirroring the Khronos header generator), `ParseOpenXr.ENABLED_PROTECTS` (platform/graphics API set), `ParseOpenXr.execute` (skips double-pointer and `*META` functions), `X10Generator.methodsToSkip` |
+| Whether something is generated at all | `XmlRegistryParser` (which features/extensions/types are included, mirroring the Khronos header generator), `ParseOpenXr.ENABLED_PROTECTS` (platform/graphics API set), `ParseOpenXr.execute` (skips double-pointer functions and `ParseOpenXr.FUNCTIONS_TO_SKIP`, for both Java and C) |
 
 Grep the generated file for the exact text, then grep `buildSrc` for a distinctive literal from it.
 

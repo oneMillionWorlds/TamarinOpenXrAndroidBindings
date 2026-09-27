@@ -162,6 +162,13 @@ public class FunctionDefinition {
         }
 
         /**
+         * A plain uint64_t/int64_t, a Java long (and a jlong in JNI)
+         */
+        public boolean is64BitInteger() {
+            return type.equals("uint64_t") || type.equals("int64_t");
+        }
+
+        /**
          * Structs by value are weird. On the java side we still treat them as pointers but then deferernce them on
          * the native side to be passed by value. This is because we can't cope with passing structs by reference on the
          * java side.
@@ -210,7 +217,7 @@ public class FunctionDefinition {
                 if(isEnumType){
                     return type;
                 }
-                if(isAtom || isTypeDefLong || isFlag || type.equals("uint64_t") ){
+                if(isAtom || isTypeDefLong || isFlag || is64BitInteger()){
                     return "long";
                 }
                 if(type.equals("float")){
@@ -242,7 +249,7 @@ public class FunctionDefinition {
                 return "long";
             } else if (isEnum) {
                 return "int";
-            } else if (isTypeDefLong() || isFlag() || paramType.equals("uint64_t")) {
+            } else if (isTypeDefLong() || isFlag() || is64BitInteger()) {
                 return "long";
             } else if (paramType.equals("float")) {
                 return "float";
