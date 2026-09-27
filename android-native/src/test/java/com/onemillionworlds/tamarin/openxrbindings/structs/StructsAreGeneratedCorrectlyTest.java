@@ -106,6 +106,25 @@ public class StructsAreGeneratedCorrectlyTest {
         test("XrHapticVibration");
     }
 
+    /**
+     * XrGraphicsBindingOpenGLESAndroidKHR is interesting because it holds EGL types (which aren't in xr.xml) and its
+     * XrStructureType (XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR) can't be derived from its name, it has to come
+     * from xr.xml
+     */
+    @Test
+    public void xrGraphicsBindingOpenGLESAndroidKHRTest(){
+        test("XrGraphicsBindingOpenGLESAndroidKHR");
+    }
+
+    /**
+     * XrSpatialComponentMesh2DListEXT is interesting because the count of its meshes pointer is held in meshCount,
+     * which can only be known from the "len" in xr.xml (not guessed from the name)
+     */
+    @Test
+    public void xrSpatialComponentMesh2DListEXTTest(){
+        test("XrSpatialComponentMesh2DListEXT");
+    }
+
     public static void test(String structName){
         try {
             String referenceContent = readResourceFile(structName);

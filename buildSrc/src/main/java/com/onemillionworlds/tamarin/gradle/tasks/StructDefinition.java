@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * Class representing a struct definition.
@@ -76,11 +75,14 @@ public class StructDefinition {
     }
 
     /**
-     * Often pointer fields come with a seperate parameter that lists how many items of that type
-     * the field contains. This finds that count method
+     * Pointer fields usually come with a separate field that holds how many items the pointer points to (the "len"
+     * of the member in xr.xml). This finds that count field
      */
     public Optional<String> findCountParameterForPointerField(String fieldName){
-        return findCountParameterForPointerField(fieldName, this::hasField);
+        return fields.stream()
+                .filter(f -> f.getName().equals(fieldName))
+                .findFirst()
+                .flatMap(StructField::getCountField);
     }
 
     public Optional<String> getBaseHeader() {
@@ -114,75 +116,5 @@ public class StructDefinition {
                 ", fields=\n" + fields.stream().map(f -> "  " + f + "\n").reduce(String::concat).orElse("") +
                 ", canBeItsOwnDefault=" + canBeItsOwnDefault +
                 '}';
-    }
-
-    /**
-     * Often pointer fields come with a seperate parameter that lists how many items of that type
-     * the field contains. This finds that count method
-     */
-    public static Optional<String> findCountParameterForPointerField(String fieldName, Predicate<String> hasField){
-
-        List<String> options = new ArrayList<>(List.of(
-                fieldName + "Count",
-                "count" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1)
-        ));
-
-        pluralToSingular(fieldName).ifPresent(singular -> {
-            options.add(singular + "CapacityInput");
-            options.add(singular + "Count");
-        });
-
-        // special cases
-        if(fieldName.equals("jointLocations") || fieldName.equals("jointVelocities")){
-            options.add("jointCount");
-        }
-        if(fieldName.equals("viewConfigurationStates")){
-            options.add("viewConfigurationCount");
-        }
-        if(fieldName.equals("viewConfigurationLayersInfo")){
-            options.add("viewConfigurationLayerCount");
-            options.add("viewConfigurationCount");
-        }
-        if (fieldName.startsWith("node")){
-            options.add("nodeCapacityInput");
-        }
-        if(fieldName.startsWith("joint")){
-            options.add("jointCapacityInput");
-        }
-        if(fieldName.startsWith("vertex")){
-            options.add("vertexCapacityInput");
-            options.add("vertexCount");
-        }
-
-
-        for (String option : options) {
-            if (hasField.test(option)){
-                return Optional.of(option);
-            }
-        }
-        return Optional.empty();
-    }
-
-    private static Optional<String> pluralToSingular(String plural) {
-        if(plural.equals("vertices")){
-            return Optional.of("vertex");
-        } else if (plural.equals("indices")) {
-            return Optional.of("index");
-        }else if (plural.equals("boxes")){
-            return Optional.of("box");
-        }else if (plural.equals("spheres")){
-            return Optional.of("sphere");
-        }else if (plural.endsWith("ies")){
-            // e.g. properties -> property, entities -> entity
-            return Optional.of(plural.substring(0, plural.length() - 3) + "y");
-        }else if(plural.endsWith("Meshes")){
-            return Optional.of(plural.replace("Meshes", "Mesh"));
-        }else if(plural.endsWith("s")) {
-            return Optional.of(plural.substring(0, plural.length() - 1));
-        } else if (plural.contains("Layers")) {
-            return Optional.of(plural.replace("Layers", "Layer"));
-        }else {
-            return Optional.empty();
-        }
     }
 }

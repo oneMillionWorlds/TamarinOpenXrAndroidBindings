@@ -12,13 +12,13 @@ find the generator that writes the line you want to change.
 
 | Generated output | Written by |
 | --- | --- |
-| `Xr*.java` struct classes (layout, getters/setters, `malloc`/`calloc`, `Buffer`, `PointerBuffer`, `toString`, validation) | `buildSrc/.../generators/StructGenerator.java`; field type mapping in `tasks/StructField.java`; parent/child + count-field logic in `tasks/StructDefinition.java` |
+| `Xr*.java` struct classes (layout, getters/setters, `malloc`/`calloc`, `Buffer`, `PointerBuffer`, `toString`, validation) | `buildSrc/.../generators/StructGenerator.java`; field type mapping in `tasks/StructField.java`; parent/child + count-field lookup in `tasks/StructDefinition.java`; the fields themselves (types, `len` count fields, `values` struct type, `parentstruct`) are read from xr.xml by `parsers/XmlRegistryParser` |
 | `XR10.java` wrappers + `native` decls | `WrapperFunctionGenerator` (per function), `X10Generator` (file shell, skip list); Java types from `FunctionDefinition.FunctionParameter.getHighLevelJavaType/getLowLevelJavaType` |
 | `com_onemillionworlds_tamarin_openxrbindings_XR10.c` | `CWrapperFunctionGenerator` (per function, JNI signature + casts), `X10CGenerator` (includes, extension PFN table, special `nxrCreateInstance`) |
-| `enums/*.java` | `EnumGenerator` (input from `parsers/EnumParser`) |
-| `handles/*.java` | `HandleGenerator` (handles from `parsers/HandleParser` + `ParseOpenXr.HANDLES_EXTRA`) |
-| `XR10Constants.java` | `ConstantsGenerator` (from `DefinePasser`, `ConstParser`) |
-| Whether something is generated at all | `ParseOpenXr.parseHeaderFile` (skips double-pointer and `*META` functions), `ParseOpenXr.STANDARD_DEFS` (ifdef set), `X10Generator.methodsToSkip` |
+| `enums/*.java` | `EnumGenerator` (values, incl. extension values and `MAX_ENUM`, from `parsers/XmlRegistryParser.buildEnum`) |
+| `handles/*.java` | `HandleGenerator` (handles from `parsers/XmlRegistryParser` + `ParseOpenXr.HANDLES_EXTRA`) |
+| `XR10Constants.java` | `ConstantsGenerator` (from `XmlRegistryParser`: `#define` types via `DefinePasser`, enum constants, flag bits) |
+| Whether something is generated at all | `XmlRegistryParser` (which features/extensions/types are included, mirroring the Khronos header generator), `ParseOpenXr.ENABLED_PROTECTS` (platform/graphics API set), `ParseOpenXr.execute` (skips double-pointer and `*META` functions), `X10Generator.methodsToSkip` |
 
 Grep the generated file for the exact text, then grep `buildSrc` for a distinctive literal from it.
 
@@ -30,6 +30,7 @@ catches a Java/C mismatch.
 ## 2. Make the change
 
 - Keep changes minimal and in the generator's existing string-building style (`StringBuilder.append` / `writer.write`)
+- Prefer information from xr.xml markup (`len`, `values`, `optional`, `category`, `parentstruct`, ...) over guessing from names. If xr.xml genuinely lacks something, add an explicit, commented table entry (like `XmlRegistryParser.MISSING_LENS`) rather than a heuristic
 - If the change is about a specific C shape (pointer + count, fixed array, function pointer, base header, by-value struct), check the existing special cases in `StructField`/`StructGenerator` first — there usually is one
 - "Update, don't overload" applies to generated APIs too: change the generated method rather than emitting an extra overload unless asked
 

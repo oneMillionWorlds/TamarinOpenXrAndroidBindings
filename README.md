@@ -58,7 +58,7 @@ See https://github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings/wiki
 
 #### Code generation
 
-Almost all of the Java API (`XR10`, the structs, enums and handles) and the JNI C wrapper are generated during the build from the OpenXR headers and the registry (`xr.xml`). Neither is checked in: the headers are extracted from the OpenXR loader AAR and `xr.xml` is downloaded from the matching [OpenXR-SDK-Source](https://github.com/KhronosGroup/OpenXR-SDK-Source) release tag, so both are always the same version as the loader (`openxr-loader` in `gradle/libs.versions.toml`). The build therefore needs network access to GitHub. The generator lives in `buildSrc` and is run by the `parseOpenXrFile` task, writing into `android-native/src/main/generated` (not checked in, never edit by hand). To only regenerate:
+Almost all of the Java API (`XR10`, the structs, enums and handles) and the JNI C wrapper are generated during the build from the OpenXR registry (`xr.xml`). It isn't checked in: it is downloaded from the matching [OpenXR-SDK-Source](https://github.com/KhronosGroup/OpenXR-SDK-Source) release tag, so it is always the same version as the loader (`openxr-loader` in `gradle/libs.versions.toml`), whose AAR also provides the headers the C compiles against. The build therefore needs network access to GitHub. The generator lives in `buildSrc` and is run by the `parseOpenXrFile` task, writing into `android-native/src/main/generated` (not checked in, never edit by hand). To only regenerate:
 
 ```
 ./gradlew :android-native:parseOpenXrFile
@@ -90,7 +90,7 @@ Note: Only a small subset of generated files are used as references in tests. Th
 
 The library uses JNI to bridge between Java and the native OpenXR API. The implementation follows these steps:
 
-1. The code generator parses the OpenXR headers and `xr.xml` and generates the Java API and the C JNI wrapper
+1. The code generator reads `xr.xml` and generates the Java API and the C JNI wrapper
 2. JNI headers are generated from the Java classes (`javac -h`)
 3. C implementation forwards calls to the OpenXR API (extension functions are looked up via `xrGetInstanceProcAddr` after instance creation)
 4. Results are written into native memory owned by the Java structs/buffers and an `XrResult` is returned

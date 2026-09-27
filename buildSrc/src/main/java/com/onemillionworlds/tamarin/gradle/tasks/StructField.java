@@ -1,6 +1,7 @@
 package com.onemillionworlds.tamarin.gradle.tasks;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Class representing a struct field.
@@ -21,10 +22,10 @@ public class StructField {
     private final boolean isDoublePointer;
 
     /**
-     * This means this field is a pointer to a struct (which is usually an array) but in this case it is actually
-     * just a single object
+     * For a pointer field, the field holding how many items it points to (the "len" of the member in xr.xml). Null if
+     * there isn't one (e.g. it points to a single object or is a null-terminated string)
      */
-    private final boolean isSingletonStructPointer;
+    private final String countField;
 
     // Constants for memory sizes
     private static final String SIZE_1_BYTE = "1";
@@ -35,7 +36,7 @@ public class StructField {
 
     public StructField(String type, String name, String arraySizeConstant, boolean isPointer, boolean isConst,
                        boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong,
-                       boolean isHandle, boolean isFlag, boolean isStruct, boolean isDoublePointer, boolean isSingletonStructPointer) {
+                       boolean isHandle, boolean isFlag, boolean isStruct, boolean isDoublePointer, String countField) {
         this.type = type;
         this.name = name;
         this.arraySizeConstant = arraySizeConstant;
@@ -49,7 +50,7 @@ public class StructField {
         this.isFlag = isFlag;
         this.isStruct = isStruct;
         this.isDoublePointer = isDoublePointer;
-        this.isSingletonStructPointer = isSingletonStructPointer;
+        this.countField = countField;
     }
 
     public String getType() {
@@ -104,8 +105,16 @@ public class StructField {
         return isDoublePointer;
     }
 
+    /**
+     * This means this field is a pointer to a struct (which is usually an array) but in this case it is actually
+     * just a single object
+     */
     public boolean isSingletonStructPointer() {
-        return isSingletonStructPointer;
+        return isStruct && isPointer && countField == null;
+    }
+
+    public Optional<String> getCountField() {
+        return Optional.ofNullable(countField);
     }
 
     /**
@@ -158,7 +167,7 @@ public class StructField {
             return type + ".Buffer";
         }else if (isEnumType) {
             return type;
-        }else if(isSingletonStructPointer) {
+        }else if(isSingletonStructPointer()) {
             return type;
         } else if(isHandle && isPointer){
             return type + ".HandleBuffer";
@@ -305,13 +314,14 @@ public class StructField {
                isDoublePointer == that.isDoublePointer && 
                Objects.equals(type, that.type) && 
                Objects.equals(name, that.name) && 
-               Objects.equals(arraySizeConstant, that.arraySizeConstant);
+               Objects.equals(arraySizeConstant, that.arraySizeConstant) &&
+               Objects.equals(countField, that.countField);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(type, name, arraySizeConstant, isPointer, isConst, isEnumType, isAtom, 
-                           isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct, isDoublePointer);
+                           isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct, isDoublePointer, countField);
     }
 
     @Override
@@ -330,6 +340,7 @@ public class StructField {
                 (isFlag ? ", isFlag" : "") +
                 (isStruct ? ", isStruct" : "") +
                 (isDoublePointer ? ", isDoublePointer" : "") +
+                (countField != null ? ", countField='" + countField + "'" : "") +
                 '}';
     }
 

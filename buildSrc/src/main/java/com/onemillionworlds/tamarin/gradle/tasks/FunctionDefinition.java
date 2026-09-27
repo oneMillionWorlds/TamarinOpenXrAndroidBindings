@@ -63,11 +63,14 @@ public class FunctionDefinition {
     }
 
     /**
-     * Often pointer fields come with a seperate parameter that lists how many items of that type
-     * the field contains. This finds that count method
+     * Pointer parameters usually come with a separate parameter that holds how many items the pointer points to (the
+     * "len" of the param in xr.xml). This finds that count parameter
      */
     public Optional<String> findCountParameterForPointerField(String parameterName){
-        return StructDefinition.findCountParameterForPointerField(parameterName, this::hasParameter);
+        return parameters.stream()
+                .filter(p -> p.getName().equals(parameterName))
+                .findFirst()
+                .flatMap(FunctionParameter::getCountParameter);
     }
 
     /**
@@ -89,6 +92,11 @@ public class FunctionDefinition {
         private final boolean isDoublePointer;
 
         private String extraDocumentation;
+
+        /**
+         * The parameter holding how many items this pointer parameter points to (the "len" of the param in xr.xml)
+         */
+        private String countParameter;
 
         public FunctionParameter(String type, String name, boolean isPointer, boolean isConst, boolean isEnumType, boolean isAtom, boolean isTypeDefInt, boolean isTypeDefLong, boolean isHandle, boolean isFlag, boolean isStructType, boolean isDoublePointer) {
             this.type = type;
@@ -260,12 +268,13 @@ public class FunctionDefinition {
                    isDoublePointer == that.isDoublePointer && 
                    Objects.equals(type, that.type) && 
                    Objects.equals(name, that.name) && 
-                   Objects.equals(extraDocumentation, that.extraDocumentation);
+                   Objects.equals(extraDocumentation, that.extraDocumentation) &&
+                   Objects.equals(countParameter, that.countParameter);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct, isDoublePointer, extraDocumentation);
+            return Objects.hash(type, name, isPointer, isConst, isEnumType, isAtom, isTypeDefInt, isTypeDefLong, isHandle, isFlag, isStruct, isDoublePointer, extraDocumentation, countParameter);
         }
 
         @Override
@@ -281,6 +290,7 @@ public class FunctionDefinition {
                 (isStruct ? " isStruct" : "") +
                 (isEnumType ? " isEnumType" : "") +
                 (isDoublePointer ? " isDoublePointer" : "") +
+                (countParameter != null ? " countParameter=" + countParameter : "") +
                 "]" + (extraDocumentation != null ? " " + extraDocumentation : "") + " ;";
         }
 
@@ -290,6 +300,15 @@ public class FunctionDefinition {
 
         public FunctionParameter setExtraDocumentation(String extraDocumentation) {
             this.extraDocumentation = extraDocumentation;
+            return this;
+        }
+
+        public Optional<String> getCountParameter() {
+            return Optional.ofNullable(countParameter);
+        }
+
+        public FunctionParameter setCountParameter(String countParameter) {
+            this.countParameter = countParameter;
             return this;
         }
     }

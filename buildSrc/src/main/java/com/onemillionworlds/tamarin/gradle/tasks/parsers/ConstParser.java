@@ -1,31 +1,8 @@
 package com.onemillionworlds.tamarin.gradle.tasks.parsers;
 
 import java.util.Collection;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ConstParser {
-
-    public static Pattern constPattern = Pattern.compile(
-            "static\\s+const\\s+" +     // Match "static const" with possible whitespace
-                    "([A-Za-z][A-Za-z0-9_]*)\\s+" +  // Type name (starts with letter, followed by letters/numbers/underscore)
-                    "([A-Za-z][A-Za-z0-9_]*)\\s*" +  // Variable name
-                    "=\\s*" +                    // Equals sign with optional whitespace
-                    "(.+);"                      // Value up to semicolon
-    );
-
-    public static Optional<Const> parseConst(String line){
-        Matcher constMatcher = constPattern.matcher(line);
-
-        if (constMatcher.find()) {
-            String type = constMatcher.group(1);
-            String name = constMatcher.group(2);
-            String value = constMatcher.group(3).trim();
-            return Optional.of(new Const(type, name, value));
-        }
-        return Optional.empty();
-    }
 
     public static class Const{
         public final String type;

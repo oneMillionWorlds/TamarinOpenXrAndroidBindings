@@ -10,10 +10,12 @@ to crash. For this reason java 17 is used instead (and is what CI uses)
 Almost everything in the public API is generated. The `buildSrc` module contains a Gradle plugin whose `ParseOpenXr`
 task (registered in android-native/build.gradle as `parseOpenXrFile`) runs before compilation and:
 
-1. Parses the OpenXR headers (see below) line by line, with `#ifdef`s resolved for Android + OpenGL ES
-   (`ParseOpenXr.STANDARD_DEFS`)
-2. Enriches the parsed structs with information from `xr.xml` (parent structs), and uses its `<feature>` blocks to
-   decide which functions are core (called directly) and which are extensions (called through a function pointer)
+1. Reads the OpenXR registry, `xr.xml` (see below). What gets generated, and in what order, follows the same rules
+   the Khronos generator uses to write `openxr.h`/`openxr_platform.h` from `xr.xml`, with platform/graphics API
+   specific parts only included for Android + OpenGL ES (`ParseOpenXr.ENABLED_PROTECTS`). Struct fields, count fields
+   (`len`), struct types (`values`), parent structs and so on all come from the registry markup
+2. Uses its `<feature>` blocks to decide which functions are core (called directly) and which are extensions (called
+   through a function pointer)
 3. Writes the Java API (`XR10`, `XR10Constants`, the structs, `enums` and `handles` packages) to
    `android-native/src/main/generated/java` and the C JNI wrapper to
    `android-native/src/main/generated/native/src/com_onemillionworlds_tamarin_openxrbindings_XR10.c`
@@ -40,13 +42,13 @@ debug messenger callback into Java, etc.).
 
 ## OpenXR headers and xr.xml
 
-Neither the OpenXR headers nor the registry (`xr.xml`) are checked in. Both are taken at the same version as the OpenXR
+Neither the OpenXR headers nor the registry (`xr.xml`) are checked in. The code generator only uses `xr.xml`; the
+headers are only used to compile the C. Both are taken at the same version as the OpenXR
 loader (`openxr-loader` in gradle/libs.versions.toml), so the generated API, the headers our C compiles against and the
 loader it runs against always agree. That version (currently 1.1.63) is the version of the API this library exposes.
 
 - The headers come from the loader AAR itself (`prefab/modules/headers/include/openxr`). CMake gets them through
-  prefab (`OpenXR::openxr_loader` exports `OpenXR::headers`), and the `extractOpenXrHeaders` task unzips the same files
-  to `android-native/build/openxrSpec/include` for the code generator
+  prefab (`OpenXR::openxr_loader` exports `OpenXR::headers`)
 - `xr.xml` is downloaded by the `downloadXrXml` task from the matching `release-<version>` tag of
   [OpenXR-SDK-Source](https://github.com/KhronosGroup/OpenXR-SDK-Source) to `android-native/build/openxrSpec/xr.xml`.
   It is checked against `xrXmlSha256` in android-native/build.gradle, so bumping the loader means updating that

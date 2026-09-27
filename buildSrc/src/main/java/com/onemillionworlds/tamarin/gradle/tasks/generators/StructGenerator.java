@@ -2,7 +2,6 @@ package com.onemillionworlds.tamarin.gradle.tasks.generators;
 
 import com.onemillionworlds.tamarin.gradle.tasks.StructDefinition;
 import com.onemillionworlds.tamarin.gradle.tasks.StructField;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.StructParser;
 import org.gradle.api.logging.Logger;
 
 import java.io.BufferedWriter;
@@ -250,14 +249,11 @@ public class StructGenerator extends FileGenerator {
             writer.append(generateFieldSetter(struct, field));
         }
 
-        // Add type$Default method if the struct has a type field
-        boolean hasTypeField = struct.getFields().stream()
-                .anyMatch(field -> field.getName().equals("type"));
-        if (hasTypeField && struct.canBeItsOwnDefault()) {
-            String typeConstant = StructParser.createXrStructureTypeEnumValueForStruct(struct.getName());
+        // Add type$Default method if the struct has its own XrStructureType
+        struct.getXrStructureTypeEnumValue().ifPresent(typeConstant -> {
             writer.append("    /** Sets the specified value to the {@code type} field. */\n");
             writer.append("    public " + struct.getName() + " type$Default() { return type(XrStructureType." + typeConstant + "); }\n");
-        }
+        });
 
         writer.append("\n");
 

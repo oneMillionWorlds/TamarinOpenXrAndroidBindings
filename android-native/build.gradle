@@ -105,40 +105,14 @@ tasks.withType(JavaCompile) {
 // Configure the CreateStructs task
 def generatedOutputDir = file("${project.projectDir}/src/main/generated/java/com/onemillionworlds/tamarin/openxrbindings")
 def generatedCOutputDir = file("${project.projectDir}/src/main/generated/native/src")
-// The OpenXR spec inputs (headers and xr.xml) are not vendored. They are both taken at the same version as the loader
-// (openxr-loader in gradle/libs.versions.toml) so the generated API, the headers the C compiles against and the runtime
-// loader always agree. The headers come from the loader AAR (the same ones CMake gets via prefab's OpenXR::headers),
-// xr.xml is downloaded from the matching Khronos release tag
+// The OpenXR registry (xr.xml), which all the Java and C bindings are generated from, is not vendored. It is
+// downloaded from the Khronos release tag matching the loader version (openxr-loader in gradle/libs.versions.toml) so
+// the generated API, the headers the C compiles against (from the loader AAR via prefab) and the runtime loader
+// always agree
 def openxrVersion = libs.versions.openxr.loader.get()
 // SHA-256 of xr.xml at release-${openxrVersion}. Must be updated whenever openxr-loader is bumped
 def xrXmlSha256 = 'e9b6b0bb9e5100c56467ec80ae30b78ff36b4dcc8a332c269fa5e3e8429ed0aa'
 def openxrSpecDir = layout.buildDirectory.dir("openxrSpec")
-
-configurations {
-    openxrLoaderAar {
-        canBeConsumed = false
-        canBeResolved = true
-        transitive = false
-    }
-}
-
-dependencies {
-    openxrLoaderAar(libs.openxr.loader) {
-        artifact {
-            type = 'aar'
-        }
-    }
-}
-
-def extractOpenXrHeaders = tasks.register('extractOpenXrHeaders', Sync) {
-    description = 'Extracts the OpenXR headers from the OpenXR loader AAR'
-    from({ zipTree(configurations.openxrLoaderAar.singleFile) }) {
-        include 'prefab/modules/headers/include/openxr/**'
-        eachFile { it.path = it.path.replaceFirst('^prefab/modules/headers/include/', '') }
-        includeEmptyDirs = false
-    }
-    into openxrSpecDir.map { it.dir('include') }
-}
 
 def downloadXrXml = tasks.register('downloadXrXml') {
     description = 'Downloads the OpenXR registry (xr.xml) matching the OpenXR loader version'
@@ -167,10 +141,7 @@ task createGeneratedDirs {
 }
 
 task parseOpenXrFile(type: ParseOpenXr) {
-    dependsOn createGeneratedDirs, extractOpenXrHeaders, downloadXrXml
-    headerFiles.from(
-            openxrSpecDir.map { it.file('include/openxr/openxr.h') },
-            openxrSpecDir.map { it.file('include/openxr/openxr_platform.h') })
+    dependsOn createGeneratedDirs, downloadXrXml
     xrXml = openxrSpecDir.map { it.file('xr.xml') }
     outputDir = generatedOutputDir
     cOutputDir = generatedCOutputDir

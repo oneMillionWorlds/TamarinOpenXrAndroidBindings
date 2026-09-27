@@ -1,30 +1,17 @@
 package com.onemillionworlds.tamarin.gradle.tasks;
 
-import com.onemillionworlds.tamarin.gradle.XmlHelper;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.ConstantsGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.EnumGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.HandleGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.StructGenerator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.X10Generator;
 import com.onemillionworlds.tamarin.gradle.tasks.generators.X10CGenerator;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.AtomParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.ConstParser;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.DefinePasser;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.EnumParser;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.FlagsParser;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.FunctionParser;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.HandleParser;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.IntTypeDefPasser;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.LongTypeDefPasser;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.StructParser;
 import com.onemillionworlds.tamarin.gradle.tasks.parsers.XmlFeatureParser;
-import com.onemillionworlds.tamarin.gradle.tasks.parsers.XmlStructParser;
-import com.onemillionworlds.tamarin.gradle.tasks.utility.IfDefParser;
+import com.onemillionworlds.tamarin.gradle.tasks.parsers.XmlRegistryParser;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.w3c.dom.Document;
@@ -34,44 +21,43 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
-import java.util.regex.Matcher;
+import java.util.Set;
+import java.util.stream.Stream;
 
 /**
- * Gradle task to parse OpenXR header files and generate Java classes for constants and structs.
+ * Gradle task to parse the OpenXR registry (xr.xml) and generate Java classes for constants, enums, handles and
+ * structs, the XR10 bindings and their JNI C implementation.
  */
-
-
 public class ParseOpenXr extends DefaultTask {
 
-    public static List<String> STANDARD_DEFS = List.of("XR_EXTENSION_PROTOTYPES", "XR_USE_PLATFORM_ANDROID", "XR_USE_GRAPHICS_API_OPENGL_ES");
+    /**
+     * Platform/graphics API specific extensions (and types) are only generated if their "protect" define is one of
+     * these; everything else (e.g. Vulkan, D3D, Windows) is dropped
+     */
+    public static final List<String> ENABLED_PROTECTS = List.of("XR_USE_PLATFORM_ANDROID", "XR_USE_GRAPHICS_API_OPENGL_ES");
 
     /**
-     * These are extra handle types not defined in the headers unfortunately
+     * Defined in the generated C before including the OpenXR headers, so they declare the same things that were
+     * generated (including the extension function prototypes)
+     */
+    public static final List<String> STANDARD_DEFS = Stream.concat(Stream.of("XR_EXTENSION_PROTOTYPES"), ENABLED_PROTECTS.stream()).toList();
+
+    /**
+     * These are extra handle types not defined in xr.xml (they are external EGL types)
      */
     private static final List<String> HANDLES_EXTRA = List.of("EGLDisplay", "EGLConfig", "EGLContext");
 
     private static final List<String> HAND_WRITTEN_ENUMS = List.of("EGLenum");
 
-    private final ConfigurableFileCollection headerFiles = getProject().files();
-
     private final RegularFileProperty xrXml = getProject().getObjects().fileProperty();
     private final RegularFileProperty outputDir = getProject().getObjects().fileProperty();
     private final RegularFileProperty cOutputDir = getProject().getObjects().fileProperty();
-
-    @InputFiles
-    public ConfigurableFileCollection getHeaderFiles() {
-        return headerFiles;
-    }
 
     @InputFile
     public RegularFileProperty getXrXml() {
@@ -90,7 +76,7 @@ public class ParseOpenXr extends DefaultTask {
 
     /**
      * Parses an XML file and returns a Document object that can be traversed.
-     * 
+     *
      * @param xmlFile The XML file to parse
      * @return A Document object representing the parsed XML
      * @throws IOException If there is an error reading the file
@@ -110,21 +96,13 @@ public class ParseOpenXr extends DefaultTask {
 
     @TaskAction
     public void execute() throws IOException {
-
-        // we probably should be using the xrXmlFile for everything but started using the c header file
-        // try to get new stuff from xrXmlFile and migrate where possible
         File xrXmlFile = xrXml.getAsFile().get();
 
-        // Parse the XML file
         Document xrXmlDocument = parseXmlFile(xrXmlFile);
         getLogger().lifecycle("Successfully parsed XML file: {}", xrXmlFile.getAbsolutePath());
 
-        // Create an XML helper for traversing the document
-        List<Element> types = XmlHelper.getElements(XmlHelper.getElement(xrXmlDocument.getDocumentElement(), "types").orElseThrow(), "type");
-        Map<String, XmlStructParser.XmlStruct> xmlStructs = XmlStructParser.parseStructs(types);
-        Set<String> coreCommands = XmlFeatureParser.parseCoreCommands(xrXmlDocument.getDocumentElement());
-
-        getLogger().lifecycle("Found XML structs: {}", xmlStructs.size());
+        Element registryRoot = xrXmlDocument.getDocumentElement();
+        Set<String> coreCommands = XmlFeatureParser.parseCoreCommands(registryRoot);
 
         File output = outputDir.getAsFile().get();
         File cOutput = null;
@@ -144,72 +122,44 @@ public class ParseOpenXr extends DefaultTask {
             getLogger().lifecycle("Generated C output directory: {}", cOutput.getAbsolutePath());
         }
 
-        // Parse the header files
-        Map<String, ConstParser.Const> constants = new LinkedHashMap<>();
-        List<StructDefinition> structs = new ArrayList<>();
-        List<EnumDefinition> enums = new ArrayList<>();
+        XmlRegistryParser registry = XmlRegistryParser.parse(registryRoot, ENABLED_PROTECTS, HANDLES_EXTRA, HAND_WRITTEN_ENUMS);
+
+        Map<String, ConstParser.Const> constants = registry.constants;
+        List<StructDefinition> structs = registry.structs;
+        List<EnumDefinition> enums = registry.enums;
+
         List<FunctionDefinition> functions = new ArrayList<>();
-        List<String> atoms = new ArrayList<>();
-        List<String> intTypedefs = new ArrayList<>();
-        List<String> longTypedefs = new ArrayList<>();
-        List<String> handles = new ArrayList<>(HANDLES_EXTRA);
-        List<String> flags = new ArrayList<>();
-
-
-        for (File header : headerFiles) {
-            getLogger().lifecycle("Pasring header {}", header.getAbsolutePath());
-            parseHeaderFile(header, constants, structs, enums, functions, atoms, intTypedefs, longTypedefs, handles, flags);
+        for (FunctionDefinition functionDefinition : registry.functions) {
+            if(functionDefinition.hasADoublePointer()){
+                // these double pointers are a pain to generate for and we don't plan to use them anyway
+                getLogger().lifecycle("Function {} has a double pointer, skipping", functionDefinition.getName());
+            } else if(functionDefinition.getName().endsWith("META") || functionDefinition.getName().endsWith("METAFunc")){
+                // these meta methods seem to fail to compile and we aren't going to use them anyway
+                getLogger().lifecycle("Skipping META function {}", functionDefinition.getName());
+            } else {
+                functions.add(functionDefinition);
+            }
         }
 
         addEnumValuesUsedAsArraySizes(structs, enums, constants);
 
         Map<String, List<String>> parentToChildren = new LinkedHashMap<>();
-
         for (StructDefinition struct : structs) {
-            XmlStructParser.XmlStruct xmlStruct = xmlStructs.get(struct.getName());
-            if (xmlStruct != null) {
-                xmlStruct.enrich(struct);
-            } else {
-                throw new RuntimeException("No XML information found for struct:"+ struct.getName());
-            }
-
-            struct.getBaseHeader().ifPresent(baseHeader -> {
-                parentToChildren.computeIfAbsent(baseHeader, k -> new ArrayList<>())
-                        .add(struct.getName());
-            });
+            struct.getBaseHeader().ifPresent(baseHeader -> parentToChildren.computeIfAbsent(baseHeader, k -> new ArrayList<>())
+                    .add(struct.getName()));
         }
-
         for (StructDefinition struct : structs) {
             if(parentToChildren.containsKey(struct.getName())) {
                 struct.setChildren(parentToChildren.get(struct.getName()));
             }
         }
 
-        // Log the parsed int and long typedefs
-        getLogger().lifecycle("Found {} int typedefs:", intTypedefs.size());
-        for (String intTypedef : intTypedefs) {
-            getLogger().lifecycle("  {}", intTypedef);
-        }
-
-        getLogger().lifecycle("Found {} long typedefs:", longTypedefs.size());
-        for (String longTypedef : longTypedefs) {
-            getLogger().lifecycle("  {}", longTypedef);
-        }
-
-        // Log the parsed handles
-        getLogger().lifecycle("Found {} handles:", handles.size());
-        for (String handle : handles) {
-            getLogger().lifecycle("  {}", handle);
-        }
-
-        // Log the parsed flags
-        getLogger().lifecycle("Found {} flags:", flags.size());
-        for (String flag : flags) {
-            getLogger().lifecycle("  {}", flag);
-        }
+        getLogger().lifecycle("Found {} structs, {} enums, {} functions, {} handles, {} flags, {} int typedefs, {} long typedefs",
+                structs.size(), enums.size(), functions.size(), registry.handles.size(), registry.flags.size(),
+                registry.intTypedefs.size(), registry.longTypedefs.size());
 
         // Generate XR10Constants.java
-        new ConstantsGenerator(getLogger(), constants, intTypedefs, longTypedefs).generate(output);
+        new ConstantsGenerator(getLogger(), constants, registry.intTypedefs, registry.longTypedefs).generate(output);
 
         // Generate enum classes
         for (EnumDefinition enumDef : enums) {
@@ -222,10 +172,8 @@ public class ParseOpenXr extends DefaultTask {
         }
 
         // Generate handle classes
-        for (String handle : handles) {
-            if(!handle.equals("object")) {
-                new HandleGenerator(getLogger(), handle).generate(output);
-            }
+        for (String handle : registry.handles) {
+            new HandleGenerator(getLogger(), handle).generate(output);
         }
 
         // Generate X10.java with method pairs
@@ -234,86 +182,6 @@ public class ParseOpenXr extends DefaultTask {
         // Generate C JNI implementation file
         if (cOutput != null) {
             new X10CGenerator(getLogger(), functions, coreCommands).generate(cOutput);
-        }
-    }
-
-    private void parseHeaderFile(File headerFile, Map<String, ConstParser.Const> constants, List<StructDefinition> structs, List<EnumDefinition> enums, List<FunctionDefinition> functions, List<String> atoms, List<String> intTypedefs, List<String> longTypedefs, List<String> handles, List<String> flags) throws IOException {
-
-        String parsedHeaderFile = IfDefParser.processIfDefs(Files.readString(headerFile.toPath()), STANDARD_DEFS);
-
-        try (BufferedReader reader = new BufferedReader(new StringReader(parsedHeaderFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Check if we're entering an enum
-
-                if(EnumParser.enumStartPattern.matcher(line).find()) {
-                    enums.add(EnumParser.parseEnum(reader, line));
-                }
-                // Check for function declarations
-                Matcher functionMatcher = FunctionParser.functionStartPattern.matcher(line);
-                if (functionMatcher.find()) {
-
-                    List<String> knownEnums = enums.stream().map(EnumDefinition::getName).toList();
-                    List<String> knownStructs = structs.stream().map(StructDefinition::getName).toList();
-
-                    FunctionDefinition functionDefinition = FunctionParser.parseFunction(reader, line, knownEnums, atoms, intTypedefs, longTypedefs, handles, flags, knownStructs);
-
-                    if(functionDefinition.hasADoublePointer()){
-                        // these double pointers are a pain to generate for and we don't plan to use them anyway
-                        getLogger().lifecycle("Function {} has a double pointer, skipping", functionDefinition.getName());
-                    } else if(functionDefinition.getName().endsWith("META") || functionDefinition.getName().endsWith("METAFunc")){
-                        // these meta methods seem to fail to compile and we aren't going to use them anyway
-                        getLogger().lifecycle("Skipping META function {}", functionDefinition.getName());
-                    } else {
-                        functions.add(functionDefinition);
-                    }
-
-                }
-
-                // Parse #define constants
-                Matcher defineMatcher = DefinePasser.definePattern.matcher(line);
-                if (defineMatcher.find()) {
-                    DefinePasser.parseDefine(line).ifPresent(define -> {
-                        String name = define.constantName;
-                        String value = define.constantValue;
-                        constants.put(name, ConstParser.Const.fromDefine(define));
-                    });
-                }
-
-                ConstParser.parseConst(line).ifPresent(newConst -> constants.put(newConst.name, newConst));
-
-                // Parse atom definitions
-                AtomParser.parseAtom(line).ifPresent(atoms::add);
-
-                // Parse int typedefs
-                IntTypeDefPasser.parseIntTypedef(line, intTypedefs).ifPresent(intTypedefs::add);
-
-                // Parse long typedefs
-                LongTypeDefPasser.parseLongTypedef(line, longTypedefs).ifPresent(longTypedefs::add);
-
-                // Parse handle definitions
-                HandleParser.parseHandle(line).ifPresent(handles::add);
-
-                // Parse flag definitions
-                FlagsParser.parseFlags(line).ifPresent(flags::add);
-
-                if(line.startsWith("typedef Xr")) {
-                    StructParser.parseStructAlias(line, structs, xrStructureTypeValues(enums)).ifPresent(structs::add);
-                }
-
-                if(StructParser.structStartPattern.matcher(line).find()) {
-                    List<String> knownEnums = new ArrayList<>(enums.size() + HAND_WRITTEN_ENUMS.size());
-                    knownEnums.addAll(enums.stream().map(EnumDefinition::getName).toList());
-                    knownEnums.addAll(HAND_WRITTEN_ENUMS);
-
-
-                    List<String> knownStructs = structs.stream().map(StructDefinition::getName).toList();
-
-                    List<String> xrStructureTypeValues = xrStructureTypeValues(enums);
-
-                    structs.add(StructParser.parseStruct(reader, line, knownEnums, atoms, intTypedefs, longTypedefs, handles, flags, knownStructs, xrStructureTypeValues));
-                }
-            }
         }
     }
 
@@ -341,14 +209,6 @@ public class ParseOpenXr extends DefaultTask {
                 }
             }
         }
-    }
-
-    private static List<String> xrStructureTypeValues(List<EnumDefinition> enums){
-        return enums.stream()
-                .filter(e -> e.getName().equals("XrStructureType"))
-                .flatMap(e -> e.getValues().stream())
-                .map(EnumDefinition.EnumValue::getName)
-                .toList();
     }
 
 }
