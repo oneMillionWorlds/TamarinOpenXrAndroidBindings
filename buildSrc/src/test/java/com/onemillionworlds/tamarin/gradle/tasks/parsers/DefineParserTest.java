@@ -31,5 +31,22 @@ public class DefineParserTest {
         assertEquals("4000", constant.value);
     }
 
+    @Test
+    void testParse_negativeNumber() {
+        String input = "#define XR_MIN_HAPTIC_DURATION -1";
+
+        ConstParser.Const constant = ConstParser.Const.fromDefine(DefinePasser.parseDefine(input).orElseThrow());
+
+        assertEquals("int", constant.type);
+        assertEquals("-1", constant.value);
+    }
+
+    @Test
+    void testParse_digitsInName() {
+        String input = "#define XR_BODY_JOINT_COUNT_2_BD 26";
+
+        assertEquals("XR_BODY_JOINT_COUNT_2_BD", DefinePasser.parseDefine(input).orElseThrow().constantName);
+    }
+
 
 }

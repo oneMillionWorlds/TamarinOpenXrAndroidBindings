@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class DefinePasser {
 
-    public static Pattern definePattern = Pattern.compile("#define\\s+(XR_[A-Z_]+)\\s+(.+)");
+    public static Pattern definePattern = Pattern.compile("#define\\s+(XR_[A-Za-z0-9_]+)\\s+(.+)");
 
     public static Optional<Define> parseDefine(String line){
         Matcher defineMatcher = definePattern.matcher(line);
@@ -15,7 +15,7 @@ public class DefinePasser {
             String name = defineMatcher.group(1);
             String value = defineMatcher.group(2).trim();
 
-            boolean isNumber = value.matches("^[0-9]+$");
+            boolean isNumber = value.matches("^-?[0-9]+$");
             boolean isQuotedString = value.matches("^\".*\"$");
             boolean isHex = value.startsWith("0x");
 

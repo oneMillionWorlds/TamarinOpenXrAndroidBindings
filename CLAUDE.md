@@ -12,7 +12,7 @@ Published as `com.onemillionworlds.tamarin:openxr-bindings-native` (version in `
 
 - `buildSrc/` — the code generator (a Gradle plugin, plain Java 17+, has its own JUnit tests)
   - `tasks/ParseOpenXr.java` — the Gradle task and entry point. Reads `xr.xml`, then runs every generator
-  - `tasks/parsers/` — `XmlRegistryParser` (builds the whole model from `xr.xml`), `XmlFeatureParser` (core vs extension commands), and `DefinePasser` / `ConstParser` (turn `#define`s and enum constants into `XR10Constants`)
+  - `tasks/parsers/` — `XmlRegistryParser` (builds the whole model from `xr.xml`), `XmlFeatureParser` (core vs extension commands), and `DefinePasser` (the C `#define` types, e.g. `XR_NULL_PATH`) / `ConstParser.Const` (an `XR10Constants` entry)
   - `tasks/StructDefinition`, `StructField`, `FunctionDefinition`, `EnumDefinition` — the intermediate model. Type mapping (C type → Java high-level / low-level / JNI type) lives mostly on `StructField` and `FunctionDefinition.FunctionParameter`
   - `tasks/generators/` — `StructGenerator` (largest), `X10Generator` + `WrapperFunctionGenerator` (Java `XR10`), `X10CGenerator` + `CWrapperFunctionGenerator` (JNI C), `EnumGenerator`, `HandleGenerator`, `ConstantsGenerator`
 - `android-native/` — the only published module (Android library)

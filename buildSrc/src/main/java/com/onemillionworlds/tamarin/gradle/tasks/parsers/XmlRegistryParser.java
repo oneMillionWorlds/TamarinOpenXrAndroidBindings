@@ -464,13 +464,7 @@ public class XmlRegistryParser {
         switch(declaration.kind){
             case DEFINE -> buildDefine(element);
             case BITMASK_VALUES -> buildBitmaskValues(name);
-            case CONSTANT -> {
-                String value = enumValueString(element, groupValues.getOrDefault(element.getAttribute("extends"), List.of()), false);
-                if(element.hasAttribute("type")){
-                    throw new RuntimeException("Typed constants are not supported: " + name);
-                }
-                addDefine("#define " + name + " " + value);
-            }
+            case CONSTANT -> buildConstant(name, element);
             case ENUM -> enums.add(buildEnum(name));
             case STRUCT -> buildStruct(name, element).ifPresent(structs::add);
             case COMMAND -> functions.add(buildFunction(name, element));
@@ -492,6 +486,33 @@ public class XmlRegistryParser {
         for(String line : text.split("\n")){
             addDefine(line);
         }
+    }
+
+    /**
+     * An API constant or an extension's constants (e.g. XR_MAX_PATH_LENGTH, XR_FB_passthrough_SPEC_VERSION,
+     * XR_FB_PASSTHROUGH_EXTENSION_NAME). These are always an integer, a string or an alias of another constant
+     */
+    private void buildConstant(String name, Element element){
+        if(element.hasAttribute("type")){
+            throw new RuntimeException("Typed constants are not supported: " + name);
+        }
+        // an alias refers to the constant it aliases (which is always declared first)
+        String value = enumValueString(element, List.of(), false);
+
+        Element resolved = element;
+        while(resolved.hasAttribute("alias")){
+            resolved = enumDict.get(resolved.getAttribute("alias"));
+        }
+        String resolvedValue = enumValueString(resolved, List.of(), false);
+        String javaType;
+        if(resolvedValue.matches("^\".*\"$")){
+            javaType = "String";
+        } else if(resolvedValue.matches("^-?[0-9]+$")){
+            javaType = "int";
+        } else{
+            throw new RuntimeException("Unexpected value " + resolvedValue + " for constant " + name);
+        }
+        constants.put(name, new ConstParser.Const(javaType, name, value));
     }
 
     private void addDefine(String line){

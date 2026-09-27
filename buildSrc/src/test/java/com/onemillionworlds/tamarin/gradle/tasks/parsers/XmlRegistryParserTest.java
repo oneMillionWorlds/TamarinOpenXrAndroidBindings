@@ -142,6 +142,8 @@ class XmlRegistryParserTest {
                         <require>
                             <enum value="1" name="XR_EXT_foo_SPEC_VERSION"/>
                             <enum value="&quot;XR_EXT_foo&quot;" name="XR_EXT_FOO_EXTENSION_NAME"/>
+                            <enum value="8" name="XR_FOO_POINT_COUNT_EXT"/>
+                            <enum name="XR_EXT_FOO_POINT_COUNT" alias="XR_FOO_POINT_COUNT_EXT"/>
                             <enum offset="0" extends="XrStructureType" name="XR_TYPE_FOO_CHILD"/>
                             <enum offset="1" extends="XrResult" dir="-" name="XR_ERROR_FOO_FAILED_EXT"/>
                             <enum bitpos="1" extends="XrInstanceCreateFlagBits" name="XR_INSTANCE_CREATE_FOO_BIT_EXT"/>
@@ -150,6 +152,7 @@ class XmlRegistryParserTest {
                     </extension>
                     <extension name="XR_KHR_foo" number="5" supported="openxr">
                         <require>
+                            <enum value="&quot;XR_KHR_foo2&quot;" name="XR_KHR_FOO2_EXTENSION_NAME"/>
                             <enum extends="XrStructureType" name="XR_TYPE_FOO_CHILD_KHR" alias="XR_TYPE_FOO_CHILD"/>
                             <type name="XrFooChildKHR"/>
                             <command name="xrEnumerateFoosKHR"/>
@@ -389,6 +392,17 @@ class XmlRegistryParserTest {
         // pulled in because a struct array is sized by it
         assertEquals("64", registry.constants.get("XR_MAX_FOO_NAME_SIZE").value);
         assertEquals("\"XR_EXT_foo\"", registry.constants.get("XR_EXT_FOO_EXTENSION_NAME").value);
+        assertEquals("String", registry.constants.get("XR_EXT_FOO_EXTENSION_NAME").type);
+        // names with lower case or digits are kept too
+        assertEquals("1", registry.constants.get("XR_EXT_foo_SPEC_VERSION").value);
+        assertEquals("int", registry.constants.get("XR_EXT_foo_SPEC_VERSION").type);
+        assertEquals("\"XR_KHR_foo2\"", registry.constants.get("XR_KHR_FOO2_EXTENSION_NAME").value);
+        // an alias refers to what it aliases (which is declared first)
+        ConstParser.Const alias = registry.constants.get("XR_EXT_FOO_POINT_COUNT");
+        assertEquals("int", alias.type);
+        assertEquals("XR_FOO_POINT_COUNT_EXT", alias.value);
+        List<String> constantNames = List.copyOf(registry.constants.keySet());
+        assertTrue(constantNames.indexOf("XR_FOO_POINT_COUNT_EXT") < constantNames.indexOf("XR_EXT_FOO_POINT_COUNT"));
 
         ConstParser.Const firstBit = registry.constants.get("XR_INSTANCE_CREATE_FIRST_BIT");
         assertEquals("XrInstanceCreateFlags", firstBit.type);
