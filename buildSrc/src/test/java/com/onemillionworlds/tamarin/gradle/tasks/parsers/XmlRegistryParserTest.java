@@ -270,16 +270,14 @@ class XmlRegistryParserTest {
 
         StructDefinition child = struct(registry, "XrFooChild");
         assertEquals(Optional.of("XR_TYPE_FOO_CHILD"), child.getXrStructureTypeEnumValue());
-        assertTrue(child.canBeItsOwnDefault());
         assertEquals(Optional.of("XrFooBaseHeader"), child.getBaseHeader());
 
         // no "values" on its type member, so it is abstract
         StructDefinition baseHeader = struct(registry, "XrFooBaseHeader");
         assertEquals(Optional.empty(), baseHeader.getXrStructureTypeEnumValue());
-        assertFalse(baseHeader.canBeItsOwnDefault());
 
         StructDefinition vector = struct(registry, "XrVector3f");
-        assertFalse(vector.canBeItsOwnDefault());
+        assertEquals(Optional.empty(), vector.getXrStructureTypeEnumValue());
     }
 
     @Test

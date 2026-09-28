@@ -13,11 +13,6 @@ public class StructDefinition {
     private final List<StructField> fields = new ArrayList<>();
 
     /**
-     * An abstract struct is one not listed in XrStructureType. Meaning that a struct cannot actually be set as having this type
-     */
-    private final boolean canBeItsOwnDefault;
-
-    /**
      * If this struct has a base header that it adds on to this records it
      */
     private Optional<String> baseHeader = Optional.empty();
@@ -25,6 +20,7 @@ public class StructDefinition {
     /**
      * If this struct has a type in the XrStructureType enum then this is the value of that enum.
      * I.e. when a base header has type() called on it it will return this value if it can be cast to this type.
+     * Abstract structs (e.g. base headers) and structs without a type member don't have one.
      */
     private Optional<String> xrStructureTypeEnumValue = Optional.empty();
 
@@ -33,9 +29,8 @@ public class StructDefinition {
      */
     private List<String> childTypes = new ArrayList<>();
 
-    public StructDefinition(String name, boolean canBeItsOwnDefault) {
+    public StructDefinition(String name) {
         this.name = name;
-        this.canBeItsOwnDefault = canBeItsOwnDefault;
     }
 
     public String getName() {
@@ -53,16 +48,12 @@ public class StructDefinition {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof StructDefinition that)) return false;
-        return Objects.equals(name, that.name) && Objects.equals(fields, that.fields) && Objects.equals(canBeItsOwnDefault, that.canBeItsOwnDefault);
-    }
-
-    public boolean canBeItsOwnDefault() {
-        return canBeItsOwnDefault;
+        return Objects.equals(name, that.name) && Objects.equals(fields, that.fields) && Objects.equals(xrStructureTypeEnumValue, that.xrStructureTypeEnumValue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, fields, canBeItsOwnDefault);
+        return Objects.hash(name, fields, xrStructureTypeEnumValue);
     }
 
     public boolean hasField(String fieldName){
@@ -114,7 +105,7 @@ public class StructDefinition {
         return "StructDefinition{" +
                 "name='" + name + "'\n" +
                 ", fields=\n" + fields.stream().map(f -> "  " + f + "\n").reduce(String::concat).orElse("") +
-                ", canBeItsOwnDefault=" + canBeItsOwnDefault +
+                ", xrStructureTypeEnumValue=" + xrStructureTypeEnumValue +
                 '}';
     }
 }

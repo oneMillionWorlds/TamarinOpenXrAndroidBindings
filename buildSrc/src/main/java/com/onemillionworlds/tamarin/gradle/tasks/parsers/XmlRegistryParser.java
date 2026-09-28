@@ -654,7 +654,7 @@ public class XmlRegistryParser {
                 .map(member -> member.getAttribute("values"))
                 .findFirst();
 
-        StructDefinition structDefinition = new StructDefinition(structName, xrStructureType.isPresent());
+        StructDefinition structDefinition = new StructDefinition(structName);
         xrStructureType.ifPresent(structDefinition::setXrStructureTypeEnumValue);
         XmlHelper.getAttribute(element, "parentstruct").ifPresent(structDefinition::setBaseHeader);
 
@@ -685,7 +685,7 @@ public class XmlRegistryParser {
                 .filter(s -> s.getName().equals(targetName))
                 .findFirst()
                 .map(target -> {
-                    StructDefinition alias = new StructDefinition(aliasName, target.canBeItsOwnDefault());
+                    StructDefinition alias = new StructDefinition(aliasName);
                     target.getFields().forEach(alias::addField);
                     target.getXrStructureTypeEnumValue().ifPresent(alias::setXrStructureTypeEnumValue);
                     return alias;

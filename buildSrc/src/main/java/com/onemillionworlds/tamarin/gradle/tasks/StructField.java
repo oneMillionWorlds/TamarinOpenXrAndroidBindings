@@ -201,10 +201,9 @@ public class StructField {
         if (type.equals("float")) return SIZE_4_BYTES;
         if (type.equals("double")) return SIZE_8_BYTES;
         if(type.equals("uint8_t")) return SIZE_1_BYTE;
-        if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) return SIZE_4_BYTES;
-        if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") || 
+        if (type.equals("uint32_t") || type.equals("int32_t") || isTypeDefInt) return SIZE_4_BYTES;
+        if (type.equals("uint64_t") || type.equals("int64_t") || 
             isHandle || isAtom || isFlag || isTypeDefLong) return SIZE_8_BYTES;
-        if (type.equals("XrStructureType")) return SIZE_4_BYTES;
 
 
         if(isStruct){
@@ -243,9 +242,9 @@ public class StructField {
             return type + ".Buffer";
         } else if (isPointer || type.startsWith("PFN")) {
             return "long";
-        } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
+        } else if (type.equals("uint32_t") || type.equals("int32_t") || isTypeDefInt) {
             return "int";
-        } else if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") || 
+        } else if (type.equals("uint64_t") || type.equals("int64_t") || 
                   isAtom || isFlag || isTypeDefLong) {
             return "long";
         } else if (isHandle) {
@@ -260,13 +259,6 @@ public class StructField {
             return "short";
         } else if (isStructByValue()) {
             return type;
-        } else if (type.equals("EGLDisplay") || type.equals("EGLConfig") || type.equals("EGLContext") || 
-                  type.equals("EGLenum")) {
-            // EGL types are pointers or enums on Android
-            return "long";
-        } else if (type.equals("jobject")) {
-            // JNI types
-            return "long";
         }
 
         throw new RuntimeException("Unknown Java type for field " + this);
@@ -288,9 +280,9 @@ public class StructField {
             return "memGetInt";
         } else if (isPointer || type.startsWith("PFN")) {
             return "memGetAddress";
-        } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
+        } else if (type.equals("uint32_t") || type.equals("int32_t") || isTypeDefInt) {
             return "memGetInt";
-        } else if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") || 
+        } else if (type.equals("uint64_t") || type.equals("int64_t") || 
                   isHandle || isAtom || isFlag || isTypeDefLong) {
             return "memGetLong";
         } else if (type.equals("float")) {
@@ -301,9 +293,6 @@ public class StructField {
             return "memGetShort";
         } else if (type.equals("uint8_t")) {
             return "memGetByte";
-        } else if (type.equals("EGLDisplay") || type.equals("EGLConfig") || type.equals("EGLContext")) {
-            // EGL types are pointers on Android
-            return "memGetAddress";
         }
         throw new RuntimeException("Unknown memory access method for field " + this);
     }
@@ -319,9 +308,9 @@ public class StructField {
             return "memPutInt";
         } else if (isPointer || type.startsWith("PFN")) {
             return "memPutAddress";
-        } else if (type.equals("uint32_t") || type.equals("int32_t") || type.equals("XrBool32") || isTypeDefInt) {
+        } else if (type.equals("uint32_t") || type.equals("int32_t") || isTypeDefInt) {
             return "memPutInt";
-        } else if (type.equals("uint64_t") || type.equals("int64_t") || type.equals("XrVersion") ||
+        } else if (type.equals("uint64_t") || type.equals("int64_t") ||
                 isHandle || isAtom || isFlag || isTypeDefLong) {
             return "memPutLong";
         } else if (type.equals("float")) {
@@ -332,9 +321,6 @@ public class StructField {
             return "memPutShort";
         } else if (type.equals("uint8_t")) {
             return "memPutByte";
-        } else if (type.equals("EGLDisplay") || type.equals("EGLConfig") || type.equals("EGLContext")) {
-            // EGL types are pointers on Android
-            return "memPutAddress";
         }
         throw new RuntimeException("Unknown memory set method for field " + this);
     }
