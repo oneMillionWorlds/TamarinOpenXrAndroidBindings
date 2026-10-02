@@ -24,11 +24,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * Gradle task to parse the OpenXR registry (xr.xml) and generate Java classes for constants, enums, handles and
@@ -37,23 +37,64 @@ import java.util.stream.Stream;
 public class ParseOpenXr extends DefaultTask {
 
     /**
+     * The platforms the native library is built for and the platform/graphics API "protect" defines enabled on each.
+     * xr.xml only makes the extensions (and types) it guards with a protect available where that is defined.
+     * <p>
+     * The Java API is the same everywhere so is generated for all of them (see {@link #ENABLED_PROTECTS}). The single
+     * generated C file defines the protects of the platform it is being compiled for (picked by the compiler's
+     * platform macro, in declaration order) and functions that need a protect that isn't defined there return
+     * XR_ERROR_FUNCTION_UNSUPPORTED.
+     * </p>
+     * <p>
+     * The external types these bring in (e.g. HDC) must be declared in native/include/tamarinPlatform.h and listed
+     * in {@link #EXTERNAL_TYPES}
+     * </p>
+     */
+    public enum NativePlatform {
+        // before LINUX, as __linux__ is also defined on Android
+        ANDROID("__ANDROID__", List.of("XR_USE_PLATFORM_ANDROID", "XR_USE_GRAPHICS_API_OPENGL_ES")),
+        WINDOWS("_WIN32", List.of("XR_USE_PLATFORM_WIN32", "XR_USE_GRAPHICS_API_OPENGL")),
+        LINUX("__linux__", List.of("XR_USE_PLATFORM_XLIB", "XR_USE_PLATFORM_XCB", "XR_USE_PLATFORM_WAYLAND",
+                "XR_USE_PLATFORM_EGL", "XR_USE_GRAPHICS_API_OPENGL"));
+
+        /**
+         * The C preprocessor macro that is defined when compiling for this platform
+         */
+        public final String compilerMacro;
+        public final List<String> protects;
+
+        NativePlatform(String compilerMacro, List<String> protects) {
+            this.compilerMacro = compilerMacro;
+            this.protects = protects;
+        }
+    }
+
+    /**
      * Platform/graphics API specific extensions (and types) are only generated if their "protect" define is one of
-     * these; everything else (e.g. Vulkan, D3D, Windows) is dropped
+     * these (the protects of every {@link NativePlatform}); everything else (e.g. Vulkan, D3D) is dropped
      */
-    public static final List<String> ENABLED_PROTECTS = List.of("XR_USE_PLATFORM_ANDROID", "XR_USE_GRAPHICS_API_OPENGL_ES");
+    public static final List<String> ENABLED_PROTECTS = Arrays.stream(NativePlatform.values())
+            .flatMap(platform -> platform.protects.stream())
+            .distinct()
+            .toList();
 
     /**
-     * Defined in the generated C before including the OpenXR headers, so they declare the same things that were
-     * generated (including the extension function prototypes)
+     * The types from outside OpenXR that the enabled protects bring in (declared for C in
+     * native/include/tamarinPlatform.h)
      */
-    public static final List<String> STANDARD_DEFS = Stream.concat(Stream.of("XR_EXTENSION_PROTOTYPES"), ENABLED_PROTECTS.stream()).toList();
-
-    /**
-     * These are extra handle types not defined in xr.xml (they are external EGL types)
-     */
-    private static final List<String> HANDLES_EXTRA = List.of("EGLDisplay", "EGLConfig", "EGLContext");
-
-    private static final List<String> HAND_WRITTEN_ENUMS = List.of("EGLenum");
+    private static final XmlRegistryParser.ExternalTypes EXTERNAL_TYPES = new XmlRegistryParser.ExternalTypes(
+            List.of(
+                    // XR_USE_PLATFORM_EGL / XR_USE_GRAPHICS_API_OPENGL_ES
+                    "EGLDisplay", "EGLConfig", "EGLContext",
+                    // XR_USE_PLATFORM_WIN32
+                    "HDC", "HGLRC",
+                    // XR_USE_PLATFORM_XLIB
+                    "GLXFBConfig", "GLXContext"),
+            // XR_USE_PLATFORM_XCB
+            List.of("xcb_visualid_t", "xcb_glx_fbconfig_t", "xcb_glx_drawable_t", "xcb_glx_context_t"),
+            // XR_USE_PLATFORM_XLIB (an X ID, which is an unsigned long; the bindings are 64 bit only)
+            List.of("GLXDrawable"),
+            List.of("EGLenum"));
 
     /**
      * Functions that can't work as a generated thin binding (neither the Java nor the C is generated). If needed they
@@ -135,7 +176,7 @@ public class ParseOpenXr extends DefaultTask {
             getLogger().lifecycle("Generated C output directory: {}", cOutput.getAbsolutePath());
         }
 
-        XmlRegistryParser registry = XmlRegistryParser.parse(registryRoot, ENABLED_PROTECTS, HANDLES_EXTRA, HAND_WRITTEN_ENUMS);
+        XmlRegistryParser registry = XmlRegistryParser.parse(registryRoot, ENABLED_PROTECTS, EXTERNAL_TYPES);
 
         Map<String, ConstParser.Const> constants = registry.constants;
         List<StructDefinition> structs = registry.structs;

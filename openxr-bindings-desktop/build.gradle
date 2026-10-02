@@ -1,0 +1,153 @@
+// The native library (openxrjni, built from native/CMakeLists.txt) for desktop, packaged in the jar as
+// natives/<platform>/<library> (where NativeLibraryLoader looks for it). The Java API is openxr-bindings-core
+//
+// The library for the machine Gradle is running on is built with CMake (which, with a C/C++ compiler, must be
+// installed). Libraries for other platforms (built elsewhere, e.g. by the other CI jobs) are added with
+// -PdesktopNativesDir=<dir containing <platform>/<library> directories>. Publishing requires every platform in
+// REQUIRED_PLATFORMS. Properties:
+//   -PskipDesktopNatives       don't build the library for this machine (e.g. no C compiler installed)
+//   -PdesktopNativesDir=<dir>  prebuilt libraries to include
+//   -PdesktopNativesPlatform   the platform the CMake build is for, if cross compiling (default: this machine's)
+//   -PdesktopCmakeArgs         extra arguments for the CMake configure (e.g. a generator or toolchain file)
+//   -Pcmake=<path>             the cmake executable (default: cmake on the PATH)
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+}
+
+group = "com.onemillionworlds.tamarin"
+version = project.version
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    withSourcesJar()
+    withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 11
+}
+
+def REQUIRED_PLATFORMS = ['windows-x64', 'linux-x64']
+
+// The OpenXR SDK source release the desktop loader is built from (and whose headers the C compiles against), the
+// same version as the Android loader and the xr.xml the bindings are generated from
+def openxrVersion = libs.versions.openxr.loader.get()
+def openxrSdkUrl = "https://github.com/KhronosGroup/OpenXR-SDK/archive/refs/tags/release-${openxrVersion}.tar.gz"
+// SHA-256 of that archive. Must be updated whenever openxr-loader is bumped
+def openxrSdkSha256 = '5b8dac0608f49498fe8e95f562fe6bcf0bc781e561f137348a8c251d06a88b6f'
+
+// the same naming as NativeLibraryLoader.desktopPlatform()
+static String hostPlatform() {
+    def osName = System.getProperty('os.name').toLowerCase(Locale.ROOT)
+    def os = osName.startsWith('windows') ? 'windows' : osName.startsWith('linux') ? 'linux' : osName.replace(' ', '')
+    def archName = System.getProperty('os.arch').toLowerCase(Locale.ROOT)
+    def arch = archName in ['amd64', 'x86_64'] ? 'x64' : archName in ['aarch64', 'arm64'] ? 'arm64' : archName
+    return "${os}-${arch}"
+}
+
+def nativesPlatform = (findProperty('desktopNativesPlatform') ?: hostPlatform()) as String
+def skipDesktopNatives = findProperty('skipDesktopNatives') != null && findProperty('skipDesktopNatives') != 'false'
+def prebuiltNativesDir = findProperty('desktopNativesDir')
+def cmakeExecutable = (findProperty('cmake') ?: 'cmake') as String
+def extraCmakeArgs = ((findProperty('desktopCmakeArgs') ?: '') as String).tokenize(' ')
+
+def cmakeBuildDir = layout.buildDirectory.dir("cmake/${nativesPlatform}")
+def builtNativesDir = layout.buildDirectory.dir("natives")
+
+def configureDesktopNatives = tasks.register('configureDesktopNatives', Exec) {
+    description = "Configures the CMake build of the ${nativesPlatform} native library"
+    dependsOn ':openxr-bindings-core:parseOpenXrFile'
+    def sourceDir = rootProject.file('native')
+    def outputDir = builtNativesDir.get().dir(nativesPlatform).asFile
+    inputs.file(new File(sourceDir, 'CMakeLists.txt'))
+    inputs.property('args', extraCmakeArgs)
+    outputs.dir(cmakeBuildDir)
+    executable cmakeExecutable
+    args(['-S', sourceDir.absolutePath, '-B', cmakeBuildDir.get().asFile.absolutePath,
+          '-DCMAKE_BUILD_TYPE=Release',
+          "-DOPENXR_SDK_URL=${openxrSdkUrl}",
+          "-DOPENXR_SDK_SHA256=${openxrSdkSha256}",
+          "-DTAMARIN_OUTPUT_DIR=${outputDir.absolutePath.replace('\\', '/')}"] + extraCmakeArgs)
+}
+
+def buildDesktopNatives = tasks.register('buildDesktopNatives', Exec) {
+    description = "Builds the ${nativesPlatform} native library with CMake"
+    dependsOn configureDesktopNatives
+    // everything CMake uses (the sources, the generated C, CMakeLists.txt and exports.map), not the JNI headers
+    inputs.files(fileTree(rootProject.file('native')) { exclude 'headers/**' })
+    inputs.property('args', extraCmakeArgs)
+    outputs.dir(builtNativesDir.map { it.dir(nativesPlatform) })
+    executable cmakeExecutable
+    args '--build', cmakeBuildDir.get().asFile.absolutePath, '--config', 'Release', '--target', 'openxrjni', '--parallel'
+}
+
+tasks.named('processResources', ProcessResources) {
+    if (!skipDesktopNatives) {
+        from(buildDesktopNatives) {
+            into "natives/${nativesPlatform}"
+            // only the library itself (not e.g. MSVC's .lib/.exp)
+            include '*.dll', '*.so'
+        }
+    }
+    if (prebuiltNativesDir != null) {
+        from(file(prebuiltNativesDir)) {
+            into 'natives'
+            include '*/*.dll', '*/*.so'
+        }
+    }
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+
+// Publishing a jar without every platform's library would give a runtime UnsatisfiedLinkError on those platforms
+def verifyAllDesktopNatives = tasks.register('verifyAllDesktopNatives') {
+    description = 'Checks the jar has the native library for every platform in REQUIRED_PLATFORMS'
+    def resourcesDir = tasks.named('processResources').map { it.destinationDir }
+    dependsOn 'processResources'
+    doLast {
+        def missing = REQUIRED_PLATFORMS.findAll { platform ->
+            def dir = new File(resourcesDir.get(), "natives/${platform}")
+            !dir.isDirectory() || dir.listFiles().length == 0
+        }
+        if (!missing.isEmpty()) {
+            throw new GradleException("The desktop jar has no native library for ${missing}. Build them on those " +
+                    "platforms and pass them with -PdesktopNativesDir (see openxr-bindings-desktop/build.gradle)")
+        }
+    }
+}
+tasks.withType(PublishToMavenRepository).configureEach {
+    dependsOn verifyAllDesktopNatives
+}
+
+dependencies {
+    // The Java API
+    api project(':openxr-bindings-core')
+
+    testImplementation libs.junit.jupiter.api
+    testRuntimeOnly libs.jupiter.junit.jupiter.engine
+    testRuntimeOnly libs.junit.platform.launcher
+}
+
+test {
+    useJUnitPlatform()
+    // the tests call into the native library for this machine, so need it built
+    onlyIf { !skipDesktopNatives && nativesPlatform == hostPlatform() }
+}
+
+ext.pomDescription = 'Native bindings for OpenXR on desktop (' + REQUIRED_PLATFORMS.join(', ') + '), use with openxr-bindings-core'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+apply from: rootProject.file('gradle/publishing.gradle')

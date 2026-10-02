@@ -8,6 +8,30 @@ import static org.junit.jupiter.api.Assertions.*;
 class CWrapperFunctionGeneratorTest {
 
     @Test
+    void generateUnsupportedCWrapperFunction() {
+        // on platforms without its protect the function still exists (with the same JNI parameters) but is unsupported
+        FunctionDefinition functionDefinition = new FunctionDefinition("xrConvertWin32PerformanceCounterToTimeKHR", "XrResult");
+        functionDefinition.setProtect("XR_USE_PLATFORM_WIN32");
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrInstance", "instance", false, false, false, false, false, false, true, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("LARGE_INTEGER", "performanceCounter", true, true, false, false, false, false, false, false, false, false));
+        functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("XrTime", "time", true, false, false, false, false, true, false, false, false, false));
+
+        String expectedValue = """
+                /*
+                 * xrConvertWin32PerformanceCounterToTimeKHR needs XR_USE_PLATFORM_WIN32, which isn't available on this platform
+                 */
+                JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_XR10_nxrConvertWin32PerformanceCounterToTimeKHR
+                  (JNIEnv *env, jclass cls, jlong instance, jlong performanceCounter, jlong time) {
+                    return XR_ERROR_FUNCTION_UNSUPPORTED;
+                }
+                """;
+
+        String actualValue = CWrapperFunctionGenerator.generateUnsupportedCWrapperFunction(functionDefinition);
+
+        assertEquals(expectedValue.trim(), actualValue.trim());
+    }
+
+    @Test
     void generateCWrapperFunction_xrEnumerateApiLayerProperties() {
         FunctionDefinition functionDefinition = new FunctionDefinition("xrEnumerateApiLayerProperties", "XrResult");
         functionDefinition.addParameter(new FunctionDefinition.FunctionParameter("uint32_t", "propertyCapacityInput", false, false, false, false, false, false, false, false, false, false));

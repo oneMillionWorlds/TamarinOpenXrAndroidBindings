@@ -1,0 +1,11 @@
+/*
+ * Linux linker version script: only export the JNI functions. Everything else (in particular the statically linked
+ * OpenXR loader's xr* functions and the C++ runtime) stays private to openxrjni, so it can't clash with another
+ * OpenXR loader (e.g. LWJGL's) in the same process
+ */
+{
+    global:
+        Java_*;
+    local:
+        *;
+};

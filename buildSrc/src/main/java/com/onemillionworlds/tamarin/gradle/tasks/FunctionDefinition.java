@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Class representing a function definition.
@@ -13,6 +14,12 @@ public class FunctionDefinition {
     private final String returnType;
     private final List<FunctionParameter> parameters = new ArrayList<>();
 
+    /**
+     * The platform/graphics API define (e.g. XR_USE_PLATFORM_WIN32) the function is only available with (the
+     * "protect" of the extension that declares it in xr.xml). Null if it is available everywhere
+     */
+    private String protect;
+
     public FunctionDefinition(String name, String returnType) {
         this.name = name;
         this.returnType = returnType;
@@ -20,6 +27,14 @@ public class FunctionDefinition {
 
     public String getName() {
         return name;
+    }
+
+    public Optional<String> getProtect() {
+        return Optional.ofNullable(protect);
+    }
+
+    public void setProtect(String protect) {
+        this.protect = protect;
     }
 
     public String getReturnType() {
@@ -98,6 +113,13 @@ public class FunctionDefinition {
      * Class representing a function parameter.
      */
     public static class FunctionParameter {
+        /**
+         * External (platform) types that parameters point to as opaque objects, e.g. a Windows COM IUnknown*. There is
+         * nothing in the pointed to memory for Java to read or write so the parameter is just the (long) address, as
+         * in LWJGL
+         */
+        private static final Set<String> OPAQUE_OBJECT_TYPES = Set.of("IUnknown");
+
         private final String type;
         private final String name;
         private final boolean isPointer;
@@ -198,11 +220,29 @@ public class FunctionDefinition {
             return isStruct && !isPointer;
         }
 
+        /**
+         * A pointer to an opaque object (see OPAQUE_OBJECT_TYPES), passed from Java as the raw address (a long)
+         */
+        public boolean isOpaqueObjectPointer(){
+            return isPointer && !isDoublePointer && OPAQUE_OBJECT_TYPES.contains(type);
+        }
+
         public String getHighLevelJavaType(boolean hasAnAssociatedCountParameter) {
             if (isPointer || isStructByValue()) {
                 if(isDoublePointer){
                     // an out parameter the runtime writes a pointer into (e.g. to a buffer it owns)
                     return "PointerBufferView";
+                }
+                if(isOpaqueObjectPointer()){
+                    return "long";
+                }
+                if(type.equals("LARGE_INTEGER")){
+                    // a Windows 64 bit signed integer (a union of it and its two halves)
+                    return "LongBufferView";
+                }
+                if(type.equals("wchar_t")){
+                    // only used by Windows (XR_USE_PLATFORM_WIN32) functions, where it is a UTF-16 code unit
+                    return "ByteBufferView";
                 }
                 if(type.equals("PFN_xrVoidFunction")){
                     return "PointerBufferView";

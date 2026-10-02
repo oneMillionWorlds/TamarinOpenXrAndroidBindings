@@ -1,11 +1,11 @@
 ---
 name: codegen-change
-description: Change what the OpenXR code generator emits — generated struct classes, XR10 wrapper methods, the JNI C file, enums, handles or constants. Use for any bug or feature in generated code under android-native/src/main/generated, or any edit to buildSrc parsers/generators.
+description: Change what the OpenXR code generator emits — generated struct classes, XR10 wrapper methods, the JNI C file, enums, handles or constants. Use for any bug or feature in generated code under openxr-bindings-core/src/main/generated or native/generated, or any edit to buildSrc parsers/generators.
 ---
 
 # Changing generated code
 
-Generated files (`android-native/src/main/generated/**`) are git-ignored and rebuilt on every build. Never edit them;
+Generated files (`openxr-bindings-core/src/main/generated/**` and `native/generated/**`) are git-ignored and rebuilt on every build. Never edit them;
 find the generator that writes the line you want to change.
 
 ## 1. Locate the source of the output
@@ -14,11 +14,11 @@ find the generator that writes the line you want to change.
 | --- | --- |
 | `Xr*.java` struct classes (layout, getters/setters, `malloc`/`calloc`, `Buffer`, `PointerBuffer`, `toString`, validation) | `buildSrc/.../generators/StructGenerator.java`; field type mapping in `tasks/StructField.java`; parent/child + count-field lookup in `tasks/StructDefinition.java`; the fields themselves (types, `len` count fields, `values` struct type, `parentstruct`) are read from xr.xml by `parsers/XmlRegistryParser` |
 | `XR10.java` wrappers + `native` decls | `WrapperFunctionGenerator` (per function), `X10Generator` (file shell, skip list); Java types from `FunctionDefinition.FunctionParameter.getHighLevelJavaType/getLowLevelJavaType` |
-| `com_onemillionworlds_tamarin_openxrbindings_XR10.c` | `CWrapperFunctionGenerator` (per function, JNI signature + casts), `X10CGenerator` (includes, extension PFN table, special `nxrCreateInstance`) |
+| `com_onemillionworlds_tamarin_openxrbindings_XR10.c` | `CWrapperFunctionGenerator` (per function, JNI signature + casts), `X10CGenerator` (includes, the per-platform protect block, `#ifdef` guards + unsupported stubs for protected functions, extension PFN table, special `nxrCreateInstance`) |
 | `enums/*.java` | `EnumGenerator` (values, incl. extension values and `MAX_ENUM`, from `parsers/XmlRegistryParser.buildEnum`) |
-| `handles/*.java` | `HandleGenerator` (handles from `parsers/XmlRegistryParser` + `ParseOpenXr.HANDLES_EXTRA`) |
+| `handles/*.java` | `HandleGenerator` (handles from `parsers/XmlRegistryParser` + `ParseOpenXr.EXTERNAL_TYPES`) |
 | `XR10Constants.java` | `ConstantsGenerator` (from `XmlRegistryParser`: `#define` types via `DefinePasser`, enum constants, flag bits) |
-| Whether something is generated at all | `XmlRegistryParser` (which features/extensions/types are included, mirroring the Khronos header generator), `ParseOpenXr.ENABLED_PROTECTS` (platform/graphics API set), `ParseOpenXr.execute` (skips `ParseOpenXr.FUNCTIONS_TO_SKIP`, for both Java and C) |
+| Whether something is generated at all | `XmlRegistryParser` (which features/extensions/types are included, mirroring the Khronos header generator), `ParseOpenXr.NativePlatform` / `ENABLED_PROTECTS` (platform/graphics API sets), `ParseOpenXr.execute` (skips `ParseOpenXr.FUNCTIONS_TO_SKIP`, for both Java and C) |
 
 Grep the generated file for the exact text, then grep `buildSrc` for a distinctive literal from it.
 
@@ -26,7 +26,7 @@ Keep the Java wrapper (`WrapperFunctionGenerator`/`FunctionParameter`) and the C
 agreement: the Java `native` parameter types, the JNI signature comment, the C parameter types and the casts must all
 match, or the app crashes at runtime with `UnsatisfiedLinkError` or silently passes garbage. The JNI type of each
 parameter comes from one place, `FunctionParameter.getJniType()`, which both sides use; change it there rather than in
-one generator. `NativeSignaturesMatchTest` (android-native) checks every generated Java native against its C function
+one generator. `NativeSignaturesMatchTest` (openxr-bindings-core) checks every generated Java native against its C function
 and JNI signature comment. It can't check the casts inside the C, or what the C does with the values
 
 ## 2. Make the change
@@ -39,7 +39,7 @@ and JNI signature comment. It can't check the casts inside the C, or what the C 
 ## 3. Regenerate and inspect
 
 ```
-./gradlew :android-native:parseOpenXrFile
+./gradlew :openxr-bindings-core:parseOpenXrFile
 ```
 
 Look at a few affected generated files (and the C file if relevant). Generated files aren't in git, so to see a
@@ -49,10 +49,10 @@ before/after diff copy the relevant files to the scratchpad before regenerating.
 
 1. Update or add string-exact tests in `buildSrc/src/test/.../generators/` (and `parsers/` if parsing changed). Run:
    `./gradlew -p buildSrc test` (the root build does not run these)
-2. Run `./gradlew :android-native:testDebugUnitTest`
-   - `StructsAreGeneratedCorrectlyTest` fails if struct output changed. Read the failure diff, confirm every difference is intended, then `./gradlew :android-native:updateReferenceStructs` and review `git diff android-native/src/test/resources/referenceStructs`
+2. Run `./gradlew :openxr-bindings-core:test`
+   - `StructsAreGeneratedCorrectlyTest` fails if struct output changed. Read the failure diff, confirm every difference is intended, then `./gradlew :openxr-bindings-core:updateReferenceStructs` and review `git diff openxr-bindings-core/src/test/resources/referenceStructs`
    - If the change introduces behaviour for a struct shape not already covered, copy that generated struct to `src/test/resources/referenceStructs/<Name>_reference.java` and add a test method with a comment explaining why the struct is interesting (follow the existing ones)
    - `StructsHaveCorrectSizeAndAlignment` failing means `Layout`/field layout generation is wrong — fix the generator, never the CSV
-3. `./gradlew build` for the full thing including the native CMake build (catches C compile errors in the generated C)
+3. `./gradlew build` for the full thing including the native CMake builds (catches C compile errors in the generated C; the desktop one only for the machine you are on, and the C also has to compile for the other platforms, where different protects are defined)
 
-Tell the user that JVM tests don't exercise JNI; on-device verification happens in Tamarin.
+Tell the user that the JVM tests (apart from `DesktopNativeLibraryTest`) don't exercise JNI; on-device verification happens in Tamarin.

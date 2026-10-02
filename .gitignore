@@ -22,9 +22,10 @@ gradle-app.setting
 
 # Ignore Gradle build output directory
 build
-/android-native/src/native/headers/
-/android-native/.cxx/
+/native/headers/
+/openxr-bindings-android/.cxx/
 /lib/.cxx/
-/android-native/src/main/generated/
+/openxr-bindings-core/src/main/generated/
+/native/generated/
 /.idea/
 /local.properties

@@ -58,7 +58,7 @@ public class X10CGenerator extends FileGenerator {
         try (BufferedWriter writer = createWriter(outputFile)) {
             // Write file header
             writer.write("/*\n");
-            writer.write(" * OpenXR C JNI bindings for Android\n");
+            writer.write(" * OpenXR C JNI bindings\n");
             writer.write(" * This file is auto-generated. DO NOT EDIT.\n");
             writer.write(" */\n\n");
 
@@ -66,30 +66,40 @@ public class X10CGenerator extends FileGenerator {
             writer.write("#include <jni.h>\n");
             writer.write("#include <string.h>\n");
             writer.write("#include <stdlib.h>\n");
-            writer.write("#include <android/log.h>\n\n");
+            writer.write("#include <stdint.h>\n\n");
 
             // Define XR_EXTENSION_PROTOTYPES to enable extension function prototypes
-            for(String def : ParseOpenXr.STANDARD_DEFS){
-                writer.write("#define " + def + "\n");
+            writer.write("#define XR_EXTENSION_PROTOTYPES\n\n");
+
+            // The platform/graphics API parts of the OpenXR headers available on the platform being compiled for
+            writer.write("// The platform specific parts of OpenXR available on the platform being compiled for\n");
+            ParseOpenXr.NativePlatform[] platforms = ParseOpenXr.NativePlatform.values();
+            for (int i = 0; i < platforms.length; i++) {
+                writer.write((i == 0 ? "#if" : "#elif") + " defined(" + platforms[i].compilerMacro + ")\n");
+                for (String protect : platforms[i].protects) {
+                    writer.write("#define " + protect + "\n");
+                }
             }
+            writer.write("#else\n");
+            writer.write("#error \"Unsupported platform\"\n");
+            writer.write("#endif\n\n");
 
-            // Include manual EGL handle definitions needed by some platform structs
-            writer.write("#include \"../../../../native/include/tamarinManualDefines.h\"\n\n");
-
-            // Include OpenXR headers (from the loader AAR, on the include path via prefab's OpenXR::headers)
-            writer.write("#include <openxr/openxr.h>\n");
-            writer.write("#include <openxr/openxr_platform.h>\n");
-            // Define logging macros
+            // Declares the external (platform) types the OpenXR platform header needs and the logging macros
             writer.write("#define TAG \"XR10\"\n");
-            writer.write("#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)\n");
-            writer.write("#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)\n\n");
+            writer.write("#include \"tamarinPlatform.h\"\n\n");
 
-            // Declare function pointers for extension functions
+            // Include OpenXR headers (on Android from the loader AAR via prefab, on desktop from the OpenXR SDK)
+            writer.write("#include <openxr/openxr.h>\n");
+            writer.write("#include <openxr/openxr_platform.h>\n\n");
+
+            // Declare function pointers for extension functions (static, so they aren't exported from the library)
             if (!extensionFunctions.isEmpty()) {
                 writer.write("// Function pointers for extension functions\n");
                 for (FunctionDefinition function : extensionFunctions) {
                     String functionName = function.getName();
-                    writer.write("PFN_" + functionName + " " + functionName + "Func = NULL;\n");
+                    writeIfProtected(writer, function);
+                    writer.write("static PFN_" + functionName + " " + functionName + "Func = NULL;\n");
+                    writeEndIfProtected(writer, function);
                 }
                 writer.write("\n");
 
@@ -103,10 +113,12 @@ public class X10CGenerator extends FileGenerator {
 
                 for (FunctionDefinition function : extensionFunctions) {
                     String functionName = function.getName();
+                    writeIfProtected(writer, function);
                     writer.write("    xrGetInstanceProcAddr(instance, \"" + functionName + "\", (PFN_xrVoidFunction*)&" + functionName + "Func);\n");
                     writer.write("    if (" + functionName + "Func == NULL) {\n");
                     writer.write("        LOGI(\"Extension function " + functionName + " not available\");\n");
                     writer.write("    }\n");
+                    writeEndIfProtected(writer, function);
                 }
 
                 writer.write("}\n\n");
@@ -141,14 +153,33 @@ public class X10CGenerator extends FileGenerator {
                 }
             }
 
-            // Generate wrapper functions for extension OpenXR functions
+            // Generate wrapper functions for extension OpenXR functions. Ones only available on some platforms are
+            // stubs returning XR_ERROR_FUNCTION_UNSUPPORTED elsewhere (so the Java native method still links)
             for (FunctionDefinition function : extensionFunctions) {
+                writeIfProtected(writer, function);
                 writer.write(CWrapperFunctionGenerator.generateCWrapperFunction(function, true));
+                if (function.getProtect().isPresent()) {
+                    writer.write("#else\n");
+                    writer.write(CWrapperFunctionGenerator.generateUnsupportedCWrapperFunction(function));
+                }
+                writeEndIfProtected(writer, function);
                 writer.write("\n");
             }
         }
 
         logGeneration("com_onemillionworlds_tamarin_openxrbindings_XR10.c");
+    }
+
+    private static void writeIfProtected(BufferedWriter writer, FunctionDefinition function) throws IOException {
+        if (function.getProtect().isPresent()) {
+            writer.write("#ifdef " + function.getProtect().get() + "\n");
+        }
+    }
+
+    private static void writeEndIfProtected(BufferedWriter writer, FunctionDefinition function) throws IOException {
+        if (function.getProtect().isPresent()) {
+            writer.write("#endif\n");
+        }
     }
 
 

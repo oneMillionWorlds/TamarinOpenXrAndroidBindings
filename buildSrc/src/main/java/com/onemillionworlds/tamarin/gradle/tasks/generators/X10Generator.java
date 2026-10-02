@@ -27,7 +27,7 @@ public class X10Generator extends FileGenerator {
 
         try (BufferedWriter writer = createWriter(outputFile)) {
             writer.write("/*\n");
-            writer.write(" * OpenXR Java bindings for Android\n");
+            writer.write(" * OpenXR Java bindings\n");
             writer.write(" * This file is auto-generated. DO NOT EDIT.\n");
             writer.write(" */\n");
             writer.write("package com.onemillionworlds.tamarin.openxrbindings;\n\n");
@@ -46,7 +46,7 @@ public class X10Generator extends FileGenerator {
             writer.write("public class XR10 {\n\n");
 
             writer.write("    static {\n");
-            writer.write("        System.loadLibrary(\"openxrjni\");\n");
+            writer.write("        NativeLibraryLoader.load();\n");
             writer.write("    }\n\n");
 
             // Generate method pairs for each function

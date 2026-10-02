@@ -97,14 +97,28 @@ public class XmlRegistryParser {
     public final List<String> flags = new ArrayList<>();
 
     /**
+     * Types from outside OpenXR (platform/graphics API types like EGLDisplay or HDC) that xr.xml only names (as
+     * &lt;type requires="EGL/egl.h" name="EGLDisplay"/&gt;), saying what they are so fields and parameters of them
+     * can be bound. Pointers to external types don't need to be listed (they are just addresses)
+     *
+     * @param handles opaque pointer types (e.g. EGLDisplay, HDC)
+     * @param intTypedefs 32 bit integer types (e.g. xcb_window_t)
+     * @param longTypedefs 64 bit integer types (e.g. GLXDrawable, which is an unsigned long X ID)
+     * @param handWrittenEnums enums that are hand-written rather than generated (e.g. EGLenum)
+     */
+    public record ExternalTypes(Collection<String> handles, Collection<String> intTypedefs,
+                                Collection<String> longTypedefs, Collection<String> handWrittenEnums) {}
+
+    /**
      * @param registryRoot the root (registry) element of xr.xml
      * @param enabledProtects the "protect" defines that are enabled (e.g. XR_USE_PLATFORM_ANDROID)
-     * @param extraHandles handles that aren't in xr.xml (e.g. EGL types)
-     * @param handWrittenEnums enums that are hand-written rather than generated but can appear as struct fields
+     * @param externalTypes the types that aren't in xr.xml (e.g. EGL types)
      */
-    public static XmlRegistryParser parse(Element registryRoot, Collection<String> enabledProtects, Collection<String> extraHandles, Collection<String> handWrittenEnums){
-        XmlRegistryParser parser = new XmlRegistryParser(enabledProtects, handWrittenEnums);
-        parser.handles.addAll(extraHandles);
+    public static XmlRegistryParser parse(Element registryRoot, Collection<String> enabledProtects, ExternalTypes externalTypes){
+        XmlRegistryParser parser = new XmlRegistryParser(enabledProtects, externalTypes.handWrittenEnums());
+        parser.handles.addAll(externalTypes.handles());
+        parser.intTypedefs.addAll(externalTypes.intTypedefs());
+        parser.longTypedefs.addAll(externalTypes.longTypedefs());
         parser.parseTree(registryRoot);
         List<FeatureOutput> features = parser.generateFeatures(registryRoot);
         parser.buildModel(features);
@@ -405,12 +419,17 @@ public class XmlRegistryParser {
         features.stream().filter(f -> f.included() && !f.protect.isEmpty()).forEach(includedFeatures::add);
 
         List<Declaration> declarations = new ArrayList<>();
+        // commands are only available with the protect of the (extension) feature that declares them
+        Map<String, String> commandProtects = new HashMap<>();
         for(FeatureOutput feature : includedFeatures){
             for(Section section : Section.values()){
                 for(Declaration declaration : feature.sections.get(section)){
                     String protect = declaration.element.getAttribute("protect");
                     if(protect.isEmpty() || enabledProtects.contains(protect)){
                         declarations.add(declaration);
+                        if(declaration.kind == DeclarationKind.COMMAND && !feature.protect.isEmpty()){
+                            commandProtects.put(declaration.name, feature.protect);
+                        }
                     }
                 }
             }
@@ -422,6 +441,9 @@ public class XmlRegistryParser {
         }
         for(Declaration declaration : declarations){
             build(declaration);
+        }
+        for(FunctionDefinition function : functions){
+            function.setProtect(commandProtects.get(function.getName()));
         }
     }
 

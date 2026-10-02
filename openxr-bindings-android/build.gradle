@@ -1,0 +1,125 @@
+// The native library (openxrjni, built from native/CMakeLists.txt) for Android, plus the Android only Java
+// (AndroidThickC). The Java API itself is openxr-bindings-core
+
+plugins {
+    // Apply the Android library plugin
+    id 'com.android.library'
+    id 'maven-publish'
+    id 'signing'
+}
+
+group = "com.onemillionworlds.tamarin"
+version = project.version
+
+repositories {
+    // Use Maven Central for resolving dependencies.
+    mavenCentral()
+    google()
+}
+
+android {
+    namespace = 'com.onemillionworlds.tamarin.openxrbindings.android'
+    compileSdk = 34
+
+    // Specify the manifest file location
+    sourceSets {
+        main {
+            manifest.srcFile('AndroidManifest.xml')
+            java.srcDirs = ['src/main/java']
+        }
+    }
+
+    defaultConfig {
+        minSdk = 26
+        targetSdk = 34
+
+        // Configure CMake
+        externalNativeBuild {
+            cmake {
+                cppFlags ''
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+
+        // Specify which ABIs to build for
+        ndk {
+            abiFilters 'arm64-v8a' // other values  'armeabi-v7a', 'x86', 'x86_64'
+        }
+    }
+
+    // Lets CMake find_package() native libraries from AAR dependencies (the OpenXR loader)
+    buildFeatures {
+        prefab = true
+    }
+
+    // The loader .so comes to consumers transitively via the Khronos AAR (see dependencies). Don't also bundle the copy
+    // CMake links against, or consumers get two libopenxr_loader.so files and a duplicate native lib merge failure
+    packaging {
+        jniLibs {
+            excludes += ['**/libopenxr_loader.so']
+        }
+    }
+
+    // Link to CMakeLists.txt (shared with the desktop build)
+    externalNativeBuild {
+        cmake {
+            path = rootProject.file("native/CMakeLists.txt")
+        }
+    }
+
+    // Configure build types
+    buildTypes {
+        release {
+            minifyEnabled = false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // Configure Java compatibility
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+// Ensure native build (CMake/externalNativeBuild) runs after the C is generated (by openxr-bindings-core)
+// This guarantees the generated C file exists before CMake config/build tasks
+// Covers various AGP task names across versions
+tasks.matching { task ->
+    def n = task.name
+    return (n.startsWith("externalNativeBuild") ||
+           n.startsWith("configureCMake") ||
+           n.startsWith("buildCMake") ||
+           (n.startsWith("generate") && n.contains("CMake"))) && ! n.contains("clean")
+}.configureEach { task ->
+    task.dependsOn ':openxr-bindings-core:parseOpenXrFile'
+}
+
+dependencies {
+    // The Java API
+    api project(':openxr-bindings-core')
+
+    // The OpenXR loader (libopenxr_loader.so), exposed via prefab to our CMake build. Exported as api so consumers
+    // resolve a single copy of the loader (and get its manifest entries) even if they also depend on it directly
+    api libs.openxr.loader
+}
+
+ext.pomDescription = 'Native bindings for OpenXR on Android (arm64-v8a), use with openxr-bindings-core'
+
+afterEvaluate {
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.release
+            }
+        }
+    }
+}
+apply from: rootProject.file('gradle/publishing.gradle')

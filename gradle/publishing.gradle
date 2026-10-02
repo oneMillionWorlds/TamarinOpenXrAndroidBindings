@@ -1,0 +1,60 @@
+// Publishing config shared by every published module. Apply after the maven-publish and signing plugins; the module
+// creates a "mavenJava" publication (artifactId = the project name) and sets ext.pomDescription
+
+publishing {
+    publications.withType(MavenPublication).configureEach {
+        groupId = project.group
+        artifactId = project.name
+        version = project.version
+
+        pom {
+            name = "Tamarin OpenXR Bindings (${project.name})"
+            description = project.pomDescription
+            url = 'https://github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings'
+
+            licenses {
+                license {
+                    name = 'BSD 3-Clause License'
+                    url = 'https://opensource.org/licenses/BSD-3-Clause'
+                    distribution = 'repo'
+                }
+            }
+
+            scm {
+                url = 'https://github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings'
+                connection = 'scm:git:https://github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings.git'
+                developerConnection = 'scm:git:ssh://git@github.com/oneMillionWorlds/TamarinOpenXrAndroidBindings.git'
+                tag = 'HEAD'
+            }
+
+            developers {
+                developer {
+                    id = 'richard-tingle'
+                    name = 'Richard Tingle'
+                    organization = 'oneMillionWorlds'
+                    organizationUrl = 'https://github.com/oneMillionWorlds'
+                }
+            }
+        }
+    }
+    repositories {
+        // Local publishing for development/testing
+        mavenLocal()
+        // Local directory used to assemble a Central Portal bundle (staging area). Every module stages into the same
+        // (root) directory so they go up in one bundle (see prepareCentralBundle in the root build.gradle)
+        maven {
+            name = 'CentralPortalStaging'
+            url = rootProject.layout.buildDirectory.dir('central-portal-staging')
+        }
+    }
+}
+
+// Sign the publications if signing properties are present (afterEvaluate as Android creates its publication then)
+afterEvaluate {
+    signing {
+        def hasSigning = project.hasProperty('signing.keyId') || project.hasProperty('signingKey') || project.hasProperty('signing.secretKeyRingFile')
+        if (hasSigning) {
+            sign publishing.publications
+        }
+    }
+}

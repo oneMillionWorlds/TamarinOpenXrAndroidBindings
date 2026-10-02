@@ -94,7 +94,7 @@ public class WrapperFunctionGenerator {
                 writer.append("        if("+paramName+"!=null){" + paramName + ".setNoLongerNeedsToValidateAllMethodsCalled();}\n");
             }
 
-            if(isPointer || isStructByValue){
+            if((isPointer || isStructByValue) && !param.isOpaqueObjectPointer()){
                 writer.append("        long " + paramName + "Address = " + paramName + " == null ? MemoryUtil.NULL : " + paramName + ".address();\n");
             }
 
@@ -113,7 +113,10 @@ public class WrapperFunctionGenerator {
             boolean isEnum = param.isEnumType();
             boolean isHandle = param.isHandle();
 
-            if(isPointer || isStructByValue){
+            if(param.isOpaqueObjectPointer()){
+                // already the address
+                writer.append(paramName);
+            }else if(isPointer || isStructByValue){
                 writer.append(paramName + "Address");
             }else{
                 writer.append(paramName);

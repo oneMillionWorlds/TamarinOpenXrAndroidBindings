@@ -30,7 +30,7 @@ The CI workflow maps existing OSSRH secrets to these properties automatically.
 
 ### How it works
 
-1) Gradle stages the Maven publication into a local directory (no network upload).
+1) Gradle stages the Maven publications of all three modules (openxr-bindings-core, openxr-bindings-android and openxr-bindings-desktop) into one local directory, build/central-portal-staging (no network upload).
 2) Gradle zips that staged repository as build/central-bundle.zip.
 3) CI (or the provided script) uploads the bundle to the Central Publisher API with publishingType=USER_MANAGED.
 4) You complete the release in the Portal UI once validation passes.
@@ -40,12 +40,17 @@ The CI workflow maps existing OSSRH secrets to these properties automatically.
 - Ensure you have configured signing and Central credentials as above.
 - Stage and zip the bundle:
 
-      ./gradlew :android-native:prepareCentralBundle
+      ./gradlew prepareCentralBundle -PdesktopNativesDir=<dir with windows-x64/ and linux-x64/ libraries>
+
+  The desktop jar must contain the native library for every desktop platform (the build fails otherwise). Only the
+  one for the machine you are on is built locally, so the others have to be built on those platforms (e.g. taken from
+  a CI run) and passed in with `-PdesktopNativesDir` (a directory with `<platform>/<library>` in it, e.g.
+  `windows-x64/openxrjni.dll`). Add `-PskipDesktopNatives` if they are all prebuilt.
 
 - Upload the bundle with the helper script (provide credentials via env vars):
 
       CENTRAL_USERNAME=your-username CENTRAL_PASSWORD=your-password \
-      .github/scripts/upload_central.sh "android-native/build/central-bundle.zip"
+      .github/scripts/upload_central.sh "build/central-bundle.zip"
 
 On success, the script prints a Deployment ID. Visit https://central.sonatype.com/publishing/deployments to monitor and manually Publish when the deployment reaches VALIDATED state.
 
@@ -59,14 +64,10 @@ The workflow at .github/workflows/publish.yml has been updated to:
 - Build the project
 - Load signing keys from secrets
 - Provide Central credentials
-- Run `./gradlew :android-native:prepareCentralBundle`
-- Run `.github/scripts/upload_central.sh "android-native/build/central-bundle.zip"`
+- Run `./gradlew prepareCentralBundle -PdesktopNativesDir=...` (a separate Windows job builds the Windows desktop library; the Linux one is built by the release job itself)
+- Run `.github/scripts/upload_central.sh "build/central-bundle.zip"`
 
-No direct uploads to OSSRH occur anymore in CI.
-
-### Legacy OSSRH notes
-
-The previous OSSRH (SonaType) repository configuration remains in the Gradle file for local/manual experiments only, but the automated pipeline no longer uses it. Prefer the Central Portal going forward.
+No direct uploads to OSSRH occur anymore in CI (and the OSSRH repository configuration has been removed).
 
 ### Manual testing of validated bundles
 

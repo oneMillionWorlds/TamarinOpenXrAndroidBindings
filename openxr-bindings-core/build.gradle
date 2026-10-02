@@ -1,0 +1,183 @@
+import com.onemillionworlds.tamarin.gradle.tasks.ParseOpenXr
+
+// The Java API (the XR10 bindings, structs, enums, handles and constants generated from xr.xml, plus the hand-written
+// runtime). Platform independent; the native library comes from openxr-bindings-android or openxr-bindings-desktop
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+    id 'com.onemillionworlds.tamarin.createstructs'
+}
+
+group = "com.onemillionworlds.tamarin"
+version = project.version
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    // it runs on Android, so Java 11
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    withSourcesJar()
+    withJavadocJar()
+}
+
+def generatedJavaDir = file("src/main/generated/java")
+def generatedOutputDir = file("${generatedJavaDir}/com/onemillionworlds/tamarin/openxrbindings")
+// The generated C is compiled by native/CMakeLists.txt (for Android and desktop)
+def generatedCOutputDir = rootProject.file("native/generated")
+
+sourceSets {
+    main {
+        // Wire generated sources so any task consuming sources (compile, sourcesJar, javadoc, etc.)
+        // will automatically run parseOpenXrFile first via builtBy linkage.
+        java.srcDir(files(generatedJavaDir).builtBy('parseOpenXrFile'))
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 11
+    // Generate JNI header files (for reference, the C doesn't include them)
+    options.compilerArgs += ["-h", rootProject.file("native/headers").absolutePath]
+}
+
+tasks.withType(Javadoc).configureEach {
+    // the generated javadoc isn't strict enough for doclint
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+// The OpenXR registry (xr.xml), which all the Java and C bindings are generated from, is not vendored. It is
+// downloaded from the Khronos release tag matching the loader version (openxr-loader in gradle/libs.versions.toml) so
+// the generated API, the headers the C compiles against (from the loader AAR via prefab on Android, from the OpenXR
+// SDK on desktop) and the runtime loader always agree
+def openxrVersion = libs.versions.openxr.loader.get()
+// SHA-256 of xr.xml at release-${openxrVersion}. Must be updated whenever openxr-loader is bumped
+def xrXmlSha256 = 'e9b6b0bb9e5100c56467ec80ae30b78ff36b4dcc8a332c269fa5e3e8429ed0aa'
+def openxrSpecDir = layout.buildDirectory.dir("openxrSpec")
+
+def downloadXrXml = tasks.register('downloadXrXml') {
+    description = 'Downloads the OpenXR registry (xr.xml) matching the OpenXR loader version'
+    def url = "https://raw.githubusercontent.com/KhronosGroup/OpenXR-SDK-Source/release-${openxrVersion}/specification/registry/xr.xml"
+    def outputFile = openxrSpecDir.map { it.file('xr.xml') }
+    inputs.property('url', url)
+    inputs.property('sha256', xrXmlSha256)
+    outputs.file(outputFile)
+    doLast {
+        def bytes = new URL(url).openStream().withCloseable { it.bytes }
+        def actualSha256 = java.security.MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString()
+        if (actualSha256 != xrXmlSha256) {
+            throw new GradleException("xr.xml from ${url} has SHA-256 ${actualSha256} but ${xrXmlSha256} was expected. " +
+                    "If openxr-loader was bumped, review the new xr.xml and update xrXmlSha256 in openxr-bindings-core/build.gradle")
+        }
+        outputFile.get().asFile.bytes = bytes
+    }
+}
+
+// Create the output directories
+task createGeneratedDirs {
+    doLast {
+        generatedOutputDir.mkdirs()
+        generatedCOutputDir.mkdirs()
+    }
+}
+
+task parseOpenXrFile(type: ParseOpenXr) {
+    dependsOn createGeneratedDirs, downloadXrXml
+    xrXml = openxrSpecDir.map { it.file('xr.xml') }
+    outputDir = generatedOutputDir
+    cOutputDir = generatedCOutputDir
+}
+
+tasks.named('compileJava') {
+    dependsOn parseOpenXrFile
+}
+
+dependencies {
+    // This dependency is exported to consumers, that is to say found on their compile classpath.
+    api libs.commons.math3
+
+    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
+    implementation libs.guava
+
+    testImplementation libs.junit.jupiter.api
+    testRuntimeOnly libs.jupiter.junit.jupiter.engine
+    testRuntimeOnly libs.junit.platform.launcher
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// Task to update reference struct files with the current generated files
+// This task is not part of the normal build process and should be run explicitly
+// when you want to accept changes to the generated structs
+// Only updates existing reference files, never creates new ones
+task updateReferenceStructs {
+    description = 'Updates existing reference struct files with the current generated files'
+    group = 'Verification'
+    dependsOn parseOpenXrFile
+
+    doLast {
+        def referenceDir = file("src/test/resources/referenceStructs")
+
+        // Ensure reference directory exists
+        if (!referenceDir.exists()) {
+            referenceDir.mkdirs()
+        }
+
+        // Find all existing reference files
+        def existingReferenceFiles = referenceDir.listFiles().findAll {
+            it.name.endsWith("_reference.java")
+        }
+
+        println "Found ${existingReferenceFiles.size()} existing reference files"
+
+        // Count of updated files
+        def updatedCount = 0
+
+        // For each existing reference file, find the corresponding generated file and update it
+        existingReferenceFiles.each { referenceFile ->
+            def baseName = referenceFile.name.replace("_reference.java", "")
+            def generatedFile = new File(generatedOutputDir, "${baseName}.java")
+
+            if (generatedFile.exists()) {
+                referenceFile.text = generatedFile.text
+                updatedCount++
+                println "Updated reference file: ${referenceFile.name}"
+            } else {
+                println "Warning: Generated file not found for reference: ${referenceFile.name}"
+            }
+        }
+
+        println "Reference struct files update complete. Updated ${updatedCount} files."
+    }
+}
+
+ext.pomDescription = 'Java bindings for OpenXR (the platform independent API). Needs openxr-bindings-android or openxr-bindings-desktop for the native library'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+apply from: rootProject.file('gradle/publishing.gradle')
+
+// Ensure `gradlew clean` removes the generated sources (Java and C) and the JNI headers.
+// They will be recreated by `createGeneratedDirs`/`parseOpenXrFile` during the next build.
+tasks.register('cleanGenerated', Delete) {
+    delete file("src/main/generated")
+    delete generatedCOutputDir
+    delete rootProject.file("native/headers")
+}
+
+tasks.named('clean') {
+    dependsOn 'cleanGenerated'
+}
+
+// so `gradlew clean build` deletes the generated files before regenerating them (not after)
+[createGeneratedDirs, parseOpenXrFile].each { it.mustRunAfter 'cleanGenerated' }

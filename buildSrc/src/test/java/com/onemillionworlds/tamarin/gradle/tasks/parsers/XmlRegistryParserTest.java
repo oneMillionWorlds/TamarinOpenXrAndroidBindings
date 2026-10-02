@@ -181,7 +181,8 @@ class XmlRegistryParserTest {
         Element root = DocumentBuilderFactory.newInstance().newDocumentBuilder()
                 .parse(new InputSource(new StringReader(REGISTRY)))
                 .getDocumentElement();
-        return XmlRegistryParser.parse(root, List.of("XR_USE_PLATFORM_ANDROID"), List.of("EGLDisplay"), List.of());
+        return XmlRegistryParser.parse(root, List.of("XR_USE_PLATFORM_ANDROID"),
+                new XmlRegistryParser.ExternalTypes(List.of("EGLDisplay"), List.of("xcb_window_t"), List.of("GLXDrawable"), List.of()));
     }
 
     private static StructDefinition struct(XmlRegistryParser registry, String name){
@@ -205,8 +206,8 @@ class XmlRegistryParserTest {
         XmlRegistryParser registry = parse();
 
         assertEquals(List.of("XrPath"), registry.atoms);
-        assertEquals(List.of("XrBool32"), registry.intTypedefs);
-        assertEquals(List.of("XrFlags64", "XrInstanceCreateFlags"), registry.longTypedefs);
+        assertEquals(List.of("xcb_window_t", "XrBool32"), registry.intTypedefs);
+        assertEquals(List.of("GLXDrawable", "XrFlags64", "XrInstanceCreateFlags"), registry.longTypedefs);
         assertEquals(List.of("XrInstanceCreateFlags"), registry.flags);
         assertEquals(List.of("EGLDisplay", "XrInstance"), registry.handles);
     }
@@ -303,6 +304,17 @@ class XmlRegistryParserTest {
         List<String> functionNames = registry.functions.stream().map(FunctionDefinition::getName).toList();
         assertTrue(functionNames.contains("xrAndroidOnly"));
         assertFalse(functionNames.contains("xrWin32Only"));
+    }
+
+    @Test
+    void commandsKnowTheProtectOfTheirExtension() throws Exception {
+        XmlRegistryParser registry = parse();
+
+        FunctionDefinition androidOnly = registry.functions.stream().filter(f -> f.getName().equals("xrAndroidOnly")).findFirst().orElseThrow();
+        assertEquals(Optional.of("XR_USE_PLATFORM_ANDROID"), androidOnly.getProtect());
+
+        FunctionDefinition core = registry.functions.stream().filter(f -> f.getName().equals("xrEnumerateFoos")).findFirst().orElseThrow();
+        assertEquals(Optional.empty(), core.getProtect());
     }
 
     @Test

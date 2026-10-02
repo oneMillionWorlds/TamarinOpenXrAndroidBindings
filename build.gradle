@@ -1,0 +1,27 @@
+// --- Central Publisher API integration (USER_MANAGED) ---
+// Every published module stages its publication into build/central-portal-staging (see gradle/publishing.gradle),
+// which is zipped into one bundle so they are all released together
+
+def publishedModules = [':openxr-bindings-core', ':openxr-bindings-android', ':openxr-bindings-desktop']
+def centralPortalStagingDir = layout.buildDirectory.dir('central-portal-staging')
+
+tasks.register('publishToCentralPortalStaging') {
+    group = 'publishing'
+    description = 'Publishes every module to the local Central Portal staging directory.'
+    dependsOn publishedModules.collect { "${it}:publishMavenJavaPublicationToCentralPortalStagingRepository" }
+}
+
+tasks.register('zipCentralPortalBundle', Zip) {
+    group = 'publishing'
+    description = 'Zips the Central Portal staging directory into build/central-bundle.zip'
+    dependsOn 'publishToCentralPortalStaging'
+    from(centralPortalStagingDir)
+    archiveFileName = 'central-bundle.zip'
+    destinationDirectory = layout.buildDirectory
+}
+
+tasks.register('prepareCentralBundle') {
+    group = 'publishing'
+    description = 'Stages and zips artifacts ready for Central Publisher Portal upload (no network).'
+    dependsOn 'zipCentralPortalBundle'
+}

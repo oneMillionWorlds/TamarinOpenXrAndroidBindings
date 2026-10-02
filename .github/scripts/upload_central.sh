@@ -12,8 +12,8 @@ set -euo pipefail
 # Notes:
 # - This script does NOT build anything; it only performs the HTTP upload.
 # - The bundle can be prepared with:
-#       ./gradlew :android-native:prepareCentralBundle
-#   which places the zip at android-native/build/central-bundle.zip
+#       ./gradlew prepareCentralBundle
+#   which places the zip at build/central-bundle.zip
 
 BUNDLE_PATH="${1:-}"
 if [[ -z "$BUNDLE_PATH" ]]; then

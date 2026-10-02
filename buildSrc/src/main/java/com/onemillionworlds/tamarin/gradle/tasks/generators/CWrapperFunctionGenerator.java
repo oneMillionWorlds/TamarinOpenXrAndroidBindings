@@ -141,4 +141,27 @@ public class CWrapperFunctionGenerator {
             throw new RuntimeException("Error generating C wrapper function for " + function.getName() + ": " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Generates the JNI function for a function that isn't available on the platform being compiled for (its protect
+     * isn't defined there). It has the same signature as the real wrapper, so the Java native method still links, but
+     * always returns XR_ERROR_FUNCTION_UNSUPPORTED
+     */
+    public static String generateUnsupportedCWrapperFunction(FunctionDefinition function) {
+        StringBuilder functionString = new StringBuilder();
+        String functionName = function.getName();
+
+        functionString.append("/*\n");
+        functionString.append(" * " + functionName + " needs " + function.getProtect().orElse("") + ", which isn't available on this platform\n");
+        functionString.append(" */\n");
+        functionString.append("JNIEXPORT jint JNICALL Java_com_onemillionworlds_tamarin_openxrbindings_XR10_n" + functionName + "\n");
+        functionString.append("  (JNIEnv *env, jclass cls");
+        for (FunctionDefinition.FunctionParameter param : function.getParameters()) {
+            functionString.append(", " + param.getJniType().cType + " " + param.getName());
+        }
+        functionString.append(") {\n");
+        functionString.append("    return XR_ERROR_FUNCTION_UNSUPPORTED;\n");
+        functionString.append("}\n");
+        return functionString.toString();
+    }
 }

@@ -8,16 +8,21 @@ on:
     types: [submitted]
 jobs:
   build_and_test:
+    # Everything: the generator tests, the core (Java API) tests, the Android library and the Linux desktop library
+    # (whose tests call into the real native library)
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
-        distribution: 'adopt'
+        distribution: 'temurin'
+
+    - name: Install X11 headers (the OpenXR loader build needs them on Linux)
+      run: sudo apt-get update && sudo apt-get install -y libx11-dev
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -27,3 +32,22 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew build --stacktrace
+
+  windows_natives:
+    # Builds the Windows desktop library (with MSVC) and runs the desktop tests against it
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Build and test the Windows native library
+      run: ./gradlew :openxr-bindings-desktop:test --stacktrace

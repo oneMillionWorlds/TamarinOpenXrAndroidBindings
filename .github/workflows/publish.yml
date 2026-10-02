@@ -3,17 +3,53 @@ name: Java release with Gradle
 on:
   workflow_dispatch:
 jobs:
+  windows_natives:
+    # The Windows desktop library has to be built on Windows (with MSVC); the release job adds it to the desktop jar
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Build and test the Windows native library
+      run: ./gradlew :openxr-bindings-desktop:test --stacktrace
+
+    - name: Upload the Windows native library
+      uses: actions/upload-artifact@v4
+      with:
+        name: natives-windows-x64
+        path: openxr-bindings-desktop/build/natives/windows-x64/*.dll
+        if-no-files-found: error
+
   release:
+    needs: windows_natives
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
-        distribution: 'adopt'
+        distribution: 'temurin'
+
+    - name: Install X11 headers (the OpenXR loader build needs them on Linux)
+      run: sudo apt-get update && sudo apt-get install -y libx11-dev
+
+    - name: Download the Windows native library
+      uses: actions/download-artifact@v4
+      with:
+        name: natives-windows-x64
+        path: prebuilt-natives/windows-x64
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -25,7 +61,7 @@ jobs:
       run: ./gradlew -p buildSrc test
 
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build -PdesktopNativesDir=$GITHUB_WORKSPACE/prebuilt-natives
 
     - name: Decode GPG key
       run: echo "${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}" | base64 --decode > ./secring.gpg
@@ -43,10 +79,11 @@ jobs:
         echo "centralPassword=${{ secrets.OSSRH_PASSWORD }}" >> ~/.gradle/gradle.properties
 
     - name: Prepare Central bundle (stage + zip)
-      run: ./gradlew :android-native:prepareCentralBundle
+      # the desktop jar gets the Linux library (built here) and the Windows one (from the windows_natives job)
+      run: ./gradlew prepareCentralBundle -PdesktopNativesDir=$GITHUB_WORKSPACE/prebuilt-natives
 
     - name: Upload bundle via Central Publisher API (USER_MANAGED)
-      run: .github/scripts/upload_central.sh "android-native/build/central-bundle.zip"
+      run: .github/scripts/upload_central.sh "build/central-bundle.zip"
       env:
         CENTRAL_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         CENTRAL_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
