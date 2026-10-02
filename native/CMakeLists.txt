@@ -7,11 +7,19 @@ project(OpenXRBindings LANGUAGES C CXX)
 #       headers come from. The same version as the xr.xml the Java/C is generated from (see downloadXrXml)
 #   TAMARIN_OUTPUT_DIR - where to put the built library
 
+# The generated C (from openxr-bindings-core's parseOpenXrFile). Gradle builds generate it first, but an IDE Gradle
+# sync configures CMake without running any tasks, so it may not exist yet (e.g. after a clean or on a fresh clone)
+set(GENERATED_XR10_C ${CMAKE_CURRENT_SOURCE_DIR}/generated/com_onemillionworlds_tamarin_openxrbindings_XR10.c)
+if (NOT EXISTS ${GENERATED_XR10_C})
+    message(FATAL_ERROR "${GENERATED_XR10_C} does not exist. Run ./gradlew :openxr-bindings-core:parseOpenXrFile "
+        "to generate it (then re-sync if this came from an IDE Gradle sync)")
+endif()
+
 # Define JNI source files
 set(JNI_SOURCES
     src/com_onemillionworlds_tamarin_openxrbindings_memory_MemoryUtil.c
     src/com_onemillionworlds_tamarin_openxrbindings_thickc_ThickC.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/generated/com_onemillionworlds_tamarin_openxrbindings_XR10.c
+    ${GENERATED_XR10_C}
 )
 
 if (ANDROID)

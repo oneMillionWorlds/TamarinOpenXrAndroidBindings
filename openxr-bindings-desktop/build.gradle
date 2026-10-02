@@ -59,6 +59,17 @@ def prebuiltNativesDir = findProperty('desktopNativesDir')
 def cmakeExecutable = (findProperty('cmake') ?: 'cmake') as String
 def extraCmakeArgs = ((findProperty('desktopCmakeArgs') ?: '') as String).tokenize(' ')
 
+// whether the executable exists, either as a path or (for a bare name) on the PATH, with PATHEXT on Windows
+static boolean executableExists(String executable) {
+    if (executable.contains('/') || executable.contains('\\')) {
+        return new File(executable).isFile()
+    }
+    def extensions = [''] + (System.getenv('PATHEXT') ?: '').tokenize(File.pathSeparator)
+    return (System.getenv('PATH') ?: '').tokenize(File.pathSeparator).any { dir ->
+        extensions.any { ext -> new File(dir, executable + ext).isFile() }
+    }
+}
+
 def cmakeBuildDir = layout.buildDirectory.dir("cmake/${nativesPlatform}")
 def builtNativesDir = layout.buildDirectory.dir("natives")
 
@@ -71,6 +82,16 @@ def configureDesktopNatives = tasks.register('configureDesktopNatives', Exec) {
     inputs.property('args', extraCmakeArgs)
     outputs.dir(cmakeBuildDir)
     executable cmakeExecutable
+    doFirst {
+        // otherwise Gradle's only message is "A problem occurred starting process 'command 'cmake''"
+        if (!executableExists(cmakeExecutable)) {
+            throw new GradleException("Can't find CMake ('${cmakeExecutable}'), which is needed to build the " +
+                    "${nativesPlatform} native library. Either install CMake and a C/C++ compiler (on Windows, Visual " +
+                    "Studio Build Tools with the 'Desktop development with C++' workload, and put its cmake on the " +
+                    "PATH or pass -Pcmake=<path to cmake>), or skip building the desktop library with " +
+                    "-PskipDesktopNatives (or skipDesktopNatives=true in your ~/.gradle/gradle.properties)")
+        }
+    }
     args(['-S', sourceDir.absolutePath, '-B', cmakeBuildDir.get().asFile.absolutePath,
           '-DCMAKE_BUILD_TYPE=Release',
           "-DOPENXR_SDK_URL=${openxrSdkUrl}",
