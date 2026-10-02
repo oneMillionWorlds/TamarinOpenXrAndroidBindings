@@ -175,6 +175,13 @@ tasks.matching { task ->
     task.dependsOn parseOpenXrFile
 }
 
+// An IDE sync configures CMake directly from the model builder, without running any of the tasks above, so on a clean
+// checkout CMake can't find the generated C file. prepareKotlinBuildScriptModel is the task the IDE runs before building
+// its models, so generate the sources then
+rootProject.tasks.matching { it.name == "prepareKotlinBuildScriptModel" }.configureEach { task ->
+    task.dependsOn parseOpenXrFile
+}
+
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api libs.commons.math3
