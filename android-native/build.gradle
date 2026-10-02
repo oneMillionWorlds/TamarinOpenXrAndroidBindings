@@ -1,5 +1,7 @@
 import com.onemillionworlds.tamarin.gradle.tasks.ParseOpenXr
 
+import java.security.MessageDigest
+
 plugins {
     // Apply the Android library plugin
     id 'com.android.library'
@@ -98,7 +100,7 @@ android {
 }
 
 // Configure Java compiler to generate JNI header files
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += ["-h", "${project.projectDir}/src/native/headers"]
 }
 
@@ -123,7 +125,7 @@ def downloadXrXml = tasks.register('downloadXrXml') {
     outputs.file(outputFile)
     doLast {
         def bytes = new URL(url).openStream().withCloseable { it.bytes }
-        def actualSha256 = java.security.MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString()
+        def actualSha256 = MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString()
         if (actualSha256 != xrXmlSha256) {
             throw new GradleException("xr.xml from ${url} has SHA-256 ${actualSha256} but ${xrXmlSha256} was expected. " +
                     "If openxr-loader was bumped, review the new xr.xml and update xrXmlSha256 in android-native/build.gradle")
@@ -133,14 +135,14 @@ def downloadXrXml = tasks.register('downloadXrXml') {
 }
 
 // Create the output directories
-task createGeneratedDirs {
+def createGeneratedDirs = tasks.register('createGeneratedDirs') {
     doLast {
         generatedOutputDir.mkdirs()
         generatedCOutputDir.mkdirs()
     }
 }
 
-task parseOpenXrFile(type: ParseOpenXr) {
+def parseOpenXrFile = tasks.register('parseOpenXrFile', ParseOpenXr) {
     dependsOn createGeneratedDirs, downloadXrXml
     xrXml = openxrSpecDir.map { it.file('xr.xml') }
     outputDir = generatedOutputDir
@@ -149,29 +151,30 @@ task parseOpenXrFile(type: ParseOpenXr) {
 
 // Make sure the CreateStructs task runs before Java compilation (and Kotlin compilation, which AGP 9 always
 // registers and which also reads the java source dirs)
-tasks.matching { task -> task instanceof JavaCompile || (task.name.startsWith("compile") && task.name.endsWith("Kotlin")) }.all { task ->
+tasks.withType(JavaCompile).configureEach { task ->
+    task.dependsOn parseOpenXrFile
+}
+tasks.named { n -> n.startsWith("compile") && n.endsWith("Kotlin") }.configureEach { task ->
     task.dependsOn parseOpenXrFile
 }
 
 // Ensure tasks that read the generated sources (annotation extraction, javadoc, sources jar) depend on parseOpenXrFile
-tasks.matching { task ->
-    def n = task.name
-    return (n.startsWith("extract") && n.endsWith("Annotations")) ||
-           (n.startsWith("javaDoc") && n.endsWith("Generation")) ||
-           n == "sourceReleaseJar"
-}.all { task ->
+tasks.named { n ->
+    (n.startsWith("extract") && n.endsWith("Annotations")) ||
+    (n.startsWith("javaDoc") && n.endsWith("Generation")) ||
+    n == "sourceReleaseJar"
+}.configureEach { task ->
     task.dependsOn parseOpenXrFile
 }
 
 // Ensure native build (CMake/externalNativeBuild) runs after generating sources
 // This guarantees the generated C file exists before CMake config/build tasks
 // Covers various AGP task names across versions
-tasks.matching { task ->
-    def n = task.name
-    return (n.startsWith("externalNativeBuild") ||
-           n.startsWith("configureCMake") ||
-           (n.startsWith("generate") && n.contains("CMake"))) && ! n.contains("clean")
-}.all { task ->
+tasks.named { n ->
+    (n.startsWith("externalNativeBuild") ||
+     n.startsWith("configureCMake") ||
+     (n.startsWith("generate") && n.contains("CMake"))) && !n.contains("clean")
+}.configureEach { task ->
     task.dependsOn parseOpenXrFile
 }
 
@@ -216,7 +219,7 @@ android.testOptions {
 // This task is not part of the normal build process and should be run explicitly
 // when you want to accept changes to the generated structs
 // Only updates existing reference files, never creates new ones
-task updateReferenceStructs {
+tasks.register('updateReferenceStructs') {
     description = 'Updates existing reference struct files with the current generated files'
     group = 'Verification'
 
@@ -320,7 +323,7 @@ afterEvaluate {
             // This keeps publishToMavenLocal working and avoids pushing to OSSRH.
             maven {
                 name = 'CentralPortalStaging'
-                url = uri("${buildDir}/central-portal-staging")
+                url = centralPortalStagingDir.get().asFile
             }
             // Sonatype OSSRH (legacy) — left in place for local testing only; CI no longer uses it
             maven {
@@ -354,7 +357,7 @@ tasks.named('clean') {
 
 
 // --- Central Publisher API integration (USER_MANAGED) ---
-ext.centralPortalStagingDir = file("${buildDir}/central-portal-staging")
+ext.centralPortalStagingDir = layout.buildDirectory.dir('central-portal-staging')
 
 // Helper task alias with clearer name
 tasks.register('publishToCentralPortalStaging') {
@@ -369,7 +372,7 @@ tasks.register('zipCentralPortalBundle', Zip) {
     dependsOn 'publishToCentralPortalStaging'
     from(centralPortalStagingDir)
     archiveFileName = 'central-bundle.zip'
-    destinationDirectory = file("${buildDir}")
+    destinationDirectory = layout.buildDirectory
 }
 
 tasks.register('prepareCentralBundle') {
