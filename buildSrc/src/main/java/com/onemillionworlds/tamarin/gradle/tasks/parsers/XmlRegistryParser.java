@@ -54,6 +54,15 @@ public class XmlRegistryParser {
     );
 
     /**
+     * Structs that hold one of a family of structs but that xr.xml doesn't make a child of that family's header (it
+     * would break validation), to the header they can be viewed as
+     */
+    private static final Map<String, String> HEADER_VIEWS = Map.of(
+            // xrPollEvent writes an event into the buffer
+            "XrEventDataBuffer", "XrEventDataBaseHeader"
+    );
+
+    /**
      * Enums that are hand-written rather than generated but can appear as struct fields.
      */
     private final Collection<String> handWrittenEnums;
@@ -657,21 +666,31 @@ public class XmlRegistryParser {
         StructDefinition structDefinition = new StructDefinition(structName);
         xrStructureType.ifPresent(structDefinition::setXrStructureTypeEnumValue);
         XmlHelper.getAttribute(element, "parentstruct").ifPresent(structDefinition::setBaseHeader);
+        structDefinition.setHeaderView(HEADER_VIEWS.get(structName));
 
         for(Element member : members){
             Declarator declarator = Declarator.of(member);
             String type = declarator.type;
 
-            // Double pointers are exposed as raw addresses, so the pointed to type's characteristics are deliberately ignored
+            // Double pointers are exposed as raw addresses, so the pointed to type's characteristics are deliberately
+            // ignored. Except arrays of struct pointers, which become the struct's PointerBuffer
             boolean isDoublePointer = declarator.isDoublePointer();
+            boolean isStruct = structNames.contains(type);
+            String countField = countOf(member, memberNames, structName + "." + declarator.name);
+            if(isDoublePointer && isStruct && countField == null){
+                throw new RuntimeException("Array of struct pointers without a len: " + structName + "." + declarator.name);
+            }
             structDefinition.addField(new StructField(type, declarator.name, declarator.arraySize(), declarator.isPointer(), declarator.isConst(),
                     !isDoublePointer && isEnum(type), !isDoublePointer && atoms.contains(type),
                     !isDoublePointer && intTypedefs.contains(type), !isDoublePointer && longTypedefs.contains(type),
                     !isDoublePointer && handles.contains(type), !isDoublePointer && flags.contains(type),
-                    !isDoublePointer && structNames.contains(type), isDoublePointer,
-                    countOf(member, memberNames, structName + "." + declarator.name),
+                    isStruct, isDoublePointer, countField,
                     member.getAttribute("len").contains("null-terminated")));
         }
+        // the structs this one can be chained onto (via their next pointer)
+        XmlHelper.getAttribute(element, "structextends")
+                .map(extended -> List.of(extended.split(",")))
+                .ifPresent(structDefinition::setStructExtends);
         return Optional.of(structDefinition);
     }
 

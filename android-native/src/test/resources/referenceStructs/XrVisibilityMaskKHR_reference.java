@@ -171,7 +171,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     public XrVisibilityMaskKHR vertices(XrVector2f.Buffer value) { 
         XrVisibilityMaskKHR.nvertices(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("vertices");
-        if(value != null){ this.setterValidation.setFieldCalled("vertexCapacityInput"); }
+        this.setterValidation.setFieldCalled("vertexCapacityInput");
         return this;
     }
     /** Sets the specified value to the {@code indexCapacityInput} field. */
@@ -190,7 +190,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     public XrVisibilityMaskKHR indices(IntBufferView value) { 
         XrVisibilityMaskKHR.nindices(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("indices");
-        if(value != null){ this.setterValidation.setFieldCalled("indexCapacityInput"); }
+        this.setterValidation.setFieldCalled("indexCapacityInput");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -426,9 +426,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     public static void nvertices(long struct, XrVector2f.Buffer value){
         long address = value == null ? NULL : value.address();
         memPutAddress(struct + VERTICES, address);
-        if(value!=null){
-            nvertexCapacityInput(struct, value.remaining());
-        }
+        nvertexCapacityInput(struct, value == null ? 0 : value.remaining());
     }
     /** Unsafe version of indexCapacityInput}. */
     public static int nindexCapacityInput(long struct) { return memGetInt(struct + XrVisibilityMaskKHR.INDEXCAPACITYINPUT); }
@@ -444,9 +442,7 @@ public class XrVisibilityMaskKHR extends Struct<XrVisibilityMaskKHR> {
     public static void nindices(long struct, IntBufferView value){
         long address = value == null ? NULL : value.address();
         memPutAddress(struct + INDICES, address);
-        if(value!=null){
-            nindexCapacityInput(struct, value.capacity());
-        }
+        nindexCapacityInput(struct, value == null ? 0 : value.capacity());
     }
 
 

@@ -265,6 +265,18 @@ public class StructGenerator extends FileGenerator {
             writer.append("    public " + struct.getName() + " type$Default() { return type(XrStructureType." + typeConstant + "); }\n");
         });
 
+        // Typed next setters for the structs that can be chained onto this one
+        for (String extendingType : struct.getExtendingTypes()) {
+            writer.append("    /**\n");
+            writer.append("     * Prepends the specified {@link " + extendingType + "} to the {@code next} chain (it is pointed at whatever\n");
+            writer.append("     * this struct's {@code next} pointed to, or NULL if it hasn't been set yet).\n");
+            writer.append("     */\n");
+            writer.append("    public " + struct.getName() + " next(" + extendingType + " value) {\n");
+            writer.append("        long currentNext = this.setterValidation.isFieldAwaitingSet(\"next\") ? NULL : next();\n");
+            writer.append("        return this.next(value.next(currentNext).address());\n");
+            writer.append("    }\n");
+        }
+
         writer.append("\n");
 
         // Generate set method
@@ -362,6 +374,12 @@ public class StructGenerator extends FileGenerator {
            writer.append("        return new "+parent+"(address(), container());\n");
            writer.append("    }\n\n");
        });
+        struct.getHeaderView().ifPresent(header -> {
+            writer.append("    /** Get a view of the struct this holds as a {@link " + header + "} (check its type() then cast it to the specific type) */\n");
+            writer.append("    public " + header + " as" + header + "() {\n");
+            writer.append("        return new " + header + "(address(), container());\n");
+            writer.append("    }\n\n");
+        });
         struct.getChildTypes().forEach(childType -> {
             writer.append("    /** Casts the specified {@link " + struct.getName() + "} instance to the {@code " + childType + "} class. \n");
             writer.append("     * Note it is the callers responsibility to make sure it really is that type (check the type() method) \n");
@@ -644,7 +662,20 @@ public class StructGenerator extends FileGenerator {
 
         writer.append("    /** Unsafe version of " + fieldName + "}. */\n");
 
-        if(field.isStruct()) {
+        if(field.isStructPointerArray()) {
+            String countMethodName = struct.findCountParameterForPointerField(field.getName()).map(f -> "n" + f).orElseThrow();
+            String offset = "struct + " + struct.getName() + "." + fieldNameUpper;
+            writer.append("    public static " + javaType + " n" + fieldNameSanitised + "(long struct) {\n");
+            writer.append("        int count = (int)" + countMethodName + "(struct);\n");
+            writer.append("        PointerBufferView pointers = PointerBufferView.wrap(memGetAddress(" + offset + "), count);\n");
+            writer.append("        return pointers == null ? null : new " + javaType + "(pointers);\n");
+            writer.append("    }\n");
+
+            writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value){\n");
+            writer.append("        memPutAddress(" + offset + ", value == null ? NULL : value.address());\n");
+            appendCountFieldWrite(writer, struct, field, countMethodName, "capacity()");
+            writer.append("    }\n");
+        } else if(field.isStruct()) {
             if(field.isPointer()){
                 if(field.isSingletonStructPointer()){
                     writer.append("    public static " + fieldType + " n" + fieldNameSanitised + "(long struct) {\n");
@@ -668,9 +699,7 @@ public class StructGenerator extends FileGenerator {
                         writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value){\n");
                         writer.append("        long address = value == null ? NULL : value.address();\n");
                         writer.append("        memPutAddress(struct + " + fieldNameUpper + ", address);\n");
-                        writer.append("        if(value!=null){\n");
-                        writer.append("            " + countMethodName + "(struct, value.remaining());\n");
-                        writer.append("        }\n");
+                        appendCountFieldWrite(writer, struct, field, countMethodName, "remaining()");
                         writer.append("    }\n");
                     }
                 }
@@ -731,9 +760,7 @@ public class StructGenerator extends FileGenerator {
 
             writer.append("    public static void n" + fieldNameSanitised + "(long struct, PointerBufferView value){\n");
             writer.append("        memPutAddress(" + offset + ", value == null ? NULL : value.address());\n");
-            writer.append("        if(value!=null){\n");
-            writer.append("            " + countMethodName + "(struct, value.capacity());\n");
-            writer.append("        }\n");
+            appendCountFieldWrite(writer, struct, field, countMethodName, "capacity()");
             writer.append("    }\n");
         } else if (field.getPrimitiveBufferViewType() != null) {
             // a pointer to an array of plain values, whose length is in another field
@@ -746,9 +773,7 @@ public class StructGenerator extends FileGenerator {
             writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value){\n");
             writer.append("        long address = value == null ? NULL : value.address();\n");
             writer.append("        memPutAddress(struct + " + fieldNameUpper + ", address);\n");
-            writer.append("        if(value!=null){\n");
-            writer.append("            " + countMethodName + "(struct, value.capacity());\n");
-            writer.append("        }\n");
+            appendCountFieldWrite(writer, struct, field, countMethodName, "capacity()");
             writer.append("    }\n");
         } else if (javaType.equals("ByteBufferView")) {
             writer.append("    public static ByteBufferView n" + fieldNameSanitised + "(long struct) { \n");
@@ -795,8 +820,8 @@ public class StructGenerator extends FileGenerator {
                     writer.append("    }\n");
 
                     writer.append("    public static void n" + fieldNameSanitised + "(long struct, " + javaType + " value ) {\n");
-                    writer.append("        " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value.address());\n");
-                    writer.append("        " + countMethodName + "(struct, value.capacity());\n");
+                    writer.append("        " + setMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + ", value == null ? NULL : value.address());\n");
+                    appendCountFieldWrite(writer, struct, field, countMethodName, "capacity()");
                     writer.append("    }\n");
                 }else {
                     writer.append("    public static long n" + fieldNameSanitised + "(long struct) { return " + accessMethod + "(struct + " + struct.getName() + "." + fieldNameUpper + "); }\n");
@@ -809,6 +834,21 @@ public class StructGenerator extends FileGenerator {
         }
 
         return writer.toString();
+    }
+
+    /**
+     * Writes a buffer field's count field from the buffer's size. A null buffer writes 0, unless the count field is
+     * shared with other buffer fields (then it is left alone, as the others still use it)
+     * @param sizeMethod the method of the value that gives its size, e.g. "capacity()"
+     */
+    private static void appendCountFieldWrite(StringBuilder writer, StructDefinition struct, StructField field, String countMethodName, String sizeMethod) {
+        if(struct.nullSetterZeroesCountField(field)){
+            writer.append("        " + countMethodName + "(struct, value == null ? 0 : value." + sizeMethod + ");\n");
+        } else {
+            writer.append("        if(value!=null){\n");
+            writer.append("            " + countMethodName + "(struct, value." + sizeMethod + ");\n");
+            writer.append("        }\n");
+        }
     }
 
     private static String sanitiseFieldName(String fieldName) {
@@ -843,8 +883,11 @@ public class StructGenerator extends FileGenerator {
             writer.append("        " + struct.getName() + ".n"+fieldNameSanitised+"(addressUnsafe(), value);\n");
         }
         writer.append("        this.setterValidation.setFieldCalled(\"").append(fieldName).append("\");\n");
-        if(field.setterAlsoSetsCountField()){
-            // the count was written from the buffer's size, so it has been set too
+        if(struct.nullSetterZeroesCountField(field)){
+            // the count was written from the buffer's size (or 0 for null), so it has been set too
+            writer.append("        this.setterValidation.setFieldCalled(\"").append(field.getCountField().orElseThrow()).append("\");\n");
+        } else if(field.setterAlsoSetsCountField()){
+            // the count was written from the buffer's size, so it has been set too. A null leaves the (shared) count alone
             writer.append("        if(value != null){ this.setterValidation.setFieldCalled(\"").append(field.getCountField().orElseThrow()).append("\"); }\n");
         }
         writer.append("        return this;\n");

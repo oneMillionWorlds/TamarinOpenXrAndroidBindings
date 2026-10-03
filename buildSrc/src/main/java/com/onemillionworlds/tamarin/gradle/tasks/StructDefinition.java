@@ -29,6 +29,22 @@ public class StructDefinition {
      */
     private List<String> childTypes = new ArrayList<>();
 
+    /**
+     * The structs this struct can be chained onto via their next pointer (its "structextends" in xr.xml)
+     */
+    private List<String> structExtends = new ArrayList<>();
+
+    /**
+     * The structs that can be chained onto this struct's next pointer (the ones whose "structextends" names this one)
+     */
+    private List<String> extendingTypes = new ArrayList<>();
+
+    /**
+     * A header type this struct can be viewed as despite not being a child of it in xr.xml (e.g. XrEventDataBuffer
+     * holds an event, so can be viewed as an XrEventDataBaseHeader)
+     */
+    private Optional<String> headerView = Optional.empty();
+
     public StructDefinition(String name) {
         this.name = name;
     }
@@ -76,6 +92,25 @@ public class StructDefinition {
                 .flatMap(StructField::getCountField);
     }
 
+    /**
+     * If the count field holds the length of more than one pointer field (e.g. XrHandTrackingMeshFB's
+     * jointCapacityInput is the length of jointBindPoses, jointRadii and jointParents). Setting one of those to null
+     * then mustn't zero the count, as the others still use it
+     */
+    public boolean isCountFieldShared(String countField){
+        return fields.stream()
+                .filter(f -> f.getCountField().filter(countField::equals).isPresent())
+                .count() > 1;
+    }
+
+    /**
+     * If setting this field to null writes 0 to its count field (rather than leaving the count alone). True for
+     * buffer fields whose count field is theirs alone
+     */
+    public boolean nullSetterZeroesCountField(StructField field){
+        return field.setterAlsoSetsCountField() && !isCountFieldShared(field.getCountField().orElseThrow());
+    }
+
     public Optional<String> getBaseHeader() {
         return baseHeader;
     }
@@ -90,6 +125,30 @@ public class StructDefinition {
 
     public void setChildren(List<String> childTypes) {
         this.childTypes = childTypes;
+    }
+
+    public List<String> getStructExtends() {
+        return structExtends;
+    }
+
+    public void setStructExtends(List<String> structExtends) {
+        this.structExtends = structExtends;
+    }
+
+    public List<String> getExtendingTypes() {
+        return extendingTypes;
+    }
+
+    public void setExtendingTypes(List<String> extendingTypes) {
+        this.extendingTypes = extendingTypes;
+    }
+
+    public Optional<String> getHeaderView() {
+        return headerView;
+    }
+
+    public void setHeaderView(String headerView) {
+        this.headerView = Optional.ofNullable(headerView);
     }
 
     public Optional<String> getXrStructureTypeEnumValue() {

@@ -21,20 +21,19 @@ import static com.onemillionworlds.tamarin.openxrbindings.BufferUtils.*;
 import static com.onemillionworlds.tamarin.openxrbindings.XR10Constants.*;
 
 /**
- * Structure specifying session action sets attach info.
+ * Structure specifying event data buffer.
  * 
  * <h3>Layout</h3>
  * 
  * <pre><code>
- * struct XrSessionActionSetsAttachInfo {
+ * struct XrEventDataBuffer {
  *     XrStructureType type;
  *     const void* next;
- *     uint32_t countActionSets;
- *     const XrActionSet* actionSets;
+ *     uint8_t varying[4000];
  * }</code></pre>
  * @noinspection unused
  */
-public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAttachInfo> {
+public class XrEventDataBuffer extends Struct<XrEventDataBuffer> {
 
     /** The struct size in bytes. */
     public static final int SIZEOF;
@@ -48,15 +47,13 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     public static final int
         TYPE,
         NEXT,
-        COUNTACTIONSETS,
-        ACTIONSETS;
+        VARYING;
 
     static {
         Layout layout = Layout.__struct(
             Layout.__member(4),
             Layout.__member(POINTER_SIZE),
-            Layout.__member(4),
-            Layout.__member(POINTER_SIZE)
+            Layout.__array(1, 4000)
         );
 
         SIZEOF = layout.getSize();
@@ -64,30 +61,29 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
 
         TYPE = layout.offsetof(0);
         NEXT = layout.offsetof(1);
-        COUNTACTIONSETS = layout.offsetof(2);
-        ACTIONSETS = layout.offsetof(3);
-        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("type", "next", "countActionSets", "actionSets");
+        VARYING = layout.offsetof(2);
+        FIELD_BIT_MASKS = StructSetterValidationObject.createBitFieldMasks("type", "next", "varying");
     }
 
-    protected XrSessionActionSetsAttachInfo(long address, ByteBuffer container) {
+    protected XrEventDataBuffer(long address, ByteBuffer container) {
         super(address, container);
-        this.setterValidation = new StructSetterValidationObject("XrSessionActionSetsAttachInfo", FIELD_BIT_MASKS);
+        this.setterValidation = new StructSetterValidationObject("XrEventDataBuffer", FIELD_BIT_MASKS);
     }
 
     @Override
-    protected XrSessionActionSetsAttachInfo create(long address, ByteBuffer container) {
-        return new XrSessionActionSetsAttachInfo(address, container);
+    protected XrEventDataBuffer create(long address, ByteBuffer container) {
+        return new XrEventDataBuffer(address, container);
     }
 
     /**
-     * Creates a {@code XrSessionActionSetsAttachInfo} instance at the current position of the specified {@link ByteBuffer} container. Changes to the buffer's content will be
+     * Creates a {@code XrEventDataBuffer} instance at the current position of the specified {@link ByteBuffer} container. Changes to the buffer's content will be
      * visible to the struct instance and vice versa.
      *
      * <p>The created instance holds a strong reference to the container object.</p>
      */
-    public XrSessionActionSetsAttachInfo(ByteBuffer container) {
+    public XrEventDataBuffer(ByteBuffer container) {
         super(memAddress(container), __checkContainer(container, SIZEOF));
-        this.setterValidation = new StructSetterValidationObject("XrSessionActionSetsAttachInfo", FIELD_BIT_MASKS);
+        this.setterValidation = new StructSetterValidationObject("XrEventDataBuffer", FIELD_BIT_MASKS);
     }
 
     @Override
@@ -95,60 +91,51 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
 
     /** Returns the value of the {@code type} field. */
     public XrStructureType type() {
-        return XrStructureType.fromValue(XrSessionActionSetsAttachInfo.ntype(addressUnsafe()));
+        return XrStructureType.fromValue(XrEventDataBuffer.ntype(addressUnsafe()));
     }
     /** Returns the value of the {@code next} field. */
     public long next() {
         return nnext(addressUnsafe());
     }
-    /** Returns the value of the {@code countActionSets} field. */
-    public int countActionSets() {
-        return ncountActionSets(addressUnsafe());
+    /** Returns the value of the {@code varying} field. */
+    public ByteBufferView varying() {
+        return nvarying(addressUnsafe());
     }
-    /** Returns the value of the {@code actionSets} field. */
-    public XrActionSet.HandleBuffer actionSets() {
-        return nactionSets(addressUnsafe());
+    /** Returns a String view of the {@code varying} field. */
+    public String varyingString() {
+        return XrEventDataBuffer.nvaryingString(addressUnsafe());
     }
 
     /** Sets the specified value to the {@code type} field. */
-    public XrSessionActionSetsAttachInfo type(XrStructureType value) { 
-        XrSessionActionSetsAttachInfo.ntype(addressUnsafe(), value.getValue());
+    public XrEventDataBuffer type(XrStructureType value) { 
+        XrEventDataBuffer.ntype(addressUnsafe(), value.getValue());
         this.setterValidation.setFieldCalled("type");
         return this;
     }
     /** Sets the specified value to the {@code next} field. */
-    public XrSessionActionSetsAttachInfo next(long value) { 
-        XrSessionActionSetsAttachInfo.nnext(addressUnsafe(), value);
+    public XrEventDataBuffer next(long value) { 
+        XrEventDataBuffer.nnext(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("next");
         return this;
     }
-    /** Sets the specified value to the {@code countActionSets} field. */
-    public XrSessionActionSetsAttachInfo countActionSets(int value) { 
-        XrSessionActionSetsAttachInfo.ncountActionSets(addressUnsafe(), value);
-        this.setterValidation.setFieldCalled("countActionSets");
-        return this;
-    }
-    /** Sets the specified value to the {@code actionSets} field. */
-    public XrSessionActionSetsAttachInfo actionSets(XrActionSet.HandleBuffer value) { 
-        XrSessionActionSetsAttachInfo.nactionSets(addressUnsafe(), value);
-        this.setterValidation.setFieldCalled("actionSets");
-        this.setterValidation.setFieldCalled("countActionSets");
+    /** Sets the specified value to the {@code varying} field. */
+    public XrEventDataBuffer varying(ByteBufferView value) { 
+        XrEventDataBuffer.nvarying(addressUnsafe(), value);
+        this.setterValidation.setFieldCalled("varying");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
-    public XrSessionActionSetsAttachInfo type$Default() { return type(XrStructureType.XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO); }
+    public XrEventDataBuffer type$Default() { return type(XrStructureType.XR_TYPE_EVENT_DATA_BUFFER); }
 
     /** Initializes this struct with the specified values. */
-    public XrSessionActionSetsAttachInfo set(
+    public XrEventDataBuffer set(
         XrStructureType type,
         long next,
-        int countActionSets,
-        XrActionSet.HandleBuffer actionSets
+        ByteBufferView varying
     ) {
         type(type);
         next(next);
-        countActionSets(countActionSets);
-        actionSets(actionSets);
+        varying(varying);
 
         return this;
     }
@@ -160,25 +147,22 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
      *
      * @return this struct
      */
-    public XrSessionActionSetsAttachInfo set(XrSessionActionSetsAttachInfo src) {
+    public XrEventDataBuffer set(XrEventDataBuffer src) {
         memCopy(src.address(), address(), SIZEOF);
         return this;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("XrSessionActionSetsAttachInfo{");
+        StringBuilder sb = new StringBuilder("XrEventDataBuffer{");
         sb.append("type=");
         sb.append(String.valueOf(type()));
         sb.append(", ");
         sb.append("next=");
         sb.append(String.valueOf(next()));
         sb.append(", ");
-        sb.append("countActionSets=");
-        sb.append(String.valueOf(countActionSets()));
-        sb.append(", ");
-        sb.append("actionSets=");
-        sb.append(String.valueOf(actionSets()));
+        sb.append("varying=");
+        sb.append(varyingString());
         sb.append('}');
         return sb.toString();
     }
@@ -209,34 +193,39 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         setterValidation.setNoLongerNeedsToValidateAllMethodsCalled();
     }
 
+    /** Get a view of the struct this holds as a {@link XrEventDataBaseHeader} (check its type() then cast it to the specific type) */
+    public XrEventDataBaseHeader asXrEventDataBaseHeader() {
+        return new XrEventDataBaseHeader(address(), container());
+    }
+
     // -----------------------------------
 
-    /** Returns a new {@code XrSessionActionSetsAttachInfo} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
-    public static XrSessionActionSetsAttachInfo malloc() {
-        XrSessionActionSetsAttachInfo instance = new XrSessionActionSetsAttachInfo(nmemAllocChecked(SIZEOF), null);
+    /** Returns a new {@code XrEventDataBuffer} instance allocated with {@link MemoryUtil#nmemAlloc nmemAlloc}. The instance must be explicitly freed. */
+    public static XrEventDataBuffer malloc() {
+        XrEventDataBuffer instance = new XrEventDataBuffer(nmemAllocChecked(SIZEOF), null);
         instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
-    /** Returns a new {@code XrSessionActionSetsAttachInfo} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
-    public static XrSessionActionSetsAttachInfo calloc() {
-        return new XrSessionActionSetsAttachInfo(nmemCallocChecked(1, SIZEOF), null);
+    /** Returns a new {@code XrEventDataBuffer} instance allocated with {@link MemoryUtil#nmemCalloc nmemCalloc}. The instance must be explicitly freed. */
+    public static XrEventDataBuffer calloc() {
+        return new XrEventDataBuffer(nmemCallocChecked(1, SIZEOF), null);
     }
 
-    /** Returns a new {@code XrSessionActionSetsAttachInfo} instance allocated with {@link BufferUtils}. */
-    public static XrSessionActionSetsAttachInfo create() {
+    /** Returns a new {@code XrEventDataBuffer} instance allocated with {@link BufferUtils}. */
+    public static XrEventDataBuffer create() {
         ByteBuffer container = BufferUtils.createByteBuffer(SIZEOF);
-        return new XrSessionActionSetsAttachInfo(memAddress(container), container);
+        return new XrEventDataBuffer(memAddress(container), container);
     }
 
-    /** Returns a new {@code XrSessionActionSetsAttachInfo} instance for the specified memory address. */
-    public static XrSessionActionSetsAttachInfo create(long address) {
-        return new XrSessionActionSetsAttachInfo(address, null);
+    /** Returns a new {@code XrEventDataBuffer} instance for the specified memory address. */
+    public static XrEventDataBuffer create(long address) {
+        return new XrEventDataBuffer(address, null);
     }
 
     /** Like {@link #create(long) create}, but returns {@code null} if {@code address} is {@code NULL}. */
-    public static XrSessionActionSetsAttachInfo createSafe(long address) {
-        return address == 0 ? null : new XrSessionActionSetsAttachInfo(address, null);
+    public static XrEventDataBuffer createSafe(long address) {
+        return address == 0 ? null : new XrEventDataBuffer(address, null);
     }
 
     /**
@@ -285,23 +274,23 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     }
 
     /**
-     * Returns a new {@code XrSessionActionSetsAttachInfo} instance allocated on the specified {@link MemoryStack}.
+     * Returns a new {@code XrEventDataBuffer} instance allocated on the specified {@link MemoryStack}.
      *
      * @param stack the stack from which to allocate
      */
-    public static XrSessionActionSetsAttachInfo malloc(MemoryStack stack) {
-        XrSessionActionSetsAttachInfo instance = new XrSessionActionSetsAttachInfo(stack.nmalloc(ALIGNOF, SIZEOF), null);
+    public static XrEventDataBuffer malloc(MemoryStack stack) {
+        XrEventDataBuffer instance = new XrEventDataBuffer(stack.nmalloc(ALIGNOF, SIZEOF), null);
         instance.setterValidation.setNeedsToValidateAllMethodsCalled();
         return instance;
     }
 
     /**
-     * Returns a new {@code XrSessionActionSetsAttachInfo} instance allocated on the specified {@link MemoryStack} and initializes all its bits to zero.
+     * Returns a new {@code XrEventDataBuffer} instance allocated on the specified {@link MemoryStack} and initializes all its bits to zero.
      *
      * @param stack the stack from which to allocate
      */
-    public static XrSessionActionSetsAttachInfo calloc(MemoryStack stack) {
-        return new XrSessionActionSetsAttachInfo(stack.ncalloc(ALIGNOF, 1, SIZEOF), null);
+    public static XrEventDataBuffer calloc(MemoryStack stack) {
+        return new XrEventDataBuffer(stack.ncalloc(ALIGNOF, 1, SIZEOF), null);
     }
 
     /**
@@ -329,33 +318,32 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
     // -----------------------------------
 
     /** Unsafe version of type}. */
-    public static int ntype(long struct) { return memGetInt(struct + XrSessionActionSetsAttachInfo.TYPE); }
-    public static void ntype(long struct, int value ) { memPutInt(struct + XrSessionActionSetsAttachInfo.TYPE, value); }
+    public static int ntype(long struct) { return memGetInt(struct + XrEventDataBuffer.TYPE); }
+    public static void ntype(long struct, int value ) { memPutInt(struct + XrEventDataBuffer.TYPE, value); }
     /** Unsafe version of next}. */
-    public static long nnext(long struct) { return memGetAddress(struct + XrSessionActionSetsAttachInfo.NEXT); }
-    public static void nnext(long struct, long value) { memPutAddress(struct + XrSessionActionSetsAttachInfo.NEXT, value); }
-    /** Unsafe version of countActionSets}. */
-    public static int ncountActionSets(long struct) { return memGetInt(struct + XrSessionActionSetsAttachInfo.COUNTACTIONSETS); }
-    public static void ncountActionSets(long struct, int value) { memPutInt(struct + XrSessionActionSetsAttachInfo.COUNTACTIONSETS, value); }
-    /** Unsafe version of actionSets}. */
-    public static XrActionSet.HandleBuffer nactionSets(long struct) { 
-        long address = memGetAddress(struct + XrSessionActionSetsAttachInfo.ACTIONSETS);
-        int count = ncountActionSets(struct);
-        ByteBuffer buffer = memByteBuffer(address, count * Long.BYTES);
-        return XrActionSet.create(buffer, address); 
+    public static long nnext(long struct) { return memGetAddress(struct + XrEventDataBuffer.NEXT); }
+    public static void nnext(long struct, long value) { memPutAddress(struct + XrEventDataBuffer.NEXT, value); }
+    /** Unsafe version of varying}. */
+    public static ByteBufferView nvarying(long struct) { 
+        long address = struct + XrEventDataBuffer.VARYING;
+        ByteBuffer rawBuffer = memByteBuffer(address, 4000);
+        return new ByteBufferView(rawBuffer, address);
     }
-    public static void nactionSets(long struct, XrActionSet.HandleBuffer value ) {
-        memPutAddress(struct + XrSessionActionSetsAttachInfo.ACTIONSETS, value == null ? NULL : value.address());
-        ncountActionSets(struct, value == null ? 0 : value.capacity());
+    /** Unsafe version of varying. */
+    public static String nvaryingString(long struct) { return memUTF8(struct + XrEventDataBuffer.VARYING); }
+    /** max length 4000 */
+    public static void nvarying(long struct, ByteBufferView value) {
+        byteBufferLengthCheck(value.getBuffer(),4000);
+        memCopy(value.address(), struct + XrEventDataBuffer.VARYING, value.getBuffer().remaining());
     }
 
 
     // -----------------------------------
 
-    /** A pointer buffer that holds pointers (aka memory addresses) to XrSessionActionSetsAttachInfos */
-    public static class PointerBuffer extends TypedPointerBufferView<XrSessionActionSetsAttachInfo> {
+    /** A pointer buffer that holds pointers (aka memory addresses) to XrEventDataBuffers */
+    public static class PointerBuffer extends TypedPointerBufferView<XrEventDataBuffer> {
         public PointerBuffer(PointerBufferView underlyingPointerBuffer) {
-            super(underlyingPointerBuffer, XrSessionActionSetsAttachInfo::create);
+            super(underlyingPointerBuffer, XrEventDataBuffer::create);
         }
         /** Creates a new TypedPointerBufferView with the specified capacity. (Will be garbage collected do no manually free)*/
         public static PointerBuffer calloc(int capacity) {
@@ -373,17 +361,17 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         }
 
     }
-    /** An array of {@link XrSessionActionSetsAttachInfo} structs. */
-    public static class Buffer extends StructBuffer<XrSessionActionSetsAttachInfo, Buffer> {
+    /** An array of {@link XrEventDataBuffer} structs. */
+    public static class Buffer extends StructBuffer<XrEventDataBuffer, Buffer> {
 
-        private static final Function<Long,XrSessionActionSetsAttachInfo> ELEMENT_FACTORY = address ->XrSessionActionSetsAttachInfo.create(address);
+        private static final Function<Long,XrEventDataBuffer> ELEMENT_FACTORY = address ->XrEventDataBuffer.create(address);
 
         /**
-         * Creates a new {@code XrSessionActionSetsAttachInfo.Buffer} instance backed by the specified container.
+         * Creates a new {@code XrEventDataBuffer.Buffer} instance backed by the specified container.
          *
          * <p>Changes to the container's content will be visible to the struct buffer instance and vice versa. The two buffers' position, limit, and mark values
          * will be independent. The new buffer's position will be zero, its capacity and its limit will be the number of bytes remaining in this buffer divided
-         * by {@link XrSessionActionSetsAttachInfo#SIZEOF}, and its mark will be undefined.</p>
+         * by {@link XrEventDataBuffer#SIZEOF}, and its mark will be undefined.</p>
          *
          * <p>The created buffer instance holds a strong reference to the container object.</p>
          */
@@ -410,7 +398,7 @@ public class XrSessionActionSetsAttachInfo extends Struct<XrSessionActionSetsAtt
         }
 
         @Override
-        protected Function<Long,XrSessionActionSetsAttachInfo> getElementFactory() {
+        protected Function<Long,XrEventDataBuffer> getElementFactory() {
             return ELEMENT_FACTORY;
         }
 

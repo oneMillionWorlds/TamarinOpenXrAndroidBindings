@@ -143,7 +143,7 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     public XrSpaceUuidFilterInfoFB uuids(XrUuidEXT.Buffer value) { 
         XrSpaceUuidFilterInfoFB.nuuids(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("uuids");
-        if(value != null){ this.setterValidation.setFieldCalled("uuidCount"); }
+        this.setterValidation.setFieldCalled("uuidCount");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -361,9 +361,7 @@ public class XrSpaceUuidFilterInfoFB extends Struct<XrSpaceUuidFilterInfoFB> {
     public static void nuuids(long struct, XrUuidEXT.Buffer value){
         long address = value == null ? NULL : value.address();
         memPutAddress(struct + UUIDS, address);
-        if(value!=null){
-            nuuidCount(struct, value.remaining());
-        }
+        nuuidCount(struct, value == null ? 0 : value.remaining());
     }
 
 

@@ -40,6 +40,16 @@ public class StructSetterValidationObject {
     }
 
     /**
+     * True if this is a malloc'ed instance whose setter for the field hasn't been called yet (so the field's memory is
+     * garbage)
+     */
+    public boolean isFieldAwaitingSet(String fieldName) {
+        @SuppressWarnings("DataFlowIssue")
+        int mask = fieldBitMasks.get(fieldName);
+        return (checkSetCalled & mask) != 0;
+    }
+
+    /**
      * Ensures that, for malloc'ed instances, all field setters have been called before use.
      * If this instance was created with calloc (or copied from another struct), this check is a no-op.
      */

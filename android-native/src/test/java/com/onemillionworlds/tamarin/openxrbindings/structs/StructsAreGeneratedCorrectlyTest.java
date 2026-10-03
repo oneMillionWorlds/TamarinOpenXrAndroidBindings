@@ -145,6 +145,35 @@ public class StructsAreGeneratedCorrectlyTest {
         test("XrDebugUtilsLabelEXT");
     }
 
+    /**
+     * XrFrameEndInfo is interesting because layers is an array of pointers to structs (const
+     * XrCompositionLayerBaseHeader* const*), so it is the base header's typed PointerBuffer and sets layerCount. It also
+     * has several structs that can be chained on to it, so gets typed next(...) setters
+     */
+    @Test
+    public void xrFrameEndInfoTest(){
+        test("XrFrameEndInfo");
+    }
+
+    /**
+     * XrHandTrackingMeshFB is interesting because one count field is the length of several buffers (jointCapacityInput
+     * for jointBindPoses, jointRadii and jointParents), so setting one of them to null must not zero the count the
+     * others use (unlike an unshared count, which null sets to 0)
+     */
+    @Test
+    public void xrHandTrackingMeshFBTest(){
+        test("XrHandTrackingMeshFB");
+    }
+
+    /**
+     * XrEventDataBuffer is interesting because it holds any event but isn't a child of XrEventDataBaseHeader in xr.xml,
+     * so gets an explicit asXrEventDataBaseHeader() view
+     */
+    @Test
+    public void xrEventDataBufferTest(){
+        test("XrEventDataBuffer");
+    }
+
     public static void test(String structName){
         try {
             String referenceContent = readResourceFile(structName);

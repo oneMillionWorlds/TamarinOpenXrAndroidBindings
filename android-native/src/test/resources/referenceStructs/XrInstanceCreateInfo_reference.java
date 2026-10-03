@@ -186,7 +186,7 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
     public XrInstanceCreateInfo enabledApiLayerNames(PointerBufferView value) { 
         XrInstanceCreateInfo.nenabledApiLayerNames(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("enabledApiLayerNames");
-        if(value != null){ this.setterValidation.setFieldCalled("enabledApiLayerCount"); }
+        this.setterValidation.setFieldCalled("enabledApiLayerCount");
         return this;
     }
     /** Sets the specified value to the {@code enabledExtensionCount} field. */
@@ -199,11 +199,27 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
     public XrInstanceCreateInfo enabledExtensionNames(PointerBufferView value) { 
         XrInstanceCreateInfo.nenabledExtensionNames(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("enabledExtensionNames");
-        if(value != null){ this.setterValidation.setFieldCalled("enabledExtensionCount"); }
+        this.setterValidation.setFieldCalled("enabledExtensionCount");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
     public XrInstanceCreateInfo type$Default() { return type(XrStructureType.XR_TYPE_INSTANCE_CREATE_INFO); }
+    /**
+     * Prepends the specified {@link XrDebugUtilsMessengerCreateInfoEXT} to the {@code next} chain (it is pointed at whatever
+     * this struct's {@code next} pointed to, or NULL if it hasn't been set yet).
+     */
+    public XrInstanceCreateInfo next(XrDebugUtilsMessengerCreateInfoEXT value) {
+        long currentNext = this.setterValidation.isFieldAwaitingSet("next") ? NULL : next();
+        return this.next(value.next(currentNext).address());
+    }
+    /**
+     * Prepends the specified {@link XrInstanceCreateInfoAndroidKHR} to the {@code next} chain (it is pointed at whatever
+     * this struct's {@code next} pointed to, or NULL if it hasn't been set yet).
+     */
+    public XrInstanceCreateInfo next(XrInstanceCreateInfoAndroidKHR value) {
+        long currentNext = this.setterValidation.isFieldAwaitingSet("next") ? NULL : next();
+        return this.next(value.next(currentNext).address());
+    }
 
     /** Initializes this struct with the specified values. */
     public XrInstanceCreateInfo set(
@@ -449,9 +465,7 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
     }
     public static void nenabledApiLayerNames(long struct, PointerBufferView value){
         memPutAddress(struct + XrInstanceCreateInfo.ENABLEDAPILAYERNAMES, value == null ? NULL : value.address());
-        if(value!=null){
-            nenabledApiLayerCount(struct, value.capacity());
-        }
+        nenabledApiLayerCount(struct, value == null ? 0 : value.capacity());
     }
     /** Unsafe version of enabledExtensionCount}. */
     public static int nenabledExtensionCount(long struct) { return memGetInt(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONCOUNT); }
@@ -475,9 +489,7 @@ public class XrInstanceCreateInfo extends Struct<XrInstanceCreateInfo> {
     }
     public static void nenabledExtensionNames(long struct, PointerBufferView value){
         memPutAddress(struct + XrInstanceCreateInfo.ENABLEDEXTENSIONNAMES, value == null ? NULL : value.address());
-        if(value!=null){
-            nenabledExtensionCount(struct, value.capacity());
-        }
+        nenabledExtensionCount(struct, value == null ? 0 : value.capacity());
     }
 
 

@@ -69,6 +69,20 @@ class XmlRegistryParserTest {
                         <member><type>float</type> <name>matrix</name>[9][3]</member>
                     </type>
                     <type category="struct" name="XrFooChildKHR" alias="XrFooChild"/>
+                    <type category="struct" name="XrFooExtra" structextends="XrFooChild,XrFooFrameInfo">
+                        <member><type>XrStructureType</type> <name>type</name></member>
+                        <member>const <type>void</type>* <name>next</name></member>
+                    </type>
+                    <type category="struct" name="XrFooFrameInfo">
+                        <member><type>XrStructureType</type> <name>type</name></member>
+                        <member>const <type>void</type>* <name>next</name></member>
+                        <member><type>uint32_t</type> <name>fooCount</name></member>
+                        <member len="fooCount">const <type>XrFooBaseHeader</type>* const* <name>foos</name></member>
+                    </type>
+                    <type category="struct" name="XrEventDataBuffer">
+                        <member><type>XrStructureType</type> <name>type</name></member>
+                        <member>const <type>void</type>* <name>next</name></member>
+                    </type>
                     <type category="struct" name="XrWin32Thing" protect="XR_USE_PLATFORM_WIN32">
                         <member><type>uint32_t</type> <name>value</name></member>
                     </type>
@@ -131,6 +145,9 @@ class XmlRegistryParserTest {
                         <type name="XrStructureType"/>
                         <type name="XrInstanceCreateFlags"/>
                         <type name="XrFooBaseHeader"/>
+                        <type name="XrFooFrameInfo"/>
+                        <type name="XrFooExtra"/>
+                        <type name="XrEventDataBuffer"/>
                         <enum name="XR_TRUE"/>
                         <command name="xrEnumerateFoos"/>
                         <command name="xrFooToString"/>
@@ -252,6 +269,36 @@ class XmlRegistryParserTest {
         assertTrue(enabledNames.isDoublePointer());
         assertTrue(enabledNames.isConst());
         assertEquals(Optional.of("enabledNameCount"), enabledNames.getCountField());
+    }
+
+    @Test
+    void arraysOfStructPointersAreStructPointerArrays() throws Exception {
+        StructDefinition frameInfo = struct(parse(), "XrFooFrameInfo");
+
+        // const XrFooBaseHeader* const* foos, len="fooCount"
+        StructField foos = field(frameInfo, "foos");
+        assertTrue(foos.isStruct());
+        assertTrue(foos.isDoublePointer());
+        assertTrue(foos.isStructPointerArray());
+        assertFalse(foos.isSingletonStructPointer());
+        assertEquals("XrFooBaseHeader.PointerBuffer", foos.getJavaType());
+        assertTrue(foos.setterAlsoSetsCountField());
+    }
+
+    @Test
+    void structExtendsComesFromXml() throws Exception {
+        XmlRegistryParser registry = parse();
+
+        assertEquals(List.of("XrFooChild", "XrFooFrameInfo"), struct(registry, "XrFooExtra").getStructExtends());
+        assertEquals(List.of(), struct(registry, "XrFooChild").getStructExtends());
+    }
+
+    @Test
+    void headerViewsAreAdded() throws Exception {
+        XmlRegistryParser registry = parse();
+
+        assertEquals(Optional.of("XrEventDataBaseHeader"), struct(registry, "XrEventDataBuffer").getHeaderView());
+        assertEquals(Optional.empty(), struct(registry, "XrFooChild").getHeaderView());
     }
 
     @Test

@@ -157,9 +157,17 @@ public class ParseOpenXr extends DefaultTask {
             struct.getBaseHeader().ifPresent(baseHeader -> parentToChildren.computeIfAbsent(baseHeader, k -> new ArrayList<>())
                     .add(struct.getName()));
         }
+        Map<String, List<String>> extendedToExtending = new LinkedHashMap<>();
+        for (StructDefinition struct : structs) {
+            struct.getStructExtends().forEach(extended -> extendedToExtending.computeIfAbsent(extended, k -> new ArrayList<>())
+                    .add(struct.getName()));
+        }
         for (StructDefinition struct : structs) {
             if(parentToChildren.containsKey(struct.getName())) {
                 struct.setChildren(parentToChildren.get(struct.getName()));
+            }
+            if(extendedToExtending.containsKey(struct.getName())) {
+                struct.setExtendingTypes(extendedToExtending.get(struct.getName()));
             }
         }
 

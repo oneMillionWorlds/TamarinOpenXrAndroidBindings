@@ -118,7 +118,15 @@ public class StructField {
      * just a single object
      */
     public boolean isSingletonStructPointer() {
-        return isStruct && isPointer && countField == null;
+        return isStruct && isPointer && !isDoublePointer && countField == null;
+    }
+
+    /**
+     * An array of pointers to structs (e.g. const XrCompositionLayerBaseHeader* const*) whose length is in another
+     * field, exposed as the struct's typed PointerBuffer
+     */
+    public boolean isStructPointerArray() {
+        return isStruct && isDoublePointer && countField != null;
     }
 
     public Optional<String> getCountField() {
@@ -130,7 +138,7 @@ public class StructField {
      * the buffer's size). The count field then doesn't need setting separately
      */
     public boolean setterAlsoSetsCountField() {
-        if (isStringArray()) {
+        if (isStringArray() || isStructPointerArray()) {
             return true;
         }
         if (countField == null || !isPointer || isDoublePointer) {
@@ -234,6 +242,8 @@ public class StructField {
             return "PointerBufferView";
         }else if (isEnumType && !isPointer) {
             return type;
+        }else if(isStructPointerArray()) {
+            return type + ".PointerBuffer";
         }else if(isSingletonStructPointer()) {
             return type;
         } else if(isHandle && isPointer){

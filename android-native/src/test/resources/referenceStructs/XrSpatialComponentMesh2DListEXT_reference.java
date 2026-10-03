@@ -132,7 +132,7 @@ public class XrSpatialComponentMesh2DListEXT extends Struct<XrSpatialComponentMe
     public XrSpatialComponentMesh2DListEXT meshes(XrSpatialMeshDataEXT.Buffer value) { 
         XrSpatialComponentMesh2DListEXT.nmeshes(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("meshes");
-        if(value != null){ this.setterValidation.setFieldCalled("meshCount"); }
+        this.setterValidation.setFieldCalled("meshCount");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
@@ -345,9 +345,7 @@ public class XrSpatialComponentMesh2DListEXT extends Struct<XrSpatialComponentMe
     public static void nmeshes(long struct, XrSpatialMeshDataEXT.Buffer value){
         long address = value == null ? NULL : value.address();
         memPutAddress(struct + MESHES, address);
-        if(value!=null){
-            nmeshCount(struct, value.remaining());
-        }
+        nmeshCount(struct, value == null ? 0 : value.remaining());
     }
 
 

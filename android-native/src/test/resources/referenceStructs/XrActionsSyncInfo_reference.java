@@ -132,11 +132,19 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
     public XrActionsSyncInfo activeActionSets(XrActiveActionSet.Buffer value) { 
         XrActionsSyncInfo.nactiveActionSets(addressUnsafe(), value);
         this.setterValidation.setFieldCalled("activeActionSets");
-        if(value != null){ this.setterValidation.setFieldCalled("countActiveActionSets"); }
+        this.setterValidation.setFieldCalled("countActiveActionSets");
         return this;
     }
     /** Sets the specified value to the {@code type} field. */
     public XrActionsSyncInfo type$Default() { return type(XrStructureType.XR_TYPE_ACTIONS_SYNC_INFO); }
+    /**
+     * Prepends the specified {@link XrActiveActionSetPrioritiesEXT} to the {@code next} chain (it is pointed at whatever
+     * this struct's {@code next} pointed to, or NULL if it hasn't been set yet).
+     */
+    public XrActionsSyncInfo next(XrActiveActionSetPrioritiesEXT value) {
+        long currentNext = this.setterValidation.isFieldAwaitingSet("next") ? NULL : next();
+        return this.next(value.next(currentNext).address());
+    }
 
     /** Initializes this struct with the specified values. */
     public XrActionsSyncInfo set(
@@ -345,9 +353,7 @@ public class XrActionsSyncInfo extends Struct<XrActionsSyncInfo> {
     public static void nactiveActionSets(long struct, XrActiveActionSet.Buffer value){
         long address = value == null ? NULL : value.address();
         memPutAddress(struct + ACTIVEACTIONSETS, address);
-        if(value!=null){
-            ncountActiveActionSets(struct, value.remaining());
-        }
+        ncountActiveActionSets(struct, value == null ? 0 : value.remaining());
     }
 
 
